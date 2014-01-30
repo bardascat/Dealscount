@@ -7,8 +7,3 @@ RewriteCond %{REQUEST_FILENAME} !-L
 RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
 
 
-
-php_value memory_limit 1024M
-
-
-

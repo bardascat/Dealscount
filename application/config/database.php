@@ -49,9 +49,9 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = '127.0.0.1';
-$db['default']['username'] = 'root';
-$db['default']['password'] = '';
-$db['default']['database'] = 'dealscount';
+$db['default']['username'] = 'dev';
+$db['default']['password'] = 'G3DJ3XvQ3Q';
+$db['default']['database'] = 'dev';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
