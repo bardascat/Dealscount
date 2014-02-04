@@ -1,8 +1,4 @@
 <?php
-
-use NeoMvc\Models as Models;
-use NeoMvc\Models\UserModel;
-
 class account extends \CI_Controller {
 
     private $UserModel;
