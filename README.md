@@ -1,4 +1,2 @@
-Dealscount
-123213
-2132131
+Dealscount development
 ==========
