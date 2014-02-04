@@ -1,18 +1,5 @@
-
-
-<link rel="stylesheet" type="text/css" href="/template/prettyPhoto.css" media="screen" />
-
-<script type="text/javascript" src="/template/js/prettyPhoto.js"></script>
-
-<script type="text/javascript">
-
-    $(document).ready(function() {
-        $("a[rel=prettyPhoto]").prettyPhoto();
-    });
-
-</script>
-
 <div class="content" style="margin-left: 194px;">
+    <!-- infobar -->
     <div class="info_bar">
         <div class="breadcrumbs">
             Toate Categoriile
@@ -56,8 +43,11 @@
             </tr>
         </table>
     </div>
-
+    <!-- end infobar -->
+    
     <div class="offers" style="clear: both;">
+        
+        <?php // for($i=0;$i<=40;$i++) { ?>
         <div class="box">
             <table border="0" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
@@ -144,6 +134,7 @@
                 </tr>
             </table>
         </div>
+        <?php // } ?>
 
         <!--
         <a href="#wrapper" id="back_top">

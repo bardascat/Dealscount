@@ -10,8 +10,8 @@ class UserModel extends AbstractModel {
      * @return \NeoMvc\Models\Entity\User
      */
     public function checkEmail($email) {
-    
-        
+
+
         $userRep = $this->em->getRepository("Entities:User");
         $user = $userRep->findBy(array("email" => $email));
         if (isset($user[0]))
@@ -108,15 +108,24 @@ class UserModel extends AbstractModel {
      * Cauta userul dupa email si parola.
      * @param type $email
      * @param type $password
-     * @return User
+     * @return Entities:User
      */
     public function find_user($email, $password = false) {
 
-        $userRep = $this->em->getRepository("Entities:User");
+        
+        $qb = $this->em->createQueryBuilder();
+        $qb->select("u")
+                ->from("Entities:User", 'u')
+                ->where('u.email=:email or u.username=:email');
         if ($password)
-            $user = $userRep->findBy(array("email" => $email, "password" => $password));
-        else
-            $user = $userRep->findBy(array("email" => $email));
+            $qb->andWhere('u.password=:password');
+
+        
+        $qb->setParameter(':email', $email)
+                ->setParameter(':password', $password);
+        
+        $user = $qb->getQuery()->getResult();
+
         if (isset($user[0]))
             return $user[0];
         else
@@ -126,9 +135,9 @@ class UserModel extends AbstractModel {
     /**
      * Cauta user dupa id.
      * @param  id int
-     * @return  Entity\User
+     * @return  Entities\User
      */
-    public function getUserByPk($id, $ORM = false) {
+    public function getUserByPk($id, $ORM = true) {
 
         if (!$ORM)
             $user = $this->em->getConnection()->executeQuery("select users.*,company.company_name from users

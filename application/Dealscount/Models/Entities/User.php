@@ -39,6 +39,16 @@ class User extends AbstractEntity {
     protected $email;
 
     /**
+     * @Column(type="string",unique=true) @var string 
+     */
+    protected $username;
+
+    /**
+     * @Column(type="string",unique=true) @var string 
+     */
+    protected $gender;
+
+    /**
      * @Column(type="string") @var string 
      */
     protected $password;
@@ -48,7 +58,6 @@ class User extends AbstractEntity {
      * Level 1 admin, level 2 partener, level 3 user
      */
     protected $access_level = 3;
-  
     protected $fromFb = 0;
 
     /**
@@ -119,11 +128,10 @@ class User extends AbstractEntity {
         $this->id_user = $id_user;
     }
 
-
     public function getEmail() {
         return $this->email;
     }
-    
+
     public function setEmail($email) {
         $this->email = $email;
     }
@@ -183,6 +191,7 @@ class User extends AbstractEntity {
         $this->invoices->add($invoice);
         $invoice->setUser($this);
     }
+
     public function getFromFb() {
         return $this->fromFb;
     }
@@ -191,7 +200,6 @@ class User extends AbstractEntity {
         $this->fromFb = $fromFb;
     }
 
-    
     public function getLastname() {
         return $this->lastname;
     }
@@ -219,7 +227,6 @@ class User extends AbstractEntity {
         return $this;
     }
 
-
     public function getAccessLevel() {
         return $this->access_level;
     }
@@ -228,7 +235,24 @@ class User extends AbstractEntity {
         $this->access_level = $access_level;
         return $this;
     }
+    
+    public function getUsername() {
+        return $this->username;
+    }
 
+    public function getGender() {
+        return $this->gender;
+    }
+
+    public function setUsername($username) {
+        $this->username = $username;
+        return $this;
+    }
+
+    public function setGender($gender) {
+        $this->gender = $gender;
+        return $this;
+    }
 
 
 
