@@ -21,7 +21,7 @@
                             <div class="menu">
                                 <ul>
                                     <li><a href="<?php echo base_url() ?>">dealscount.ro</a></li>
-                                    <li><a href="<?php echo base_url() ?>admin/index/logout">Logout</a></li>
+                                    <li><a href="<?php echo base_url('account/logout') ?>">Logout</a></li>
                                 </ul>
                             </div>
                         </div>

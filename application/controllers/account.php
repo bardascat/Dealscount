@@ -1,12 +1,9 @@
 <?php
 class account extends \CI_Controller {
 
-    private $UserModel;
-
     function __construct() {
         parent::__construct();
-        $this->load->library('form_validation');
-        $this->UserModel = new \Dealscount\Models\UserModel();
+        $this->load->library('form_validation');        
     }
 
     public function index() {
@@ -71,6 +68,7 @@ class account extends \CI_Controller {
     }
 
     public function logout() {
+        
         $cookie = array(
             'name' => 'dl_loggedin',
             'value' => '',
