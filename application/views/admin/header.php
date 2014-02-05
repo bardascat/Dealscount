@@ -14,7 +14,7 @@
                         <div id="header">
                             <div class="admin_icon">
                                 <a href='<?= base_url() ?>admin'>
-                                    <img src="<?= base_url() ?>images/admin/admin_icon.png" width="70"/>
+                                    <img src="<?= base_url() ?>assets/images/admin/admin_icon.png" width="70"/>
                                 </a>
                             </div>
                             <h2><?=$this->view->getPage_name() ?></h2>

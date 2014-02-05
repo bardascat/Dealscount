@@ -11,7 +11,7 @@
             <td class='content index'>
                 <!-- content -->
                 <div class='welcome'>
-                    Bine ai venit administrator 
+                    Bine ai venit administrator <?=$this->view->getUser()['lastname'].' '.$this->view->getUser()['firstname']?>
                 </div>
                 <!-- end content -->
             </td>

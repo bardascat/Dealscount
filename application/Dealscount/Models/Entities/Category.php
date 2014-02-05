@@ -18,7 +18,7 @@ class Category {
     private $id_category;
 
     /** @OneToMany(targetEntity="ItemCategories", mappedBy="category") */
-    protected $ItemCategories;
+    private $ItemCategories;
 
     /**
      *
@@ -48,10 +48,15 @@ class Category {
     private $cover;
 
     /**
-     *
      * @Column(type="string",nullable=true) @var string 
      */
     protected $layout;
+    
+    
+    /**
+     * @Column(type="string",nullable=false) @var string 
+     */
+    protected $item_type="offer";
     
     /**
      * @Column(type="integer",nullable=true) @var string 
@@ -139,6 +144,16 @@ class Category {
     public function setPosition($position) {
         $this->position = $position;
     }
+    
+    public function getItem_type() {
+        return $this->item_type;
+    }
+
+    public function setItem_type($item_type) {
+        $this->item_type = $item_type;
+        return $this;
+    }
+
 
 
 

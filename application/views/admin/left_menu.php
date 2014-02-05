@@ -3,33 +3,11 @@
 
     <table border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
-            <th>Produse</th>
-        </tr>
-        <tr>
-            <td>
-                <a href='<?= base_url() ?>admin/product/categories'>Categorii produse</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href='<?= base_url() ?>admin/product/products_list'>Listă Produse</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href='<?= base_url() ?>admin/product/add_product'>Adauga Produs</a>
-            </td>
-        </tr>
-
-    </table>
-    
-    <table border='0' width='100%' cellpadding='0' cellspacing='0'>
-        <tr>
             <th>Oferte</th>
         </tr>
         <tr>
             <td>
-                <a href='<?= base_url() ?>admin/offer/categories'>Categorii oferte</a>
+                <a href='<?= base_url() ?>admin/categories/categories_list/offer'>Categorii Oferte</a>
             </td>
         </tr>
         <tr>
@@ -44,6 +22,7 @@
         </tr>
 
     </table>
+
     <table border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
             <th>Comenzi</th>
@@ -53,8 +32,40 @@
                 <a href='<?= base_url() ?>admin/orders/orders_list'>Listă Comenzi</a>
             </td>
         </tr>  
+        <tr>
+            <td>
+                <a href='<?= base_url() ?>admin/orders/orders_list'>Adauga Comanda</a>
+            </td>
+        </tr> 
     </table>
     <table border='0' width='100%' cellpadding='0' cellspacing='0'>
+        <tr>
+            <th>Useri</th>
+        </tr>
+        <tr>
+            <td>
+                <a href='<?= base_url() ?>admin/users/users_list'>Lista Useri</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href='<?= base_url() ?>admin/users/add_user'>Adauga Utilizator</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href='<?= base_url() ?>admin/users/company_list'>Listă Parteneri</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href='<?= base_url() ?>admin/users/add_company'>Adauga Partener</a>
+            </td>
+        </tr>
+
+    </table>
+    
+       <table border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
             <th>Pagini</th>
         </tr>
@@ -72,27 +83,6 @@
             </tr>
       
         <?php // } ?>
-    </table>
-    <table border='0' width='100%' cellpadding='0' cellspacing='0'>
-        <tr>
-            <th>Useri</th>
-        </tr>
-        <tr>
-            <td>
-                <a href='<?= base_url() ?>admin/users/users_list'>Lista Useri</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href='<?= base_url() ?>admin/users/company_list'>Listă Parteneri</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href='<?= base_url() ?>admin/users/add_company'>Adauga Partener</a>
-            </td>
-        </tr>
-
     </table>
 
     <table border='0' width='100%' cellpadding='0' cellspacing='0'>

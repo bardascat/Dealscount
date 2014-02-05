@@ -33,6 +33,18 @@ class Item extends AbstractEntity {
      *
      * @Column(type="string") @var string 
      */
+    protected $brief;
+
+    /**
+     *
+     * @Column(type="string",nullable=true)
+     */
+    protected $company_name;
+
+    /**
+     *
+     * @Column(type="string") @var string 
+     */
     protected $slug;
 
     /**
@@ -46,12 +58,6 @@ class Item extends AbstractEntity {
      * @Column(type="integer") @var float
      */
     protected $active = 1;
-
-    /**
-     *
-     * @Column(type="integer") @var float
-     */
-    protected $blackfriday = 0;
 
     /**
      *
@@ -79,6 +85,101 @@ class Item extends AbstractEntity {
      */
     private $company;
 
+    /**
+     *
+     * @Column (type="text",nullable=true)
+     */
+    protected $location;
+
+    /**
+     *
+     * @Column (type="text")
+     */
+    protected $city;
+
+    /**
+     *
+     * @Column(type="text")
+     */
+    protected $terms;
+
+    /**
+     *
+     * @Column(type="text")
+     */
+    protected $benefits;
+
+    /**
+     *
+     * @Column(type="float")
+     */
+    protected $price;
+
+    /**
+     *
+     * @Column(type="float")
+     */
+    protected $sale_price;
+
+    /**
+     *
+     * @Column(type="float")
+     */
+    protected $commission;
+
+    /**
+     *
+     * @Column(type="integer")
+     */
+    protected $startWith;
+
+    /**
+     *
+     * @Column(type="datetime")
+     */
+    protected $start_date;
+
+    /**
+     *
+     * @Column(type="datetime")
+     */
+    protected $end_date;
+
+    /**
+     *
+     * @Column(type="integer")
+     */
+    protected $voucher_max_limit;
+
+    /**
+     *
+     * @Column(type="integer")
+     */
+    protected $voucher_max_limit_user;
+
+    /**
+     *
+     * @Column(type="datetime")
+     */
+    protected $voucher_start_date;
+
+    /**
+     *
+     * @Column(type="datetime")
+     */
+    protected $voucher_end_date;
+
+    /**
+     *
+     * @Column(type="string",nullable=true)
+     */
+    protected $latitude;
+
+    /**
+     *
+     * @Column(type="string",nullable=true)
+     */
+    protected $longitude;
 
     public function __construct() {
         $this->createdDate = new \DateTime("now");
@@ -200,7 +301,6 @@ class Item extends AbstractEntity {
         $this->slug = $slug;
     }
 
-
     /**
      * 
      * Metoda folosita pentru a repopula inputurile din forms
@@ -240,8 +340,7 @@ class Item extends AbstractEntity {
     }
 
     /**
-     * 
-     * @return \NeoMvc\Models\Entity\ItemStats
+     * @return \Dealscount\Models\Entities\ItemStats
      */
     public function getStats() {
         return $this->stats;
@@ -258,14 +357,171 @@ class Item extends AbstractEntity {
     public function setId_stats($id_stats) {
         $this->id_stats = $id_stats;
     }
+    
 
-    public function getBlackfriday() {
-        return $this->blackfriday;
+    public function getBrief() {
+        return $this->brief;
     }
 
-    public function setBlackfriday($blackfriday) {
-        $this->blackfriday = $blackfriday;
+    public function setBrief($brief) {
+        $this->brief = $brief;
+        return $this;
     }
+
+        public function getCompany_name() {
+        return $this->company_name;
+    }
+
+    public function setCompany_name($company_name) {
+        $this->company_name = $company_name;
+        return $this;
+    }
+
+    public function getLocation() {
+        return $this->location;
+    }
+
+    public function setLocation($location) {
+        $this->location = $location;
+        return $this;
+    }
+
+    public function getCity() {
+        return $this->city;
+    }
+
+    public function setCity($city) {
+        $this->city = $city;
+        return $this;
+    }
+
+    public function getTerms() {
+        return $this->terms;
+    }
+
+    public function setTerms($terms) {
+        $this->terms = $terms;
+        return $this;
+    }
+
+    public function getBenefits() {
+        return $this->benefits;
+    }
+
+    public function setBenefits($benefits) {
+        $this->benefits = $benefits;
+        return $this;
+    }
+
+    public function getPrice() {
+        return $this->price;
+    }
+
+    public function setPrice($price) {
+        $this->price = $price;
+        return $this;
+    }
+
+    public function getSale_price() {
+        return $this->sale_price;
+    }
+
+    public function setSale_price($sale_price) {
+        $this->sale_price = $sale_price;
+        return $this;
+    }
+
+    public function getCommission() {
+        return $this->commission;
+    }
+
+    public function setCommission($commission) {
+        $this->commission = $commission;
+        return $this;
+    }
+
+    public function getStartWith() {
+        return $this->startWith;
+    }
+
+    public function setStartWith($startWith) {
+        $this->startWith = $startWith;
+        return $this;
+    }
+
+    public function getStart_date() {
+        return $this->start_date;
+    }
+
+    public function setStart_date($start_date) {
+        $this->start_date = $start_date;
+        return $this;
+    }
+
+    public function getEnd_date() {
+        return $this->end_date;
+    }
+
+    public function setEnd_date($end_date) {
+        $this->end_date = $end_date;
+        return $this;
+    }
+
+    public function getVoucher_max_limit() {
+        return $this->voucher_max_limit;
+    }
+
+    public function setVoucher_max_limit($voucher_max_limit) {
+        $this->voucher_max_limit = $voucher_max_limit;
+        return $this;
+    }
+
+    public function getVoucher_max_limit_user() {
+        return $this->voucher_max_limit_user;
+    }
+
+    public function setVoucher_max_limit_user($voucher_max_limit_user) {
+        $this->voucher_max_limit_user = $voucher_max_limit_user;
+        return $this;
+    }
+
+    public function getVoucher_start_date() {
+        return $this->voucher_start_date;
+    }
+
+    public function setVoucher_start_date($voucher_start_date) {
+        $this->voucher_start_date = $voucher_start_date;
+        return $this;
+    }
+
+    public function getVoucher_end_date() {
+        return $this->voucher_end_date;
+    }
+
+    public function setVoucher_end_date($voucher_end_date) {
+        $this->voucher_end_date = $voucher_end_date;
+        return $this;
+    }
+
+    public function getLatitude() {
+        return $this->latitude;
+    }
+
+    public function setLatitude($latitude) {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude() {
+        return $this->longitude;
+    }
+
+    public function setLongitude($longitude) {
+        $this->longitude = $longitude;
+        return $this;
+    }
+
+
 
 }
 

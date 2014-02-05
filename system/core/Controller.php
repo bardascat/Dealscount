@@ -127,6 +127,64 @@ class CI_Controller {
             redirect(base_url());
     }
 
+    protected function upload_images($upload_images, $path, $Entity = "Dealscount\Models\Entities\ItemImage", $resize = true) {
+
+        $this->load->library('SimpleImage',false,'SimpleImage');
+        
+        
+        if(!is_dir('application_uploads'))
+            mkdir('application_uploads',0777);
+        
+        $image = $this->SimpleImage;
+
+        $images = array();
+        foreach ($upload_images['tmp_name'] as $tmp_file) {
+            if ($Entity)
+                $productImage = new $Entity;
+            else
+                $productImage = array();
+
+            if ($tmp_file != "") {
+                if (!is_dir($path))
+                    mkdir($path, 0777);
+
+                $photo_name = substr(md5(rand(100, 9999)), 0, 10) . '.jpg';
+                if(!move_uploaded_file($tmp_file, $path . '/' . $photo_name)){
+                    exit('erroare');
+                }
+                
+                //huge
+                $image->load($path . '/' . $photo_name);
+                $image->resizePerfect(1200, 1200);
+                $image->save($path . '/huge_' . $photo_name);
+
+                if ($resize) {
+                    //big photo
+                    $image->load($path . '/' . $photo_name);
+                    $image->resizePerfect(550, 550);
+                    $image->save($path . '/' . $photo_name);
+                }
+
+                if (is_object($productImage))
+                    $productImage->setImage($path . '/' . $photo_name);
+                else
+                    $productImage['image'] = $path . '/' . $photo_name;
+
+                //thumb
+                $image->load($path . '/' . $photo_name);
+                $image->resizePerfect(200, 200);
+                $image->save($path . '/thumb_' . $photo_name);
+                if (is_object($productImage)) {
+                    $productImage->setThumb($path . '/thumb_' . $photo_name);
+                } else {
+
+                    $productImage['thumb'] = $path . '/thumb_' . $photo_name;
+                }
+                $images[] = $productImage;
+            }
+        }
+        return $images;
+    }
 }
 
 // END Controller class

@@ -11,11 +11,20 @@ class DLConstants {
     );
     private static $ADMIN_JS_FILES = array(
         'assets/js/jquery.1.10.min.js',
-        'assets/js/global.js'
+        'assets/js/jquery_ui/ui-1-10.js',
+        'assets/js/admin.js',
+        "assets/js/source_fancy/jquery.fancybox.js",
+        "assets/js/custom_alert/customAlert.js",
+        "assets/js/ckeditorScripts/ckeditor.js",
+        "assets/js/timepicker/timepicker.js"
     );
     private static $ADMIN_CSS_FILES = array(
-        'assets/css/admin.css'
+        'assets/css/admin.css',
+        'assets/js/jquery_ui/ui-1-10.css',
+        "assets/js/source_fancy/jquery.fancybox.css",
+        "assets/js/custom_alert/customAlert.css"
     );
+    
     public static $ADMIN_LEVEL = 1;
     public static $PARTNER_LEVEL = 2;
     public static $USER_LEVEL = 3;

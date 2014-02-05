@@ -26,7 +26,6 @@ class View {
     public function getJs($admin=false) {
         $jsFiles=$cssFiles=($admin ? DLConstants::getADMIN_JS_FILES() : DLConstants::getJS_FILES());
         if($jsFiles){
-            $jsFiles=DLConstants::getJS_FILES();
             $scripts='';
             foreach($jsFiles as $js){
                 $scripts.='<script type="text/javascript" src="'.base_url($js).'"></script>';

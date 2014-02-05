@@ -54,7 +54,7 @@ class account extends \CI_Controller {
             $user = $this->UserModel->find_user($email, md5($password));
 
         if ($user) {
-            $cookie = array('id_user' => $user->getId_user(), 'email' => $user->getEmail(), 'access_level' => $user->getAccessLevel(), "gender" => $user->getGender());
+            $cookie = array('id_user' => $user->getId_user(), 'email' => $user->getEmail(), 'access_level' => $user->getAccessLevel(), "gender" => $user->getGender(),"firstname"=>$user->getFirstname(),"lastname"=>$user->getLastname(),"username"=>$user->getUsername());
             $cookie = array(
                 'name' => 'dl_loggedin',
                 'value' => serialize($cookie),

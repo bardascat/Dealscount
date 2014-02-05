@@ -1,6 +1,8 @@
 <?php
-
-
+/**
+ * Feb 05 2014
+ * @author Bardas Catalin @ bardascat@gmail.com
+ */
 class dashboard extends \CI_Controller {
 
     function __construct() {
