@@ -64,7 +64,7 @@ class Doctrine {
 
         $em = EntityManager::create($dbParams, $config);
 
-      // $this->updateSchema($em);
+       //$this->updateSchema($em);
 
         return $em;
     }

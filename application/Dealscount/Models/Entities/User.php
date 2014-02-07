@@ -44,14 +44,14 @@ class User extends AbstractEntity {
     protected $username;
 
     /**
-     * @Column(type="string",unique=true) @var string 
+     * @Column(type="string") @var string 
      */
     protected $gender;
 
     /**
      * @Column(type="string") @var string 
      */
-    protected $password;
+    private $password;
 
     /**
      * @Column(type="string") @var string 
@@ -209,7 +209,7 @@ class User extends AbstractEntity {
     }
 
     public function getCreated_date() {
-        return $this->created_date;
+        return $this->created_date->format('d-m-Y H:i');
     }
 
     public function setLastname($lastname) {

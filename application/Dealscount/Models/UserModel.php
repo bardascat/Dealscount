@@ -20,18 +20,21 @@ class UserModel extends AbstractModel {
             return false;
     }
 
-    public function createUser(Entity\User $user, $type = "user") {
-        $checkEmail = $this->checkEmail($user->getEmail());
+    public function createUser($params) {
+        $checkEmail = $this->checkEmail($params['email']);
         if ($checkEmail) {
             throw new \Exception("Adresa email deja folosita", 1);
         }
-        //cand contul se face cu facebook nu are parola, si o generam automat
+        $user = new Entities\User();
 
-        if (!$user->getPassword()) {
+        if (!$params['password']) {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
             $user->setRealPassword($new_password);
         }
+        else
+            $user->setPassword(sha1($params['password']));
+
         $this->em->persist($user);
         $this->em->flush();
         // $this->sendNotification($user, $type);
@@ -53,7 +56,8 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
             return true;
-        } else
+        }
+        else
             return false;
     }
 
@@ -112,7 +116,7 @@ class UserModel extends AbstractModel {
      */
     public function find_user($email, $password = false) {
 
-        
+
         $qb = $this->em->createQueryBuilder();
         $qb->select("u")
                 ->from("Entities:User", 'u')
@@ -120,10 +124,10 @@ class UserModel extends AbstractModel {
         if ($password)
             $qb->andWhere('u.password=:password');
 
-        
+
         $qb->setParameter(':email', $email)
                 ->setParameter(':password', $password);
-        
+
         $user = $qb->getQuery()->getResult();
 
         if (isset($user[0]))
@@ -187,9 +191,44 @@ class UserModel extends AbstractModel {
 
     /*     * ************************** FUNCTII PARTENER ******************** */
 
+    public function createPartner($params) {
+
+        $checkEmail = $this->checkEmail($params['email']);
+        if ($checkEmail) {
+            throw new \Exception("Adresa email deja folosita", 1);
+        }
+        $user = new Entities\User();
+        $user->postHydrate($params);
+        $company = new Entities\Company();
+        if ($params['image'][0]['image']) {
+            $company->setImage($params['image'][0]['image']);
+        }
+        $company->postHydrate($params);
+
+        //cand contul se face cu facebook nu are parola, si o generam automat
+
+        if (!$params['password']) {
+            $new_password = $this->randString(10);
+            $user->setPassword(sha1($new_password));
+        }
+        else
+        $user->setPassword(sha1($params['password']));
+        $user->setAccess_level(\DLConstants::$PARTNER_LEVEL);
+        $user->setCompany($company);
+        try {
+            $this->em->persist($user);
+            $this->em->flush();
+        } catch (Doctrine\DBAL\DBALException $e) {
+            
+        }
+        // $this->sendNotification($user, $type);
+        //  $this->subscribeUser($user);
+        return $user;
+    }
+
     public function getCompaniesList() {
         $partnerRep = $this->em->getRepository("Entities:User");
-        $partnersList = $partnerRep->findBy(array("access_level" => 2), array("id_user" => "desc"));
+        $partnersList = $partnerRep->findBy(array("access_level" => \DLConstants::$PARTNER_LEVEL), array("id_user" => "desc"));
 
         return $partnersList;
     }
@@ -212,16 +251,12 @@ class UserModel extends AbstractModel {
         /* @var $user Entity\User */
         $user = $this->em->find("Entities:User", $post['id_user']);
         $user->postHydrate($post);
-        $user->setPassword(sha1($post['real_password']));
-
-        $user->setRealPassword($post['real_password']);
-
         /* @var $company Entity\Company */
         $company = $user->getCompanyDetails();
         $company->postHydrate($post);
 
 
-        if (isset($post['image']))
+        if (isset($post['image'][0]['image']))
             $company->setImage($post['image'][0]['image']);
 
         $this->em->persist($user);

@@ -181,6 +181,18 @@ class Item extends AbstractEntity {
      */
     protected $longitude;
 
+    /**
+     *
+     * @Column(type="integer",nullable=true)
+     */
+    protected $posted_by;
+
+    /**
+     *
+     * @Column(type="date",nullable=true)
+     */
+    protected $updated_date;
+
     public function __construct() {
         $this->createdDate = new \DateTime("now");
         $this->images = new ArrayCollection();
@@ -189,7 +201,7 @@ class Item extends AbstractEntity {
     }
 
     public function getCreatedDate() {
-        return $this->createdDate->format("d-m-Y");
+        return $this->createdDate->format("d-m-Y H:i");
     }
 
     public function getIdItem() {
@@ -209,7 +221,7 @@ class Item extends AbstractEntity {
     }
 
     public function addImage(ItemImage $image) {
-        $image->setProduct($this);
+        $image->setItem($this);
         if (!($this->images instanceof ArrayCollection))
             $this->images = new ArrayCollection ();
 
@@ -313,13 +325,7 @@ class Item extends AbstractEntity {
                 $iteration[$key] = $value;
         }
 
-        //adaugam detaliile
-        $ItemDetails = $this->getItemDetails();
-
-        $extra = $ItemDetails->getIterationArray();
-
-        foreach ($extra as $key => $value)
-            $iteration[$key] = $value;
+      
 
         //adaugam compania
         $company = $this->getCompany();
@@ -357,7 +363,6 @@ class Item extends AbstractEntity {
     public function setId_stats($id_stats) {
         $this->id_stats = $id_stats;
     }
-    
 
     public function getBrief() {
         return $this->brief;
@@ -368,7 +373,7 @@ class Item extends AbstractEntity {
         return $this;
     }
 
-        public function getCompany_name() {
+    public function getCompany_name() {
         return $this->company_name;
     }
 
@@ -518,6 +523,27 @@ class Item extends AbstractEntity {
 
     public function setLongitude($longitude) {
         $this->longitude = $longitude;
+        return $this;
+    }
+    
+    public function getPosted_by() {
+        return $this->posted_by;
+    }
+      public function getAuthorName() {
+        return "Catalin";
+    }
+
+    public function setPosted_by($posted_by) {
+        $this->posted_by = $posted_by;
+        return $this;
+    }
+
+    public function getUpdated_date() {
+        return $this->updated_date;
+    }
+
+    public function setUpdated_date($updated_date) {
+        $this->updated_date = $updated_date;
         return $this;
     }
 

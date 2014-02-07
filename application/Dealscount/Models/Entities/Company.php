@@ -1,6 +1,7 @@
 <?php
 
 namespace Dealscount\Models\Entities;
+
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -20,7 +21,14 @@ class Company extends AbstractEntity {
      *
      * @Column(type="string",nullable=false)
      */
+    protected $description;
+
+    /**
+     *
+     * @Column(type="string",nullable=false)
+     */
     protected $company_name;
+
     /**
      *
      * @Column(type="string",nullable=false)
@@ -61,19 +69,7 @@ class Company extends AbstractEntity {
      *
      * @Column(type="string",nullable=true)
      */
-    protected $district;
-
-    /**
-     *
-     * @Column(type="string")
-     */
-    protected $district_code;
-
-    /**
-     *
-     * @Column(type="string",nullable=true)
-     */
-    protected $image;
+    private $image;
 
     /**
      *
@@ -97,7 +93,7 @@ class Company extends AbstractEntity {
      *
      * @Column(type="string",nullable=true)
      */
-    protected $send_order=0;
+    protected $send_order = 0;
 
     /**
      * @OneToOne(targetEntity="User",inversedBy="company")
@@ -173,7 +169,6 @@ class Company extends AbstractEntity {
         $this->image = $image;
     }
 
-
     public function getIterationArray() {
         $iteration = array();
         foreach ($this as $key => $value) {
@@ -222,7 +217,7 @@ class Company extends AbstractEntity {
     public function setCity($city) {
         $this->city = $city;
     }
-    
+
     public function getSend_order() {
         return $this->send_order;
     }
@@ -231,13 +226,21 @@ class Company extends AbstractEntity {
         $this->send_order = $send_order;
     }
 
-
     public function getCommercial_name() {
         return $this->commercial_name;
     }
 
     public function setCommercial_name($commercial_name) {
         $this->commercial_name = $commercial_name;
+    }
+    
+    public function getDescription() {
+        return $this->description;
+    }
+
+    public function setDescription($description) {
+        $this->description = $description;
+        return $this;
     }
 
 

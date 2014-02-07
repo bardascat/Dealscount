@@ -48,90 +48,23 @@ class offer extends CI_Controller {
         $tree = $this->CategoriesModel->createCheckboxList("offer");
 
         $data = array(
-            'companies' => false,
+            'companies' => $companies,
             'category_tree' => $tree
         );
         $this->load_view_admin('admin/offer/add_offer', $data);
     }
 
     public function addOfferDo() {
-        $config = array(
-            array(
-                "field" => "name",
-                "label" => "Nume",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "brief",
-                "label" => "Scurta descriere",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "benefits",
-                "label" => "Beneficii",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "terms",
-                "label" => "Termeni",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "price",
-                "label" => "Pret",
-                "rules" => "required|callback_numeric_check|xss_clean"
-            ),
-            array(
-                "field" => "sale_price",
-                "label" => "Pret vanzare",
-                "rules" => "required|callback_numeric_check|xss_clean"
-            ),
-            array(
-                "field" => "id_company",
-                "label" => "Partener",
-                "rules" => "required"
-            ),
-            array(
-                "field" => "start_date",
-                "label" => "Data inceput oferta",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "end_date",
-                "label" => "Data sfarsit oferta",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "voucher_start_date",
-                "label" => "Data start voucher",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "voucher_end_date",
-                "label" => "Data sfarsit voucher",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "location",
-                "label" => "Locatie",
-                "rules" => "required|xss_clean"
-            ),
-            array(
-                "field" => "city",
-                "label" => "Oras",
-                "rules" => "required|xss_clean"
-            )
-        );
 
+        $this->form_validation->set_rules($this->setOfferRules());
+        $this->form_validation->set_rules('categories', 'Categorie', 'callback_categories_check');
+        $this->form_validation->set_rules('image', 'Poze', 'callback_images_check');
 
-        $this->form_validation->set_rules($config);
-        $this->form_validation->add_error("test eroare");
-                
         if ($this->form_validation->run() == FALSE) {
             $tree = $this->CategoriesModel->createCheckboxList("offer");
             $companies = $this->UserModel->getCompaniesList();
             $data = array(
-                'companies' => false,
+                'companies' => $companies,
                 'category_tree' => $tree,
                 "notification" => array(
                     "type" => "form_notification",
@@ -141,59 +74,61 @@ class offer extends CI_Controller {
             );
             $this->load_view_admin('admin/offer/add_offer', $data);
         } else {
-
             $id = $this->OffersModel->getNextId("items", "id_item");
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
             $this->OffersModel->addOffer($_POST);
 
-            Session::set_flash_data('form_ok', 'Oferta a fost adaugata');
-            header('Location:' . URL . 'admin/offer/add_offer');
-
-            exit();
+            $this->session->set_flashdata('form_ok', 'Oferta a fost adaugata');
+            redirect(base_url('admin/offer/offers_list'));
         }
     }
 
-    public function editOffer($param) {
-        $this->view->pageName = "Editeaza Oferta";
-        if (!isset($param[0])) {
-            echo " PAGE NOT FOUND";
-            exit();
-        }
-        /* @var $product Entity\Item  */
-        $this->view->companies = $this->UserModel->getCompaniesList();
-        $this->view->tree = $this->CategoriesModel->createCheckboxList("offer", $param[0]);
+    public function editOffer() {
+        $this->view->setPage_name("Editeaza Oferta");
 
-        $item = $this->OffersModel->getOffer($param[0]);
-        $this->view->item = $item;
+        $id_item = $this->uri->segment(4);
+
+        /* @var $product Entity\Item  */
+        $companies = $this->UserModel->getCompaniesList();
+        $tree = $this->CategoriesModel->createCheckboxList("offer", $id_item);
+
+        $item = $this->OffersModel->getOffer($id_item);
         $this->populate_form($item);
-        $this->view->render('admin/offer/edit_offer', true);
+        $data = array(
+            "companies" => $companies,
+            "tree" => $tree,
+            "item" => $item
+        );
+        $this->load_view_admin('admin/offer/edit_offer', $data);
     }
 
     public function editOfferDo() {
 
-        if (count($_POST) > 0) {
-            $id_item = $_POST['id_item'];
+        $this->form_validation->set_rules($this->setOfferRules());
+        $this->form_validation->set_rules('categories', 'Categorie', 'callback_categories_check');
 
-            $objValidator = $this->validate_offer("edit");
-
-            if (!$objValidator->isValid($_POST)) {
-
-                $this->view->form_js = $objValidator->form_js();
-                $this->view->item = $this->OffersModel->getOffer($id_item);
-                $this->view->tree = $this->CategoriesModel->createCheckboxList("offer", $id_item);
-                $this->view->companies = $this->UserModel->getCompaniesList();
-                $this->populate_form($this->view->item);
-                $this->view->render('admin/offer/edit_offer', true);
-            } else {
-                $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id_item);
-                $_POST['images'] = $images;
-                $this->OffersModel->updateOffer($_POST);
-                Session::set_flash_data('form_ok', 'Oferta a fost salvata');
-                header('Location:' . URL . 'admin/offer/editOffer/' . $id_item);
-            }
+        if ($this->form_validation->run() == FALSE) {
+            $tree = $this->CategoriesModel->createCheckboxList("offer");
+            $companies = $this->UserModel->getCompaniesList();
+            $data = array(
+                'companies' => $companies,
+                'category_tree' => $tree,
+                "notification" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "ui-state-error ui-corner-all"
+                )
+            );
+            $this->load_view_admin('admin/offer/edit_offer', $data);
         } else {
-            header('Location:' . URL . 'admin/product/add_product');
+            $id = $this->input->post('id_item');
+            $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
+            $_POST['images'] = $images;
+            $this->OffersModel->updateOffer($_POST);
+            $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Oferta a fost salvata</div>');
+            
+            redirect(base_url('admin/offer/editOffer/' . $id));
         }
     }
 
@@ -210,13 +145,11 @@ class offer extends CI_Controller {
         }
     }
 
-    public function delete_image($param) {
-        if (isset($_POST['id_image'])) {
+    public function delete_image() {
+        if ($this->input->post("id_image")) {
             $data = false;
-
-            $this->OffersModel->delete_image($_POST['id_image']);
-
-            echo json_encode(array('type' => 'success', 'msg' => 'Produsul a fost sters', 'data' => $data));
+            $this->OffersModel->delete_image($this->input->post("id_image"));
+            echo json_encode(array('type' => 'success', 'msg' => 'Oferta a fost stersa', 'data' => $data));
         } else {
             echo json_encode(array('type' => 'error', 'msg' => 'Id produs incorect'));
         }
@@ -293,12 +226,107 @@ class offer extends CI_Controller {
             echo json_encode(array('type' => 'error', 'msg' => 'ERROR: 105'));
     }
 
+    private function setOfferRules() {
+        $config = array(
+            array(
+                "field" => "name",
+                "label" => "Nume",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "brief",
+                "label" => "Scurta descriere",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "benefits",
+                "label" => "Beneficii",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "terms",
+                "label" => "Termeni",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "price",
+                "label" => "Pret",
+                "rules" => "required|callback_numeric_check|xss_clean"
+            ),
+            array(
+                "field" => "sale_price",
+                "label" => "Pret vanzare",
+                "rules" => "required|callback_numeric_check|xss_clean"
+            ),
+            array(
+                "field" => "id_company",
+                "label" => "Partener",
+                "rules" => "required"
+            ),
+            array(
+                "field" => "start_date",
+                "label" => "Data inceput oferta",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "end_date",
+                "label" => "Data sfarsit oferta",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "voucher_start_date",
+                "label" => "Data start voucher",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "voucher_end_date",
+                "label" => "Data sfarsit voucher",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "location",
+                "label" => "Locatie",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "city",
+                "label" => "Oras",
+                "rules" => "required|xss_clean"
+            )
+        );
+        return $config;
+    }
+
+    /**
+     * Validate custom oferta
+     */
     public function numeric_check($str) {
-        if(!preg_match('/^[0-9,]+$/', $str)){
+        if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s must be a number');
             return FALSE;
         }
-        else return true;
+        else
+            return true;
+    }
+
+    public function images_check($data) {
+
+        if (!$_FILES['image']['name'][0]) {
+            $this->form_validation->set_message('images_check', 'Este obligatoriu sa alegi cel putin o poza');
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function categories_check($data) {
+        //daca a ales o categorie
+        if (isset($data[0]) and is_numeric($data[0]))
+            return true;
+        else {
+            $this->form_validation->set_message('categories_check', 'Este obligatoriu sa alegi o categorie');
+            return false;
+        }
     }
 
 }

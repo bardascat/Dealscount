@@ -39,6 +39,36 @@ function load_offer_editor(width, height) {
     CKEDITOR.replace('benefits', op);
 
 }
+function load_partner_editor(width, height) {
+    if (!width)
+        width = "90%";
+    if (!height)
+        height = "200";
+    var op = {
+        filebrowserUploadUrl: urlRoot + 'Controllers/uploader/upload.php?type=Files',
+        width: width,
+        height: height,
+        toolbar:
+                [
+                    '/',
+                    {
+                        name: 'styles',
+                        items: ['Source', 'FontSize', 'Font', 'TextColor', 'BGColor', 'Bold', 'Italic', 'Strike']
+                    },
+                    {
+                        name: 'insert',
+                        items: ['Image', 'Table', 'PageBreak', 'Link', 'Unlink']
+                    },
+                    {
+                        name: 'basicstyles',
+                        items: ['Bold', 'Italic', 'Strike', '-', 'RemoveFormat', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
+                    },
+                ]
+
+    }
+    CKEDITOR.replace('description', op);
+
+}
 function new_image() {
     var new_image_html = "<div class='image_group'><input type='file' name='image[]'/></div>";
 
@@ -47,7 +77,7 @@ function new_image() {
 function delete_image(id_image) {
     $.ajax({
         type: "POST",
-        url: url + "product/delete_image",
+        url: url + "offer/delete_image",
         data: "id_image=" + id_image,
         dataType: 'json',
         beforeSend: function() {

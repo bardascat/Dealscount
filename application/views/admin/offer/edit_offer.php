@@ -10,6 +10,7 @@
             'height': 100,
             afterShow: function() {
                 $(".fancybox-inner").css({'overflow-x': 'hidden'});
+
             }
         });
         $(".datepicker").datetimepicker({timeFormat: 'HH:mm:ss', dateFormat: "dd-mm-yy"});
@@ -21,14 +22,16 @@
 
     <table id='main_table' border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
-
-            <? require_once('views/admin/left_menu.php'); ?> 
-
+            <?php $this->load->view('admin/left_menu'); ?>
             <td class='content index'>
                 <!-- content -->
+                <div>
+                     <?php echo $this->session->flashdata('form_message'); ?>
+                    <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
+                </div>
 
-                <form id="addProductForm" method="post" action="<?= URL ?>admin/offer/editOfferDo" enctype="multipart/form-data">
-                    <input type="hidden" name="id_item" value="<?= $this->item->getId_item() ?>"/>
+                <form id="addProductForm" method="post" action="<?= base_url() ?>admin/offer/editOfferDo" enctype="multipart/form-data">
+                    <input type="hidden" name="id_item" value="<?=$item->getId_item()?>"/>
                     <div class="categoriesInput">
                     </div>
                     <div id="submit_btn_right">
@@ -37,7 +40,7 @@
                     <div id="tabs">
                         <ul>
                             <li><a href="#tabs-1">Detalii</a></li>
-                            <li><a href="#tabs-2">Atribute</a></li>
+                            <li><a href="#tabs-2">Finante</a></li>
                             <li><a href="#tabs-3">Date</a></li>
                             <li><a href="#tabs-4">Galerie Foto</a></li>
                         </ul>
@@ -49,7 +52,7 @@
                                         <label>Nume</label>
                                     </td>
                                     <td class='input' >
-                                        <input id="name" type='text' name='name'/>
+                                        <input id="name" type='text' value="<?php echo set_value('name') ?>" name='name'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -57,27 +60,27 @@
                                         <label>Scurta descrierie</label>
                                     </td>
                                     <td class='input' >
-                                        <input id="name" type='text' name='brief'/>
+                                        <input id="name" type='text' value="<?php echo set_value('brief') ?>" name='brief'/>
                                     </td>
                                 </tr>
 
-
+                                <tr>
+                                    <td class='label'>
+                                        <label>Beneficii/Descriere</label>
+                                    </td>
+                                    <td class='input'>
+                                        <textarea id='benefits' name='benefits'><?php echo set_value('benefits') ?></textarea>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td class='label'>
                                         <label>Termeni</label>
                                     </td>
                                     <td class='input'>
-                                        <textarea id='terms' name='terms'></textarea>
+                                        <textarea id='terms' name='terms'><?php echo set_value('terms') ?></textarea>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class='label'>
-                                        <label>Beneficii</label>
-                                    </td>
-                                    <td class='input'>
-                                        <textarea id='benefits' name='benefits'></textarea>
-                                    </td>
-                                </tr>
+
 
                             </table>
 
@@ -90,15 +93,7 @@
                                         Pret Intreg
                                     </td>
                                     <td class='small_input'>
-                                        <input type="text" name="price"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="label">
-                                        Pret cu Cupon
-                                    </td>
-                                    <td class='small_input'>
-                                        <input type="text" name="voucher_price"/>
+                                        <input type="text" value="<?php echo set_value('price') ?>" name="price"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -106,32 +101,23 @@
                                         Pret Vanzare
                                     </td>
                                     <td class='small_input'>
-                                        <input type="text" name="sale_price"/>
+                                        <input type="text"  value="<?php echo set_value('sale_price') ?>" name="sale_price"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="label">
-                                        Comision Oringo
+                                        Comision
                                     </td>
                                     <td class='small_input'>
-                                        <input type="text" name="commission"/>
+                                        <input value="<?php echo set_value('commission') ?>" type="text" name="commission"/>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class='label'>
-                                        <label>Locatie(ex:Obor)</label>
-                                    </td>
-                                    <td class='small_input' >
-                                        <input type='text' name='location'/>
-                                    </td>
-                                </tr>
-
                                 <tr>
                                     <td class="label">
-                                        Vanzarile incep cu nr.
+                                        Incrementare vanzari
                                     </td>
                                     <td class='small_input'>
-                                        <input type="text" name="startWith"/>
+                                        <input type="text" value="<?php echo set_value('startWith') ?>" name="startWith"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -139,14 +125,24 @@
                                         <label>Categorie</label>
                                     </td>
                                     <td class='input'>
-                                        <a class="fancybox" href="#alege_categorie">Modifica Categorie Produs (  <?
-                                            if ($this->item->getCategory())
-                                                echo "Categorie Curenta: " . $this->item->getCategory()->getName();
+                                        <a class="fancybox" href="#alege_categorie">Modifica Categorie Produs (  
+                                            <?php
+                                            if ($item->getCategory())
+                                                echo "Categorie Curenta: " . $item->getCategory()->getName();
                                             else
                                                 echo "Nicio categorie aleasa";
                                             ?> )</a>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class="label">
+                                        Nume partener
+                                    </td>
+                                    <td class='small_input'>
+                                        <input type="text" value="<?php echo set_value('company_name') ?>"  name="company_name"/>
+                                    </td>
+                                </tr>
+
                                 <tr>
                                     <td class='label'>
                                         <label>Partener</label>
@@ -154,13 +150,17 @@
                                     <td class='input'>
                                         <select name="id_company">
                                             <option value="">Alege partener</option>
-                                            <?
-                                            foreach ($this->companies as $company) {
-                                                $companyDetails = $company->getCompanyDetails();
-                                                ?>
+                                            <?php
+                                            if ($companies) {
+                                                foreach ($companies as $company) {
+                                                    $companyDetails = $company->getCompanyDetails();
+                                                    ?>
 
-                                                <option value="<?= $company->getId_user(); ?>"><?= $companyDetails->getCompany_name() ?></option>
-                                            <? } ?>
+                                                    <option value="<?= $company->getId_user(); ?>"><?= $companyDetails->getCompany_name() ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
                                         </select>
                                     </td>
                                 </tr>
@@ -173,7 +173,7 @@
                             <table  border='0' width='100%' id='add_table'>
                                 <tr>
                                     <td class='label'>
-                                        <label>Activa</label>
+                                        <label>Vizibila? </label>
                                     </td>
                                     <td class='input' >
                                         <select name="active">
@@ -186,19 +186,19 @@
                                     <td colspan="2"><b>Oferta</b></td>
                                 </tr>
                                 <tr>
-                                    <td class='label'>
+                                    <td class='big_label'>
                                         <label>Data de Inceput</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input class="datepicker" type="text" name="start_date"/>
+                                        <input class="datepicker"  value="<?php echo set_value('start_date') ?>"  type="text" name="start_date"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class='label'>
+                                    <td class='big_label'>
                                         <label>Data de sfarsit</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input  class="datepicker" type="text" name="end_date"/>
+                                        <input  class="datepicker" type="text" value="<?php echo set_value('end_date') ?>"  name="end_date"/>
                                     </td>
                                 </tr>
 
@@ -206,49 +206,72 @@
                                     <td colspan="2"><b>Voucher</b></td>
                                 </tr>
                                 <tr>
-                                    <td class='label'>
+                                    <td class='big_label'>
                                         <label>Data de Inceput</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input  class="datepicker" type="text" name="voucher_start_date"/>
+                                        <input  class="datepicker" type="text" value="<?php echo set_value('voucher_start_date') ?>"  name="voucher_start_date"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class='label'>
+                                    <td class='big_label'>
                                         <label>Data de sfarsit</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input   class="datepicker" type="text" name="voucher_end_date"/>
+                                        <input   class="datepicker" type="text" value="<?php echo set_value('voucher_end_date') ?>" name="voucher_end_date"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='big_label'>
+                                        <label>Nr. maxim vouchere</label>
+                                    </td>
+                                    <td class='small_input' >
+                                        <input  type="text" value="<?php echo set_value('voucher_max_limit') ?>"  name="voucher_max_limit"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='big_label'>
+                                        <label>Nr. maxim vouchere user</label>
+                                    </td>
+                                    <td class='small_input' >
+                                        <input type="text" name="voucher_max_limit_user" value="<?php echo set_value('voucher_max_limit_user') ?>"/>
                                     </td>
                                 </tr>
 
+
                                 <tr>
-                                    <td class='label'>
+                                    <td class='big_label'>
                                         <label>Latitudine</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input type='text' name='latitude'/>
+                                        <input type='text' value="<?php echo set_value('latitude') ?>" name='latitude'/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class='label'>
+                                    <td class='big_label'>
                                         <label>Longitudine</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input type='text' name='longitude'/>
+                                        <input type='text' value="<?php echo set_value('longitude') ?>" name='longitude'/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class='label'>
-                                        <label>Limitata</label>
+                                    <td class='big_label'>
+                                        <label>Zona</label>
                                     </td>
                                     <td class='small_input' >
-                                        <select name='limited'>
-                                            <option value='0'>Nu</option>
-                                            <option value='1'>Da</option>
-                                        </select>
+                                        <input type='text' value="<?php echo set_value('location') ?>" name='location'/>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class='big_label'>
+                                        <label>Oras</label>
+                                    </td>
+                                    <td class='small_input' >
+                                        <input type='text' value="<?php echo set_value('city') ?>" name='city'/>
+                                    </td>
+                                </tr>
+
 
                             </table>
 
@@ -261,23 +284,23 @@
                                 </div>
                             </div>
                             <div class='new_image' onclick="new_image()">Poza Noua</div>
-
                             <table id="pictures_table" border="0" width="100%">
-                                <?
-                                $photos = $this->item->getImages();
+                                <?php
+                                $photos = $item->getImages();
                                 foreach ($photos as $photo) {
                                     ?>
-                                    <tr id="<?= $photo->getId_image() ?>">
+                                    <tr id="<?php echo $photo->getId_image() ?>">
                                         <td width="400">
-                                            <img height="150" src="<?= $photo->getImage() ?>"/>
+                                            <img height="150" src="<?php echo base_url($photo->getImage()) ?>"/>
                                         </td>
                                         <td style="vertical-align: top">
-                                            <input id="princ_<?= $photo->getId_image() ?>" type="radio" <? if ($photo->getPrimary()) echo "checked"; ?> name="primary_image" value="<?= $photo->getId_image() ?>"/>  <label for="princ_<?= $photo->getId_image() ?>">Poza Principala</label> 
+                                            <input id="princ_<?= $photo->getId_image() ?>" type="radio" <?php if ($photo->getPrimary()) echo "checked"; ?> name="primary_image" value="<?= $photo->getId_image() ?>"/>  <label for="princ_<?= $photo->getId_image() ?>">Poza Principala</label> 
                                             <a class="delete_photo" href="javascript:delete_image(<?= $photo->getId_image() ?>)">Sterge</a>
                                         </td>
                                     </tr>
-                                <? } ?>
+                                <?php } ?>
                             </table>
+
                         </div>
 
                     </div>
@@ -289,8 +312,8 @@
 
 
     <div id="alege_categorie" style="width: 600px;">
-        <h1>Alege din ce categorii face parte acest produs (Categoria finala)</h1>
-        <? print_r($this->tree); ?>
+        <h1>Alege din ce categorii face parte acesta oferta (Categoria finala)</h1>
+        <?php print_r($tree); ?>
     </div>
 
 </div>

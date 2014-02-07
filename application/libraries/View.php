@@ -7,9 +7,19 @@ class View {
     private $logged_user=FALSE;
     private $page_name;
     private $page_description;
+    private $populate_form;
     
     function __construct() {
         
+    }
+
+    public function getPopulate_form() {
+        return $this->populate_form;
+    }
+
+    public function setPopulate_form($populate_form) {
+        $this->populate_form = $populate_form;
+        return $this;
     }
 
     public function getCss($admin=false) {
@@ -48,8 +58,6 @@ class View {
         return "<div id='".$notification['type']."' class='".$notification['cssClass']."'>".$notification['message']."</div>";
         
     }
-
-
 
     public function getPage_name() {
         return $this->page_name;

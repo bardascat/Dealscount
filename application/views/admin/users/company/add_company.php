@@ -1,7 +1,7 @@
 <script>
     $(function() {
         $("#tabs").tabs();
-
+        load_partner_editor();
         $("input[type=submit]").button();
     });
 </script>
@@ -11,12 +11,14 @@
     <table id='main_table' border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
 
-            <? require_once('views/admin/left_menu.php'); ?> 
+            <?php $this->load->view('admin/left_menu'); ?>
 
             <td class='content index'>
                 <!-- content -->
-
-                <form method="post" action="<?= URL ?>admin/users/addCompanySubmit"  enctype="multipart/form-data">
+                <div>
+                    <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
+                </div>
+                <form method="post" action="<?= base_url() ?>admin/users/addCompanySubmit"  enctype="multipart/form-data">
                     <div id="submit_btn_right">
                         <input name="submit" type="submit" value="Salveaza" />
                     </div>
@@ -33,7 +35,7 @@
                                         <label>Nume pers. contact</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='nume'/>
+                                        <input type='text' value="<?php echo set_value('nume')?>" name='lastname'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -41,7 +43,18 @@
                                         <label>Prenume pers. contact</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='prenume'/>
+                                        <input type='text' value="<?php echo set_value('prenume')?>" name='firstname'/>
+                                    </td>
+                                </tr>
+                                 <tr>
+                                    <td class='label'>
+                                        <label>Sex</label>
+                                    </td>
+                                    <td class='input' >
+                                        <select name="gender">
+                                            <option vlaue="M">M</option>
+                                            <option vlaue="F">F</option>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -49,7 +62,16 @@
                                         <label>Email(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='email'/>
+                                        <input type='text' value="<?php echo set_value('email')?>" name='email'/>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class='label'>
+                                        <label>Username(*)</label>
+                                    </td>
+                                    <td class='input' >
+                                        <input type='text' value="<?php echo set_value('username')?>" name='username'/>
                                     </td>
                                 </tr>
 
@@ -79,15 +101,15 @@
                                         <label>Nume Companie(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='company_name'/>
+                                        <input type='text' value="<?php echo set_value('company_name')?>" name='company_name'/>
                                     </td>
                                 </tr>
-                                 <tr>
+                                <tr>
                                     <td class='label'>
                                         <label>Nume Comercial(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='commercial_name'/>
+                                        <input type='text' value="<?php echo set_value('commercial_name')?>" name='commercial_name'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -95,7 +117,7 @@
                                         <label>Website(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='website'/>
+                                        <input type='text' value="<?php echo set_value('website')?>" name='website'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -103,7 +125,7 @@
                                         <label>Telefon</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='phone'/>
+                                        <input type='text' value="<?php echo set_value('phone')?>" name='phone'/>
                                     </td>
                                 </tr>
 
@@ -112,7 +134,7 @@
                                         <label>CIF</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='cif'/>
+                                        <input type='text' value="<?php echo set_value('cif')?>" name='cif'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -120,7 +142,7 @@
                                         <label>Registrul Comertului</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='regCom'/>
+                                        <input type='text' value="<?php echo set_value('regcom')?>" name='regCom'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -128,7 +150,7 @@
                                         <label>Oras</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='city'/>
+                                        <input type='text' value="<?php echo set_value('city')?>" name='city'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -136,17 +158,7 @@
                                         <label>Adresa</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='address'/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>
-                                        <label>Judet</label>
-                                    </td>
-                                    <td class='input' >
-                                        <select name="district_code">
-                                            <?= $this->htmlCargus; ?>
-                                        </select>
+                                        <input type='text' value="<?php echo set_value('address')?>" name='address'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -154,7 +166,7 @@
                                         <label>IBAN</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='iban'/>
+                                        <input type='text' value="<?php echo set_value('iban')?>" name='iban'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -162,7 +174,15 @@
                                         <label>Bank</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='bank'/>
+                                        <input type='text' value="<?php echo set_value('bank')?>" name='bank'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>Descriere</label>
+                                    </td>
+                                    <td class='input' >
+                                        <textarea id="description" name="description"><?php echo set_value('description')?></textarea>
                                     </td>
                                 </tr>
                             </table>

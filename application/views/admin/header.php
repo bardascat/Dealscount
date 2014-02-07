@@ -6,6 +6,7 @@
         <meta http-equiv="Content-Language" content="ro" />
         <?php echo $this->view->getCss('admin'); ?>
          <?php echo $this->view->getJs('admin'); ?>
+         <?php echo $this->view->getPopulate_form() ?>
             <meta name="description" content=""/>
             <link rel="shortcut icon"  type="image/png"  href="<?php echo base_url() ?>assets/images_fdd/favicon.ico">
                 </head>

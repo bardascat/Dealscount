@@ -185,6 +185,34 @@ class CI_Controller {
         }
         return $images;
     }
+    
+    protected function populate_form($object) {
+
+        //repopulate fields
+        $js = '<script type="text/javascript"> $(document).ready(function(){';
+        $iteration = $object->getIterationArray();
+
+        foreach ($iteration as $key => $value) {
+
+            if (is_object($value)) {
+                if (get_class($value) == "DateTime") {
+                    if ($key == "start_date" || $key == "end_date")
+                        $value = $value->format("d-m-Y H:i:s");
+                    else
+                        $value = $value->format("d-m-Y");
+                }
+            }
+            //daca in DB e NULL in js apare tot null
+
+            if (is_null($value))
+                $value = "";
+            $value = json_encode($value);
+            $js.='$(":input[name= \'' . $key . '\']").val(' . $value . ');';
+        }
+        $js.='});</script>';
+
+        $this->view->setPopulate_form($js);
+    }
 }
 
 // END Controller class

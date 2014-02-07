@@ -7,14 +7,13 @@ namespace Dealscount\Models;
  * @author Bardas Catalin
  * date: Dec 29, 2011 
  */
-
 class OffersModel extends \Dealscount\Models\AbstractModel {
-    
+
     public function addOffer($post) {
+        $next_id = $this->getNextId("items");
         $item = new Entities\Item();
         $item->setName($post['name']);
-        $item->setSlug(\NeoMvc\Controllers\controller::makeSlugs($post['name']));
-        $item->setItem_type("offer");
+        $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['name'] . '-' . $next_id));
 
         foreach ($post['images'] as $image)
             $item->addImage($image);
@@ -26,20 +25,13 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             $item->addCategory($categoryReference);
         }
 
-
-        //cream obiectul offer
-        $offer = new Entities\Offer();
-        $offer->postHydrate($post);
-        $item->setOffer($offer);
-
+        $item->postHydrate($post);
         //asociem partenerul
         $company = $this->em->find("Entities:User", $post['id_company']);
         $item->setCompany($company);
 
         $this->em->persist($item);
-
         $this->em->flush();
-
         return true;
     }
 
@@ -47,36 +39,37 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         $item = $this->getOffer($post['id_item']);
         $item->postHydrate($post);
-        $item->getOffer()->postHydrate($post);
-
 
         if (isset($post['images']))
             foreach ($post['images'] as $image)
                 $item->addImage($image);
 
         //setam imaginea principala
-        if (isset($post['primary_image'])) {
-
+        if (isset($_POST['primary_image'])) {
+            //scoatem imaginile care erau principale in trecut
             $this->em->createQuery("update Entities:ItemImage p set p.primary_image=null where p.primary_image is not null and p.id_item=:id_item")
                     ->setParameter(":id_item", $post['id_item'])
                     ->execute();
-
+            //setam imaginea principala
             $this->em->createQuery("update Entities:ItemImage p set p.primary_image=1 where p.id_image=:id_image")
                     ->setParameter(":id_image", $post['primary_image'])
                     ->execute();
         }
 
-        //stergem asocirerile si le inseram din nou in caz de update
-        $this->em->createQuery("delete  Entities:ItemCategories c where c.id_item=:id_item")
-                ->setParameter(":id_item", $post['id_item'])
-                ->execute();
+        //daca se modifica categoria
+        if ((!$item->getCategory()) || $item->getCategory()->getId_category() != $post['categories'][0]) {
+            //stergem ascorierele de categorii
+            $this->em->createQuery("delete  Entities:ItemCategories c where c.id_item=:id_item")
+                    ->setParameter(":id_item", $post['id_item'])
+                    ->execute();
 
-        foreach ($post['categories'] as $category) {
-            $category = $this->em->find("Entities:Category", $category);
+            $category = $this->em->find("Entities:Category", $post['categories'][0]);
             $categoryReference = new Entities\ItemCategories();
             $categoryReference->setCategory($category);
             $item->addCategory($categoryReference);
         }
+        else
+            $category = $item->getCategory();
 
         //asociem partenerul
         $company = $this->em->find("Entities:User", $post['id_company']);
@@ -238,7 +231,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     }
 
     public function delete_image($id_image) {
-        $image = $this->em->getReference("Entities\ProductImage", $id_image);
+        $image = $this->em->find("Entities:ItemImage", $id_image);
         $this->em->remove($image);
         $this->em->flush();
     }

@@ -28,8 +28,10 @@
                 <div>
                     <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
                 </div>
-                
+
                 <form id="addProductForm" method="post" action="<?= base_url() ?>admin/offer/addOfferDo" enctype="multipart/form-data">
+                    <div class="categoriesInput">
+                    </div>
                     <div id="submit_btn_right">
                         <input onclick="addProduct()" type="button" value="Salveaza" />
                     </div>
@@ -48,7 +50,7 @@
                                         <label>Nume</label>
                                     </td>
                                     <td class='input' >
-                                        <input id="name" type='text' value="<?php echo set_value('name')?>" name='name'/>
+                                        <input id="name" type='text' value="<?php echo set_value('name') ?>" name='name'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -56,7 +58,7 @@
                                         <label>Scurta descrierie</label>
                                     </td>
                                     <td class='input' >
-                                        <input id="name" type='text' value="<?php echo set_value('brief')?>" name='brief'/>
+                                        <input id="name" type='text' value="<?php echo set_value('brief') ?>" name='brief'/>
                                     </td>
                                 </tr>
 
@@ -65,7 +67,7 @@
                                         <label>Beneficii/Descriere</label>
                                     </td>
                                     <td class='input'>
-                                        <textarea id='benefits' name='benefits'><?php echo set_value('benefits')?></textarea>
+                                        <textarea id='benefits' name='benefits'><?php echo set_value('benefits') ?></textarea>
                                     </td>
                                 </tr>
                                 <tr>
@@ -73,7 +75,7 @@
                                         <label>Termeni</label>
                                     </td>
                                     <td class='input'>
-                                        <textarea id='terms' name='terms'><?php echo set_value('terms')?></textarea>
+                                        <textarea id='terms' name='terms'><?php echo set_value('terms') ?></textarea>
                                     </td>
                                 </tr>
 
@@ -89,7 +91,7 @@
                                         Pret Intreg
                                     </td>
                                     <td class='small_input'>
-                                        <input type="text" value="<?php echo set_value('price')?>" name="price"/>
+                                        <input type="text" value="<?php echo set_value('price') ?>" name="price"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -97,7 +99,7 @@
                                         Pret Vanzare
                                     </td>
                                     <td class='small_input'>
-                                        <input type="text"  value="<?php echo set_value('sale_price')?>" name="sale_price"/>
+                                        <input type="text"  value="<?php echo set_value('sale_price') ?>" name="sale_price"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -105,7 +107,7 @@
                                         Comision
                                     </td>
                                     <td class='small_input'>
-                                        <input value="<?php echo set_value('commission')?>" type="text" name="commission"/>
+                                        <input value="<?php echo set_value('commission') ?>" type="text" name="commission"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -113,7 +115,7 @@
                                         Incrementare vanzari
                                     </td>
                                     <td class='small_input'>
-                                        <input type="text" value="<?php echo set_value('startWith')?>" name="startWith"/>
+                                        <input type="text" value="<?php echo set_value('startWith') ?>" name="startWith"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -129,7 +131,7 @@
                                         Nume partener
                                     </td>
                                     <td class='small_input'>
-                                        <input type="text" value="<?php echo set_value('company_name')?>"  name="company_name"/>
+                                        <input type="text" value="<?php echo set_value('company_name') ?>"  name="company_name"/>
                                     </td>
                                 </tr>
 
@@ -180,7 +182,7 @@
                                         <label>Data de Inceput</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input class="datepicker"  value="<?php echo set_value('start_date')?>"  type="text" name="start_date"/>
+                                        <input class="datepicker"  value="<?php echo set_value('start_date') ?>"  type="text" name="start_date"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -188,7 +190,7 @@
                                         <label>Data de sfarsit</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input  class="datepicker" type="text" value="<?php echo set_value('end_date')?>"  name="end_date"/>
+                                        <input  class="datepicker" type="text" value="<?php echo set_value('end_date') ?>"  name="end_date"/>
                                     </td>
                                 </tr>
 
@@ -200,7 +202,7 @@
                                         <label>Data de Inceput</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input  class="datepicker" type="text" value="<?php echo set_value('voucher_start_date')?>"  name="voucher_start_date"/>
+                                        <input  class="datepicker" type="text" value="<?php echo set_value('voucher_start_date') ?>"  name="voucher_start_date"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -208,7 +210,7 @@
                                         <label>Data de sfarsit</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input   class="datepicker" type="text" value="<?php echo set_value('voucher_end_date')?>" name="voucher_end_date"/>
+                                        <input   class="datepicker" type="text" value="<?php echo set_value('voucher_end_date') ?>" name="voucher_end_date"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -216,7 +218,7 @@
                                         <label>Nr. maxim vouchere</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input   class="datepicker"  type="text" value="<?php echo set_value('voucher_max_limit')?>"  name="voucher_max_limit"/>
+                                        <input  type="text" value="<?php echo set_value('voucher_max_limit') ?>"  name="voucher_max_limit"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -224,7 +226,7 @@
                                         <label>Nr. maxim vouchere user</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input   class="datepicker" type="text" name="voucher_max_limit_user" value="<?php echo set_value('voucher_max_limit_user')?>"/>
+                                        <input type="text" name="voucher_max_limit_user" value="<?php echo set_value('voucher_max_limit_user') ?>"/>
                                     </td>
                                 </tr>
 
@@ -234,7 +236,7 @@
                                         <label>Latitudine</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input type='text' value="<?php echo set_value('latitude')?>" name='latitude'/>
+                                        <input type='text' value="<?php echo set_value('latitude') ?>" name='latitude'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -242,7 +244,7 @@
                                         <label>Longitudine</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input type='text' value="<?php echo set_value('longitude')?>" name='longitude'/>
+                                        <input type='text' value="<?php echo set_value('longitude') ?>" name='longitude'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -250,7 +252,7 @@
                                         <label>Zona</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input type='text' value="<?php echo set_value('location')?>" name='location'/>
+                                        <input type='text' value="<?php echo set_value('location') ?>" name='location'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -258,7 +260,7 @@
                                         <label>Oras</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input type='text' value="<?php echo set_value('city')?>" name='city'/>
+                                        <input type='text' value="<?php echo set_value('city') ?>" name='city'/>
                                     </td>
                                 </tr>
 
@@ -285,7 +287,7 @@
 
 
     <div id="alege_categorie" style="width: 600px;">
-        <h1>Alege din ce categorii face parte acest produs (Categoria finala)</h1>
+        <h1>Alege din ce categorii face parte acesta oferta (Categoria finala)</h1>
         <?php print_r($category_tree); ?>
     </div>
 
