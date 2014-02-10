@@ -71,6 +71,11 @@ class User extends AbstractEntity {
     protected $items;
 
     /**
+     * @OneToMany(targetEntity="Item",mappedBy="operator")
+     */
+    protected $operator_items;
+
+    /**
      * @OneToOne(targetEntity="Company",mappedBy="user",cascade={"persist"})
      */
     protected $company;
@@ -89,9 +94,18 @@ class User extends AbstractEntity {
 
     function __construct() {
         $this->created_date = new \DateTime("now");
-        $this->item = new ArrayCollection();
+        $this->items = new ArrayCollection();
+        $this->operator_items = new ArrayCollection();
         $this->orders = new ArrayCollection();
         $this->invoices = new ArrayCollection();
+    }
+
+    public function addIOperatorItem(Item $item) {
+        $this->operator_items->add($item);
+        $item->setOperator($this);
+    }
+    public function getOperatorItems(){
+        return $this->operator_items;
     }
 
     public function addItem(Item $item) {
@@ -235,7 +249,7 @@ class User extends AbstractEntity {
         $this->access_level = $access_level;
         return $this;
     }
-    
+
     public function getUsername() {
         return $this->username;
     }
@@ -253,8 +267,6 @@ class User extends AbstractEntity {
         $this->gender = $gender;
         return $this;
     }
-
-
 
 }
 

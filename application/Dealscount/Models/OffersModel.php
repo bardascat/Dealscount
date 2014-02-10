@@ -9,7 +9,7 @@ namespace Dealscount\Models;
  */
 class OffersModel extends \Dealscount\Models\AbstractModel {
 
-    public function addOffer($post) {
+    public function addOffer($post, $id_operator) {
         $next_id = $this->getNextId("items");
         $item = new Entities\Item();
         $item->setName($post['name']);
@@ -26,7 +26,9 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         }
 
         $item->postHydrate($post);
-        //asociem partenerul
+        $item->setOperator($this->em->find("Entities:User", $id_operator));
+
+//asociem partenerul
         $company = $this->em->find("Entities:User", $post['id_company']);
         $item->setCompany($company);
 
@@ -35,7 +37,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         return true;
     }
 
-    public function updateOffer($post) {
+    public function updateOffer($post, $id_operator) {
 
         $item = $this->getOffer($post['id_item']);
         $item->postHydrate($post);
@@ -44,21 +46,21 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             foreach ($post['images'] as $image)
                 $item->addImage($image);
 
-        //setam imaginea principala
+//setam imaginea principala
         if (isset($_POST['primary_image'])) {
-            //scoatem imaginile care erau principale in trecut
+//scoatem imaginile care erau principale in trecut
             $this->em->createQuery("update Entities:ItemImage p set p.primary_image=null where p.primary_image is not null and p.id_item=:id_item")
                     ->setParameter(":id_item", $post['id_item'])
                     ->execute();
-            //setam imaginea principala
+//setam imaginea principala
             $this->em->createQuery("update Entities:ItemImage p set p.primary_image=1 where p.id_image=:id_image")
                     ->setParameter(":id_image", $post['primary_image'])
                     ->execute();
         }
 
-        //daca se modifica categoria
+//daca se modifica categoria
         if ((!$item->getCategory()) || $item->getCategory()->getId_category() != $post['categories'][0]) {
-            //stergem ascorierele de categorii
+//stergem ascorierele de categorii
             $this->em->createQuery("delete  Entities:ItemCategories c where c.id_item=:id_item")
                     ->setParameter(":id_item", $post['id_item'])
                     ->execute();
@@ -71,9 +73,30 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         else
             $category = $item->getCategory();
 
-        //asociem partenerul
+//asociem partenerul
         $company = $this->em->find("Entities:User", $post['id_company']);
         $item->setCompany($company);
+
+        $item->setUpdated_by($id_operator);
+
+  
+        //adaugam tagurile
+        if ($post['tags']) {
+            try{
+            $this->em->createQuery("delete  Entities:ItemTags c where c.id_item=:id_item")
+                    ->setParameter(":id_item", $post['id_item'])
+                    ->execute();
+            }catch(\Exception $e){
+                print_r($e->getMessage());
+                exit();
+            }
+            $tags = explode(',', $post['tags']);
+            foreach ($tags as $tag) {
+                $tagEntity= new Entities\ItemTags();
+                $tagEntity->setValue($tag);
+                $item->addTag($tagEntity);
+            }
+        }
 
         try {
             $this->em->persist($item);
@@ -135,7 +158,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     /**
      * 
      * @param type $id_offer
-     * @return \NeoMvc\Models\Entities\Item
+     * @return \Dealscount\Models\Entities\Item
      */
     public function getOffer($id_offer) {
         $offer = $this->em->find("Entities:Item", $id_offer);

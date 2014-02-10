@@ -25,7 +25,6 @@ class offer extends CI_Controller {
     }
 
     public function offers_list() {
-
         if ($this->input->get('page'))
             $page = $this->input->get('page');
         else
@@ -77,7 +76,7 @@ class offer extends CI_Controller {
             $id = $this->OffersModel->getNextId("items", "id_item");
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
-            $this->OffersModel->addOffer($_POST);
+            $this->OffersModel->addOffer($_POST,$this->getLoggedUser()['id_user']);
 
             $this->session->set_flashdata('form_ok', 'Oferta a fost adaugata');
             redirect(base_url('admin/offer/offers_list'));
@@ -109,9 +108,13 @@ class offer extends CI_Controller {
         $this->form_validation->set_rules('categories', 'Categorie', 'callback_categories_check');
 
         if ($this->form_validation->run() == FALSE) {
-            $tree = $this->CategoriesModel->createCheckboxList("offer");
+            $tree = $this->CategoriesModel->createCheckboxList("offer",$this->input->post("id_item"));
+            $item = $this->OffersModel->getOffer($this->input->post("id_item"));
             $companies = $this->UserModel->getCompaniesList();
+            $this->populate_form($item);
+            
             $data = array(
+                'item'=>$item,
                 'companies' => $companies,
                 'category_tree' => $tree,
                 "notification" => array(
@@ -125,7 +128,7 @@ class offer extends CI_Controller {
             $id = $this->input->post('id_item');
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
-            $this->OffersModel->updateOffer($_POST);
+            $this->OffersModel->updateOffer($_POST,$this->getLoggedUser()['id_user']);
             $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Oferta a fost salvata</div>');
             
             redirect(base_url('admin/offer/editOffer/' . $id));

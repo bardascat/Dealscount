@@ -80,6 +80,11 @@ class Item extends AbstractEntity {
     private $images;
 
     /**
+     * @OneToMany(targetEntity="ItemTags",mappedBy="item",cascade={"persist","merge"})
+     */
+    private $tags;
+
+    /**
      * @ManyToOne(targetEntity="User",inversedBy="items")
      * @JoinColumn(name="id_user", referencedColumnName="id_user" ,onDelete="CASCADE")
      */
@@ -183,19 +188,36 @@ class Item extends AbstractEntity {
 
     /**
      *
-     * @Column(type="integer",nullable=true)
+     * @Column(type="string",nullable=true)
      */
-    protected $posted_by;
+    protected $meta_title;
 
     /**
      *
+     * @Column(type="string",nullable=true)
+     */
+    protected $meta_desc;
+
+    /**
+     * @ManyToOne(targetEntity="User",inversedBy="items")
+     * @JoinColumn(name="id_operator", referencedColumnName="id_user" ,onDelete="CASCADE")
+     */
+    protected $operator;
+
+    /**
      * @Column(type="date",nullable=true)
      */
     protected $updated_date;
 
+    /**
+     * @Column(type="integer",nullable=true)
+     */
+    protected $updated_by;
+
     public function __construct() {
         $this->createdDate = new \DateTime("now");
         $this->images = new ArrayCollection();
+        $this->tags = new ArrayCollection();
         $this->ItemCategories = new ArrayCollection();
         $this->ProductVariants = new ArrayCollection();
     }
@@ -220,6 +242,14 @@ class Item extends AbstractEntity {
         $this->name = $name;
     }
 
+    public function addTag(ItemTags $tag) {
+        $tag->setItem($this);
+        $this->tags->add($tag);
+    }
+
+    public function getTags(){
+        return $this->tags;
+    }
     public function addImage(ItemImage $image) {
         $image->setItem($this);
         if (!($this->images instanceof ArrayCollection))
@@ -325,7 +355,7 @@ class Item extends AbstractEntity {
                 $iteration[$key] = $value;
         }
 
-      
+
 
         //adaugam compania
         $company = $this->getCompany();
@@ -525,17 +555,9 @@ class Item extends AbstractEntity {
         $this->longitude = $longitude;
         return $this;
     }
-    
-    public function getPosted_by() {
-        return $this->posted_by;
-    }
-      public function getAuthorName() {
-        return "Catalin";
-    }
 
-    public function setPosted_by($posted_by) {
-        $this->posted_by = $posted_by;
-        return $this;
+    public function getAuthorName() {
+        return $this->getOperator()->getFirstname() . ' ' . $this->getOperator()->getLastname();
     }
 
     public function getUpdated_date() {
@@ -547,7 +569,45 @@ class Item extends AbstractEntity {
         return $this;
     }
 
+    public function getMeta_title() {
+        return $this->meta_title;
+    }
 
+    public function setMeta_title($meta_title) {
+        $this->meta_title = $meta_title;
+        return $this;
+    }
+
+    public function getMeta_desc() {
+        return $this->meta_desc;
+    }
+
+    public function setMeta_desc($meta_desc) {
+        $this->meta_desc = $meta_desc;
+        return $this;
+    }
+
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\User
+     */
+    public function getOperator() {
+        return $this->operator;
+    }
+
+    public function setOperator($operator) {
+        $this->operator = $operator;
+        return $this;
+    }
+
+    public function getUpdated_by() {
+        return $this->updated_by;
+    }
+
+    public function setUpdated_by($updated_by) {
+        $this->updated_by = $updated_by;
+        return $this;
+    }
 
 }
 

@@ -26,7 +26,7 @@
             <td class='content index'>
                 <!-- content -->
                 <div>
-                     <?php echo $this->session->flashdata('form_message'); ?>
+                    <?php echo $this->session->flashdata('form_message'); ?>
                     <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
                 </div>
 
@@ -43,6 +43,7 @@
                             <li><a href="#tabs-2">Finante</a></li>
                             <li><a href="#tabs-3">Date</a></li>
                             <li><a href="#tabs-4">Galerie Foto</a></li>
+                            <li><a href="#tabs-5">SEO</a></li>
                         </ul>
                         <div id="tabs-1">
 
@@ -301,6 +302,49 @@
                                 <?php } ?>
                             </table>
 
+                        </div>
+
+                        <div id="tabs-5">
+                            <table  border='0' width='100%' id='add_table'>
+                                <tr>
+                                    <td class='label'>
+                                        <label>META Title</label>
+                                    </td>
+                                    <td class="input">
+                                        <input type="text" name="meta_title"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>META Description</label>
+                                    </td>
+                                    <td class="input">
+                                        <input type="text" name="meta_desc"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>TAG(separate prin virgula)</label>
+                                    </td>
+                                    <td class="input">
+                                        <input type="text" 
+                                               value="<?php if($item->getTags()) { $tags='';
+                                                foreach($item->getTags() as $tag) $tags.=$tag->getValue().',';   
+                                                $tags=substr($tags,0,-1);
+                                                echo $tags;
+                                               }?>"
+                                               name="tags"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>URL (Nume Unic)</label>
+                                    </td>
+                                    <td class="input">
+                                        <input type="text" name="slug"/>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
 
                     </div>

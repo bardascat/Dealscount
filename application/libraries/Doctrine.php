@@ -91,7 +91,8 @@ class Doctrine {
             $em->getClassMetadata("Entities:Invoice"),
             $em->getClassMetadata("Entities:OrderItem"),
             $em->getClassMetadata("Entities:OrderVoucher"),
-            $em->getClassMetadata("Entities:SimplePage")
+            $em->getClassMetadata("Entities:SimplePage"),
+            $em->getClassMetadata("Entities:ItemTags"),
         );
         $tool->updateSchema($classes);
         exit("done");

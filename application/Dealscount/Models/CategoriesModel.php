@@ -227,9 +227,9 @@ class CategoriesModel extends AbstractModel  {
     }
 
     /**
-     * Genereaza lista - html categorilor pentru administrare
-     * 
+     * Genereaza lista categoriilor pentru administrarea ofertei
      * @param string $item_type Offer
+     * @param integer id_item -> id-ul ofertei pentru care se doreste bifarea checkboxului in cazul unui update
      * 
      */
     public function createCheckboxList($item_type, $id_item = false, $id_category = false) {
@@ -324,12 +324,11 @@ class CategoriesModel extends AbstractModel  {
     }
 
     /**
-     * Genereaza lista -html  categorilor pentru administrare
-     * 
-     * @param string $item_type Product sau Offer
+     * Genereaza lista html  a categorilor pentru administrare
+     * @param string $item_type Offer
      * 
      */
-    public function createAdminList($item_type) {
+    public function createAdminList($item_type="offer") {
 
         $pdoObject = $this->em->getConnection();
         $stm = $pdoObject->prepare("select * from categories where item_type=:item_type order by name ");
