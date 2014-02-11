@@ -160,7 +160,7 @@ class User extends AbstractEntity {
 
     /**
      * 
-     * @return \NeoMvc\Models\Entity\Company
+     * @return \Dealscount\Models\Entities\Company
      */
     public function getCompanyDetails() {
         return $this->company;

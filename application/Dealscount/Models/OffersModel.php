@@ -3,7 +3,6 @@
 namespace Dealscount\Models;
 
 /**
- * Description of login_model
  * @author Bardas Catalin
  * date: Dec 29, 2011 
  */
@@ -12,8 +11,24 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     public function addOffer($post, $id_operator) {
         $next_id = $this->getNextId("items");
         $item = new Entities\Item();
-        $item->setName($post['name']);
-        $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['name'] . '-' . $next_id));
+
+        //adaugam tagurile daca exista
+        if ($post['tags']) {
+            try {
+                $this->em->createQuery("delete  Entities:ItemTags c where c.id_item=:id_item")
+                        ->setParameter(":id_item", $post['id_item'])
+                        ->execute();
+            } catch (\Exception $e) {
+                print_r($e->getMessage());
+                exit();
+            }
+            $tags = explode(',', $post['tags']);
+            foreach ($tags as $tag) {
+                $tagEntity = new Entities\ItemTags();
+                $tagEntity->setValue($tag);
+                $item->addTag($tagEntity);
+            }
+        }
 
         foreach ($post['images'] as $image)
             $item->addImage($image);
@@ -26,6 +41,12 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         }
 
         $item->postHydrate($post);
+        if ($post['slug']) {
+            $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['slug'] . '-' . $next_id));
+        }
+        else
+            $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['name'] . '-' . $next_id));
+
         $item->setOperator($this->em->find("Entities:User", $id_operator));
 
 //asociem partenerul
@@ -40,7 +61,18 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     public function updateOffer($post, $id_operator) {
 
         $item = $this->getOffer($post['id_item']);
+        $current_slug = $item->getSlug();
+        
         $item->postHydrate($post);
+        
+        //daca operatorul doreste modificarea slugului
+        if ($post['slug'] != substr($current_slug, 0, strripos($current_slug, '-'))) {
+            $slug = $post['slug'];
+            $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($slug . '-' . $post['id_item']));
+        }
+        else
+            $item->setSlug($current_slug);
+
 
         if (isset($post['images']))
             foreach ($post['images'] as $image)
@@ -79,20 +111,20 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         $item->setUpdated_by($id_operator);
 
-  
-        //adaugam tagurile
+
+        //adaugam tagurile daca exista
         if ($post['tags']) {
-            try{
-            $this->em->createQuery("delete  Entities:ItemTags c where c.id_item=:id_item")
-                    ->setParameter(":id_item", $post['id_item'])
-                    ->execute();
-            }catch(\Exception $e){
+            try {
+                $this->em->createQuery("delete  Entities:ItemTags c where c.id_item=:id_item")
+                        ->setParameter(":id_item", $post['id_item'])
+                        ->execute();
+            } catch (\Exception $e) {
                 print_r($e->getMessage());
                 exit();
             }
             $tags = explode(',', $post['tags']);
             foreach ($tags as $tag) {
-                $tagEntity= new Entities\ItemTags();
+                $tagEntity = new Entities\ItemTags();
                 $tagEntity->setValue($tag);
                 $item->addTag($tagEntity);
             }
@@ -130,24 +162,16 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     }
 
     public function getActiveOffers($limit = 10, $page = 1) {
-
         try {
             $offers = $this->em->createQueryBuilder()
                     ->select("i")
                     ->from("Entities:Item", "i")
-                    ->join("i.offer", "o")
-                    ->where("i.item_type='offer'")
-                    ->andWhere("i.active=1")
-                    ->andWhere("o.end_date>CURRENT_TIMESTAMP()")
-                    ->andWhere("o.start_date<=CURRENT_TIMESTAMP()")
-                    ->orderBy("o.end_date", "asc")
-                    ->setFirstResult(( $page * $limit) - $limit)
-                    ->setMaxResults($limit)
+                    ->where("i.active=1")
+                    ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
+                    ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
+                    ->orderBy("i.end_date", "asc")
                     ->getQuery();
-
-            $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($offers);
-
-            return $paginator;
+            return $offers->getResult();
         } catch (\Exception $e) {
             echo $e->getMessage();
         };

@@ -37,6 +37,8 @@ class CI_Controller {
      * @var \Dealscount\Models\UserModel
      */
     protected $UserModel;
+    
+    protected $CategoriesModel=null;
 
     /**
      * Constructor
@@ -56,7 +58,10 @@ class CI_Controller {
 
         $this->load->initialize();
         $this->UserModel = new \Dealscount\Models\UserModel();
+        $this->CategoriesModel=new Dealscount\Models\CategoriesModel();
         $this->view->setUser($this->getLoggedUser());
+        $this->view->setCategories($this->CategoriesModel->getRootCategories('offer',true));
+        
         $this->setHash();
         log_message('debug', "Controller Class Initialized");
     }

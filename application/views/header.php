@@ -20,12 +20,24 @@
                                     <img src="<?php echo base_url() . '/assets' ?>/images_fdd/getadeal_logo.png" width="170" height="40"/>
                                 </a>
                             </div>
-
                             <div class="left_side_inner_content">
                                 <ul class="categorii">
-                                    categorii
-                                </ul>
+                                    <?php
+                                    foreach ($this->view->getCategories() as $category) {
+                                        $parent = $category['parent'];
+                                        ?>
+                                        <li class = "main_<?php echo $parent['id_category'] ?>" class = "cat_selected">
+                                            <a onmouseover = "show_subcats(<?php echo $parent['id_category'] ?>)" style = "width:100%;" href = "<?php echo base_url('categorii/' . $parent['slug']) ?>"><?php echo $parent['name'] ?></a>
+                                        </li>
 
+                                        <ul id="<?php echo $parent['id_category'] ?>" class="subcats">
+                                            <div class="arrow"></div>
+                                            <?php foreach ($category['childs'] as $category) { ?>
+                                                <li><a style="display: block; width:100%;" href="<?php echo base_url('categorii/' . $parent['slug'] . '/' . $category['category_slug']) ?>"><?php echo $category['category_name'] ?></a></li>
+                                            <?php } ?>
+                                        </ul>
+                                    <?php } ?>
+                                </ul>
                                 <table border="0" class="promo">
                                     <tr>
                                         <td>
@@ -87,21 +99,12 @@
                                 <div class="search_bar">
                                     <form method="post" action="index.php?">
                                         <input type="text" name="query" class="query_field" value="Cauta" 
-                                               onfocus="if (this.value == 'Cauta') {
-                                                   this.value = '';
-                                               }" onblur="if (this.value == '') {
-                                                           this.value = 'Cauta';
-                                                       }" />
+                                                           onfocus="if (this.value == 'Cauta') {                                             this.value = '';
+                                                                   }" onblur="if (this.value == '') {                                             this.value = 'Cauta';
+                                                               }" />
                                         <input type="hidden" name="search" value="true" />
                                         <input type="submit" value="" class="search_submit" />
                                     </form>
-                                </div>
-
-
-                                <div style="float: left;margin-left: 20px;margin-top: 8px;">
-                                    <a href="cadou=1">
-                                        <img src="<?php echo base_url() . '/assets' ?>/images_fdd/love-is-in-the-air.png"/>
-                                    </a>
                                 </div>
 
                                 <ul class="meniu">
@@ -120,13 +123,19 @@
                                     </a>
 
                                     <li class="contul_meu">
-                                        <?php 
-                                        $user=$this->view->getUser();
+                                        <?php
+                                        $user = $this->view->getUser();
                                         ?>
                                         <a
                                             style="display:block; display:block; margin:0px; padding:0px; width:80px;"
                                             href="javascript:login">
-                                            <div class="icon"style="<?php if(isset($user['gender'])) { ?>background-image:url('<?php echo base_url() . '/assets' ?>/images_fdd/<?php echo (strtoupper($user['gender'] =="F") ? "lady.png" : "sir.png") ?>'); <?php if(strtoupper($user['gender']=="F")) echo "width: 23px"; else echo "margin-top:8px; height:29px"; } ?>">
+                                            <div class="icon"style="<?php if (isset($user['gender'])) { ?>background-image:url('<?php echo base_url() . '/assets' ?>/images_fdd/<?php echo (strtoupper($user['gender'] == "F") ? "lady.png" : "sir.png") ?>'); <?php
+                                                if (strtoupper($user['gender'] == "F"))
+                                                    echo "width: 23px";
+                                                else
+                                                    echo "margin-top:8px; height:29px";
+                                            }
+                                            ?>">
                                             </div>
                                         </a>
 

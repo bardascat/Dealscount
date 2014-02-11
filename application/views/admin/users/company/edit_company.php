@@ -82,7 +82,7 @@
                             <table  border='0' width='100%' id='add_table'>
                                 <tr>
                                     <td class='label'>
-                                        <label>Logo Companie(*)</label>
+                                        <label>Logo Companie</label>
                                     </td>
                                     <td class='input' >
                                         <input type='file' name='image[]'/>
@@ -106,7 +106,7 @@
                                 </tr>
                                 <tr>
                                     <td class='label'>
-                                        <label>Website(*)</label>
+                                        <label>Website</label>
                                     </td>
                                     <td class='input' >
                                         <input type='text' value="<?php echo set_value('website')?>" name='website'/>

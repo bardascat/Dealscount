@@ -53,7 +53,7 @@ class CategoriesModel extends AbstractModel  {
             return true;
     }
 
-    public function categoryExists($slug, $item_type) {
+    public function categoryExists($slug, $item_type="offer") {
         $dql = $this->em->createQuery("select 1 from Entities:Category c where c.slug=:slug and c.item_type=:item_type");
         $dql->setParameter(':slug', $slug);
         $dql->setParameter(':item_type', $item_type);
@@ -193,7 +193,7 @@ class CategoriesModel extends AbstractModel  {
      * @param string  $item_type (product sau offer)
      * @return Array Of Entities\Category
      */
-    public function getRootCategories($item_type, $child = false, $orm = false) {
+    public function getRootCategories($item_type="offer", $child = false, $orm = false) {
         $conn = $this->em->getConnection();
 
         if (!$orm) {

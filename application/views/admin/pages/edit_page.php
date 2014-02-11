@@ -1,7 +1,7 @@
 <script>
     $(function() {
         $("#tabs").tabs();
-        load_produs_editor("90%","300");
+          load_page_editor("90%","300");
         $("input[type=submit]").button();
         $("input[type=button]").button();
 
@@ -13,13 +13,13 @@
     <table id='main_table' border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
 
-            <? require_once('views/admin/left_menu.php'); ?> 
+             <?php $this->load->view('admin/left_menu'); ?>
 
             <td class='content index'>
                 <!-- content -->
 
-                <form id="addProductForm" method="post" action="<?= URL ?>admin/pages/updatePageSubmit  " enctype="multipart/form-data">
-                    <input type="hidden" name="id_page" value="<?= $this->page->getId_page() ?>"/>
+                <form id="addProductForm" method="post" action="<?= base_url() ?>admin/pages/updatePageSubmit  " enctype="multipart/form-data">
+                    <input type="hidden" name="id_page" value="<?= $page->getId_page() ?>"/>
                     <div class="categoriesInput"></div>
                     <div id="submit_btn_right">
                         <input onclick="return addProduct()"  type="button" value="Salveaza" />

@@ -1,5 +1,18 @@
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
 <script>
     $(function() {
+        $(document).tooltip({
+            position: {
+                my: "center bottom-20",
+                at: "left+20 top",
+                using: function(position, feedback) {
+                    $(this).css(position);
+                    $("<div>")
+                            .addClass("arrow")
+                            .appendTo(this);
+                }
+            }
+        });
         $("#tabs").tabs();
         load_offer_editor();
         $("input[type=submit]").button();
@@ -53,7 +66,7 @@
                                         <label>Nume</label>
                                     </td>
                                     <td class='input' >
-                                        <input id="name" type='text' value="<?php echo set_value('name') ?>" name='name'/>
+                                        <input id="name" title="Maxim 90 de caractere" maxlength="90" type='text' value="<?php echo set_value('name') ?>" name='name'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -328,20 +341,24 @@
                                     </td>
                                     <td class="input">
                                         <input type="text" 
-                                               value="<?php if($item->getTags()) { $tags='';
-                                                foreach($item->getTags() as $tag) $tags.=$tag->getValue().',';   
-                                                $tags=substr($tags,0,-1);
-                                                echo $tags;
-                                               }?>"
+                                               value="<?php
+                                               if ($item->getTags()) {
+                                                   $tags = '';
+                                                   foreach ($item->getTags() as $tag)
+                                                       $tags.=$tag->getValue() . ',';
+                                                   $tags = substr($tags, 0, -1);
+                                                   echo $tags;
+                                               }
+                                               ?>"
                                                name="tags"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class='label'>
-                                        <label>URL (Nume Unic)</label>
+                                        <label>URL</label>
                                     </td>
                                     <td class="input">
-                                        <input type="text" name="slug"/>
+                                        <input title="Atentie ! Daca modificati url-ul ofertei, vechiul url va fi inexistent." type="text" name="slug"/>
                                     </td>
                                 </tr>
                             </table>

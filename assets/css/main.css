@@ -2,7 +2,6 @@
 body{
 	background-color: #f4f4f4;
 	/*background-image: url('../template/holydays/bg.jpg');*/
-	background-image: url('../template/valentine/bg.jpg');
 	background-position: center;
 	background-repeat: repeat;
 }
@@ -37,9 +36,7 @@ wrapper{
 #left_side .categorii li{width: 163px; height: 31px;
                          padding-left: 30px;
                          line-height: 31px;
-                         /*background-image: url(../template/images_fdd/cats_bgg.png);*/
-                         background-image: url(../template/holydays/cats_bgg.png);
-                         /*background-image: url(../template/valentine/cats_bgg.png);*/
+                         background-image: url(../images_fdd/cats_bgg.png);
 }
 #left_side .categorii .subcat_btn{height: 31px; width: 31px; 
                                   background-image: url('../images_fdd/cats_arrow.png');

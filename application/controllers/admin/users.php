@@ -159,7 +159,7 @@ class users extends CI_Controller {
 
         $this->UserModel->deleteUser($params[0]);
 
-        header('Location:' . $this->getRefPage());
+        header('Location:' . base_url('admin/users'));
     }
 
     private function validate_company() {

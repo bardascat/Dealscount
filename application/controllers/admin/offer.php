@@ -93,6 +93,7 @@ class offer extends CI_Controller {
         $tree = $this->CategoriesModel->createCheckboxList("offer", $id_item);
 
         $item = $this->OffersModel->getOffer($id_item);
+        $item->setSlug(substr($item->getSlug(), 0, strripos($item->getSlug(), '-')));
         $this->populate_form($item);
         $data = array(
             "companies" => $companies,
@@ -116,7 +117,7 @@ class offer extends CI_Controller {
             $data = array(
                 'item'=>$item,
                 'companies' => $companies,
-                'category_tree' => $tree,
+                'tree' => $tree,
                 "notification" => array(
                     "type" => "form_notification",
                     "message" => validation_errors(),
@@ -135,14 +136,12 @@ class offer extends CI_Controller {
         }
     }
 
-    public function delete_offer($param) {
-        if (isset($param[0])) {
+    public function delete_offer() {
+        if ($this->uri->segment(3)) {
 
-            $id_product = $param[0];
+            $id = $this->uri->segment(3);
 
-            $this->OffersModel->deleteOffer($id_product);
-
-            controller::set_alert_message("<br/> Oferta a fost stersa");
+            $this->OffersModel->deleteOffer($id);
 
             header("Location: " . $this->getRefPage());
         }

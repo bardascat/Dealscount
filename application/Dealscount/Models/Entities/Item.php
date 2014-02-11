@@ -298,13 +298,14 @@ class Item extends AbstractEntity {
      */
     public function getMainImage($type = "thumb") {
         $itemImages = $this->getImages();
+        if(!file_exists($itemImages[0]->getThumb())) return 'application_uploads/items/image_not_found.png';
+        
         if ($type == "thumb")
             return ($itemImages[0]->getThumb());
 
         if ($type == "image")
             return ($itemImages[0]->getImage());
 
-        return (URL . "images/image_not_found.jpg");
     }
 
     public function getId_item() {
@@ -325,7 +326,7 @@ class Item extends AbstractEntity {
 
     /**
      * 
-     * @return \NeoMvc\Models\Entity\User
+     * @return \Dealscount\Models\Entities\User
      */
     public function getCompany() {
         return $this->company;
@@ -354,9 +355,6 @@ class Item extends AbstractEntity {
             if (!is_object($value) || ($value instanceof \DateTime))
                 $iteration[$key] = $value;
         }
-
-
-
         //adaugam compania
         $company = $this->getCompany();
         if (!$company)
@@ -607,6 +605,24 @@ class Item extends AbstractEntity {
     public function setUpdated_by($updated_by) {
         $this->updated_by = $updated_by;
         return $this;
+    }
+    
+    /**
+     * Metode particulare
+     */
+    
+    public function getRemainingHours(){
+        
+        $date1=date("Y-m-d H:i:s");
+        $date2=date("Y-m-d");
+        $diff = abs(strtotime($date2.' 23:59:59') - strtotime($date1));
+        
+        return round($diff/3600);
+        
+    }
+    
+    public function getPercentageDiscount(){
+        return round(100 - ($this->getSale_price() * 100 ) / $this->getPrice());
     }
 
 }

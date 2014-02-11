@@ -535,3 +535,52 @@ input[type="text"],input[type="password"],textarea,select{
 .homePage .homeSlide .name{float: left; width: 200px; float: left;  margin-left: 30px}
 .homePage .homeSlide .url{float: left; width: 200px;  margin-left: 30px; margin-right: 20px;}
 .homePage .homeSlide .remove{float: left; width:200px; margin-left: 50px;}
+
+.ui-tooltip, .arrow:after {
+    background: black;
+    border: 2px solid white;
+}
+.ui-tooltip {
+    padding: 0px 0px;
+    color: white;
+    border-radius: 10px;
+    font-size: 10px;
+    box-shadow: 0 0 7px black;
+    
+}
+.ui-tooltip-content{font-size: 10px;}
+.arrow {
+    width: 70px;
+    height: 16px;
+    overflow: hidden;
+    position: absolute;
+    left: 50%;
+    margin-left: -35px;
+    bottom: -16px;
+}
+.arrow.top {
+    top: -16px;
+    bottom: auto;
+}
+.arrow.left {
+    left: 20%;
+}
+.arrow:after {
+    content: "";
+    position: absolute;
+    left: 25px;
+    top: -10px;
+    width: 15px;
+    height: 15px;
+    box-shadow: 3px 2px 6px -6px black;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    tranform: rotate(45deg);
+    background-color: #ccc;
+}
+.arrow.top:after {
+    bottom: -20px;
+    top: auto;
+}

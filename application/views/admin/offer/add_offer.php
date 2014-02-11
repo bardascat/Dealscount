@@ -1,5 +1,17 @@
 <script>
     $(function() {
+         $(document).tooltip({
+            position: {
+                my: "center bottom-20",
+                at: "left+20 top",
+                using: function(position, feedback) {
+                    $(this).css(position);
+                    $("<div>")
+                            .addClass("arrow")
+                            .appendTo(this);
+                }
+            }
+        });
         $("#tabs").tabs();
         load_offer_editor();
         $("input[type=submit]").button();
@@ -41,6 +53,7 @@
                             <li><a href="#tabs-2">Finante</a></li>
                             <li><a href="#tabs-3">Date</a></li>
                             <li><a href="#tabs-4">Galerie Foto</a></li>
+                            <li><a href="#tabs-5">SEO</a></li>
                         </ul>
                         <div id="tabs-1">
 
@@ -50,7 +63,7 @@
                                         <label>Nume</label>
                                     </td>
                                     <td class='input' >
-                                        <input id="name" type='text' value="<?php echo set_value('name') ?>" name='name'/>
+                                        <input id="name" title="Maxim 90 de caractere" maxlength="90" type='text' value="<?php echo set_value('name') ?>" name='name'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -276,6 +289,42 @@
                                 </div>
                             </div>
                             <div class='new_image' onclick="new_image()">Poza Noua</div>
+                        </div>
+                        <div id="tabs-5">
+                            <table  border='0' width='100%' id='add_table'>
+                                <tr>
+                                    <td class='label'>
+                                        <label>META Title</label>
+                                    </td>
+                                    <td class="input">
+                                        <input type="text" name="meta_title"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>META Description</label>
+                                    </td>
+                                    <td class="input">
+                                        <input type="text" name="meta_desc"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>TAG(separate prin virgula)</label>
+                                    </td>
+                                    <td class="input">
+                                        <input title="Ex: vacanta grecia, reducere restaurant" type="text" name="tags"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>URL(Optional)</label>
+                                    </td>
+                                    <td class="input">
+                                        <input type="text" name="slug"/>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
 
                     </div>

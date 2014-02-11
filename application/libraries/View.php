@@ -8,6 +8,7 @@ class View {
     private $page_name;
     private $page_description;
     private $populate_form;
+    private $categories;
     
     function __construct() {
         
@@ -76,6 +77,15 @@ class View {
         $this->page_description = $page_description;
         return $this;
     }
+    public function getCategories() {
+        return $this->categories;
+    }
+    public function setCategories($categories) {
+        $this->categories = $categories;
+        return $this;
+    }
+
+
 
 
 

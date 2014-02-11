@@ -40,6 +40,7 @@
 
 $route['default_controller'] = "landing";
 $route['admin'] = "admin/dashboard";
+$route['categorii/(:any)'] = "categorii/load_categories";
 $route['404_override'] = '';
 
 

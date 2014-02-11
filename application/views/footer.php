@@ -32,13 +32,13 @@
                 <tr>
                     <td>
                         <a href="https://itunes.apple.com/hr/app/getadeal/id474750657?mt=8">
-                            <img src="<?php echo base_url().'assets'?>/images_fdd/android.png"/>
+                            <img src="<?php echo base_url() . 'assets' ?>/images_fdd/android.png"/>
                         </a>
                     </td>
 
                     <td>
                         <a  href="https://play.google.com/store/apps/details?id=ro.ic.icatGetADeal">
-                            <img src="<?php echo base_url().'assets'?>/images_fdd/iphone.png"/>
+                            <img src="<?php echo base_url() . 'assets' ?>/images_fdd/iphone.png"/>
                         </a>
                     </td>
                 </tr>
@@ -48,7 +48,7 @@
         <div class="afacere">
             <div class="title"><a href="http://{$project_url}/business.php">Ai o afacere? <br/> Contacteaza-ne</a></div>
             <a  href="http://{$project_url}/business.php">
-                <img src="template/images_fdd/my_business.png"/>
+                <img src="<?php echo base_url() ?>assets/images_fdd/my_business.png"/>
             </a>
         </div>
 
@@ -71,9 +71,9 @@
             <div class="soccial">
                 <span>Urmareste-ne</span>
                 <div class="imgs">
-                    <img href="http://www.facebook.com/GetADeal.ro" target="_blank" src="template/images_fdd/fb.png"/>
-                    <img href="https://twitter.com/getadealro" target="_blank" src="template/images_fdd/twiter.png"/>
-                    <img href="http://feeds.seomonitor.ro/GetADeal" src="template/images_fdd/rss.png"/>
+                    <img href="http://www.facebook.com/GetADeal.ro" target="_blank" src="<?php echo base_url() ?>assets/images_fdd/fb.png"/>
+                    <img href="https://twitter.com/getadealro" target="_blank" src="<?php echo base_url() ?>assets/images_fdd/twiter.png"/>
+                    <img href="http://feeds.seomonitor.ro/GetADeal" src="<?php echo base_url() ?>assets/images_fdd/rss.png"/>
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@
         <div class="certificat">
 
             <a href="#" style="float: left;">
-                <img src="templat<?php echo base_url().'assets'?>/images_fdd/certificat.png"/>
+                <img src="<?php echo base_url() . 'assets' ?>/images_fdd/certificat.png"/>
             </a>
 
         </div>
@@ -99,19 +99,19 @@
 
 <script type="text/javascript">
 
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-20288491-1']);
-    _gaq.push(['_setDomainName', 'getadeal.ro']);
-    _gaq.push(['_trackPageview']);
+                           var _gaq = _gaq || [];
+                           _gaq.push(['_setAccount', 'UA-20288491-1']);
+                           _gaq.push(['_setDomainName', 'getadeal.ro']);
+                           _gaq.push(['_trackPageview']);
 
-    (function() {
-        var ga = document.createElement('script');
-        ga.type = 'text/javascript';
-        ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ga, s);
-    })();
+                           (function() {
+                               var ga = document.createElement('script');
+                               ga.type = 'text/javascript';
+                               ga.async = true;
+                               ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                               var s = document.getElementsByTagName('script')[0];
+                               s.parentNode.insertBefore(ga, s);
+                           })();
 
 </script>
 
