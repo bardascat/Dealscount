@@ -41,6 +41,11 @@
 $route['default_controller'] = "landing";
 $route['admin'] = "admin/dashboard";
 $route['categorii/(:any)'] = "categorii/load_categories";
+
+//oferte
+$route['oferte/(:any)'] = "oferte/view";
+$route['oferte/show_offer'] = "oferte/show_offer";
+
 $route['404_override'] = '';
 
 

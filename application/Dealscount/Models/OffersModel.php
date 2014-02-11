@@ -43,8 +43,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $item->postHydrate($post);
         if ($post['slug']) {
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['slug'] . '-' . $next_id));
-        }
-        else
+        } else
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['name'] . '-' . $next_id));
 
         $item->setOperator($this->em->find("Entities:User", $id_operator));
@@ -62,15 +61,14 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         $item = $this->getOffer($post['id_item']);
         $current_slug = $item->getSlug();
-        
+
         $item->postHydrate($post);
-        
+
         //daca operatorul doreste modificarea slugului
         if ($post['slug'] != substr($current_slug, 0, strripos($current_slug, '-'))) {
             $slug = $post['slug'];
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($slug . '-' . $post['id_item']));
-        }
-        else
+        } else
             $item->setSlug($current_slug);
 
 
@@ -101,8 +99,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             $categoryReference = new Entities\ItemCategories();
             $categoryReference->setCategory($category);
             $item->addCategory($categoryReference);
-        }
-        else
+        } else
             $category = $item->getCategory();
 
 //asociem partenerul
@@ -189,6 +186,20 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         return $offer;
     }
 
+    /**
+     * 
+     * @param type $id_offer
+     * @return \Dealscount\Models\Entities\Item
+     */
+    public function getOfferBySlug($slug) {
+        $offerRep = $this->em->getRepository("Entities:Item");
+        $offers = $offerRep->findBy(array("slug" => $slug));
+        if (isset($offers[0]))
+            return $offers[0];
+        else
+            return false;
+    }
+
     public function getNrVouchersBought($id_item) {
 
         $query = "select count(id_voucher) as nr_vouchers from orders_vouchers ov
@@ -225,10 +236,14 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
      * @param type $id_category
      * @return boolean
      */
-    public function getOffersByParentCategory($id_category, $page) {
-        $limit = 13;
-        $categoriesModel = new Models\CategoriesModel();
-        $childs = $categoriesModel->getChilds($id_category);
+    public function getOffersByParentCategory($category_slug) {
+
+        $categoriesModel = new CategoriesModel();
+        $category = $categoriesModel->getCategoryBySlug($category_slug);
+        if (!$category)
+            return false;
+
+        $childs = $categoriesModel->getChilds($category->getId_category());
 
         $in = "";
         foreach ($childs as $child) {
@@ -242,23 +257,14 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
             $offers = $qb->select("i")
                     ->from("Entities:Item", "i")
-                    ->join("i.offer", "o")
                     ->join('i.ItemCategories', 'cat')
                     ->add('where', $qb->expr()->in('cat.id_category', $in))
-                    ->andWhere("i.item_type='offer'")
                     ->andWhere("i.active=1")
-                    ->andWhere("o.end_date>CURRENT_TIMESTAMP()")
-                    ->andWhere("o.start_date<=CURRENT_TIMESTAMP()")
-                    ->orderBy("o.end_date", "asc")
-                    ->setFirstResult(( $page * $limit) - $limit)
-                    ->setMaxResults($limit)
+                    ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
+                    ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
+                    ->orderBy("i.end_date", "asc")
                     ->getQuery();
-
-
-
-            $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($offers);
-
-            return $paginator;
+            return $offers->getResult();
         } catch (\Exception $e) {
             echo $e->getMessage();
         };

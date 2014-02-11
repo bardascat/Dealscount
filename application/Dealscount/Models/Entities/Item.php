@@ -286,7 +286,7 @@ class Item extends AbstractEntity {
 
     /**
      * 
-     * @return \NeoMvc\Models\Entity\ItemImage
+     * @return \Dealscount\Models\Entities\ItemImage
      */
     public function getImages() {
         return $this->images;

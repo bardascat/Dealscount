@@ -38,6 +38,10 @@ class CI_Controller {
      */
     protected $UserModel;
     
+    /**
+     *
+     * @var \Dealscount\Models\CategoriesModel
+     */
     protected $CategoriesModel=null;
 
     /**

@@ -1,4 +1,6 @@
-<?php /* @var  $offers \Dealscount\Models\Entities\Item */ $offers; ?>
+<?php /* @var  $offers \Dealscount\Models\Entities\Item */ $offers; 
+
+?>
 <div class="content" style="margin-left: 194px;">
     <!-- infobar -->
     <div class="info_bar">

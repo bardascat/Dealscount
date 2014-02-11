@@ -12,7 +12,6 @@ class offer extends CI_Controller {
      * @var OffersModel $OffersModel
      */
     private $OffersModel;
-    private $CategoriesModel;
 
     function __construct() {
         parent::__construct();
@@ -20,7 +19,6 @@ class offer extends CI_Controller {
         $this->load->library('form_validation');
 
         $this->setAccessLevel(DLConstants::$ADMIN_LEVEL);
-        $this->CategoriesModel = new Dealscount\Models\CategoriesModel();
         $this->OffersModel = new Dealscount\Models\OffersModel();
     }
 
@@ -330,6 +328,5 @@ class offer extends CI_Controller {
             return false;
         }
     }
-
 }
 
