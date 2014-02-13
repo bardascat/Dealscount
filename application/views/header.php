@@ -6,10 +6,10 @@
         <meta http-equiv="Content-Language" content="ro" />
         <?php echo $this->view->getCss(); ?>
         <link href='http://fonts.googleapis.com/css?family=Oxygen&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-            <?php echo $this->view->getJs(); ?>
-            <meta name="description" content=""/>
-            <link rel="shortcut icon"  type="image/png"  href="<?php echo base_url() ?>assets/images_fdd/favicon.ico">
-                </head>
+        <?php echo $this->view->getJs(); ?>
+        <?php echo $this->view->getNotification()?>
+        <link rel="shortcut icon"  type="image/png"  href="<?php echo base_url() ?>assets/images_fdd/favicon.ico">
+    </head>
                 <body>
                     <div id="wrapper">
 

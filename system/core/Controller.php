@@ -32,25 +32,26 @@ if (!defined('BASEPATH'))
 class CI_Controller {
 
     private static $instance;
+
     /**
      *
      * @var \Dealscount\Models\UserModel
      */
     protected $UserModel;
-    
+
     /**
      *
      * @var \Dealscount\Models\CategoriesModel
      */
-    protected $CategoriesModel=null;
+    protected $CategoriesModel = null;
 
     /**
      * Constructor
      */
     public function __construct() {
-        
+
         self::$instance = & $this;
-        
+
         // Assign all the class objects that were instantiated by the
         // bootstrap file (CodeIgniter.php) to local class variables
         // so that CI can run as one big super object.
@@ -62,10 +63,10 @@ class CI_Controller {
 
         $this->load->initialize();
         $this->UserModel = new \Dealscount\Models\UserModel();
-        $this->CategoriesModel=new Dealscount\Models\CategoriesModel();
+        $this->CategoriesModel = new Dealscount\Models\CategoriesModel();
         $this->view->setUser($this->getLoggedUser());
-        $this->view->setCategories($this->CategoriesModel->getRootCategories('offer',true));
-        
+        $this->view->setCategories($this->CategoriesModel->getRootCategories('offer', true));
+        $this->view->setNotification($this->session->flashdata('notification'));
         $this->setHash();
         log_message('debug', "Controller Class Initialized");
     }
@@ -79,12 +80,10 @@ class CI_Controller {
         $this->load->view($view, $vars);
         $this->load->view('footer');
     }
-    
+
     public function load_view_admin($view, $vars = array()) {
         $this->load->view('admin/header', $vars);
         $this->load->view($view, $vars);
-        
-       
     }
 
     //intoarce userul curent
@@ -100,16 +99,15 @@ class CI_Controller {
     }
 
     /**
-     * Genereaza un un hash unic
+     * Genereaza un un hash unic pentru cart
      * @return type
      */
-    public function setHash() {
+    protected function setHash() {
         if (get_cookie('cart_id')) {
             $cookie_id = unserialize(get_cookie('cart_id'));
             return $cookie_id;
         } else {
             $cookie_id = $this->generateHash();
-
             $cookie = array(
                 'name' => 'cart_id',
                 'value' => serialize($cookie_id),
@@ -122,12 +120,16 @@ class CI_Controller {
         }
     }
 
+    protected function getCartHash() {
+        return $this->setHash();
+    }
+
     private function generateHash() {
         return md5(uniqid(microtime()) . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
     }
 
     public function setAccessLevel($level) {
-        
+
         $user = $this->getLoggedUser();
         if (!$user)
             redirect(base_url());
@@ -138,12 +140,12 @@ class CI_Controller {
 
     protected function upload_images($upload_images, $path, $Entity = "Dealscount\Models\Entities\ItemImage", $resize = true) {
 
-        $this->load->library('SimpleImage',false,'SimpleImage');
-        
-        
-        if(!is_dir('application_uploads'))
-            mkdir('application_uploads',0777);
-        
+        $this->load->library('SimpleImage', false, 'SimpleImage');
+
+
+        if (!is_dir('application_uploads'))
+            mkdir('application_uploads', 0777);
+
         $image = $this->SimpleImage;
 
         $images = array();
@@ -158,10 +160,10 @@ class CI_Controller {
                     mkdir($path, 0777);
 
                 $photo_name = substr(md5(rand(100, 9999)), 0, 10) . '.jpg';
-                if(!move_uploaded_file($tmp_file, $path . '/' . $photo_name)){
+                if (!move_uploaded_file($tmp_file, $path . '/' . $photo_name)) {
                     exit('erroare');
                 }
-                
+
                 //huge
                 $image->load($path . '/' . $photo_name);
                 $image->resizePerfect(1200, 1200);
@@ -194,7 +196,7 @@ class CI_Controller {
         }
         return $images;
     }
-    
+
     protected function populate_form($object) {
 
         //repopulate fields
@@ -222,6 +224,7 @@ class CI_Controller {
 
         $this->view->setPopulate_form($js);
     }
+
 }
 
 // END Controller class

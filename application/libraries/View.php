@@ -4,12 +4,13 @@ class View {
 
     private $css;
     private $js;
-    private $logged_user=FALSE;
+    private $logged_user = FALSE;
     private $page_name;
     private $page_description;
     private $populate_form;
     private $categories;
-    
+    private $notification;
+
     function __construct() {
         
     }
@@ -23,23 +24,23 @@ class View {
         return $this;
     }
 
-    public function getCss($admin=false) {
-         $cssFiles=($admin ? DLConstants::getADMIN_CSS_FILES() : DLConstants::getCSS_FILES());
-         if($cssFiles){
-            $scripts='';
-            foreach($cssFiles as $css){
-                $scripts.='<link rel="stylesheet" type="text/css" href="'.base_url($css).'"/>';
+    public function getCss($admin = false) {
+        $cssFiles = ($admin ? DLConstants::getADMIN_CSS_FILES() : DLConstants::getCSS_FILES());
+        if ($cssFiles) {
+            $scripts = '';
+            foreach ($cssFiles as $css) {
+                $scripts.='<link rel="stylesheet" type="text/css" href="' . base_url($css) . '"/>';
             }
         }
         return $scripts;
     }
 
-    public function getJs($admin=false) {
-        $jsFiles=$cssFiles=($admin ? DLConstants::getADMIN_JS_FILES() : DLConstants::getJS_FILES());
-        if($jsFiles){
-            $scripts='';
-            foreach($jsFiles as $js){
-                $scripts.='<script type="text/javascript" src="'.base_url($js).'"></script>';
+    public function getJs($admin = false) {
+        $jsFiles = $cssFiles = ($admin ? DLConstants::getADMIN_JS_FILES() : DLConstants::getJS_FILES());
+        if ($jsFiles) {
+            $scripts = '';
+            foreach ($jsFiles as $js) {
+                $scripts.='<script type="text/javascript" src="' . base_url($js) . '"></script>';
             }
         }
         return $scripts;
@@ -53,11 +54,10 @@ class View {
         $this->logged_user = $logged_user;
         return $this;
     }
-    
-    public function show_message($notification){
-        
-        return "<div id='".$notification['type']."' class='".$notification['cssClass']."'>".$notification['message']."</div>";
-        
+
+    public function show_message($notification) {
+
+        return "<div id='" . $notification['type'] . "' class='" . $notification['cssClass'] . "'>" . $notification['message'] . "</div>";
     }
 
     public function getPage_name() {
@@ -77,18 +77,31 @@ class View {
         $this->page_description = $page_description;
         return $this;
     }
+
     public function getCategories() {
         return $this->categories;
     }
+
     public function setCategories($categories) {
         $this->categories = $categories;
         return $this;
     }
 
+    public function getNotification() {
+        if(!$this->notification) return false;
+        $js = "var n=noty({
+            layout: 'topCenter',
+            type: '" . $this->notification['type'] . "',
+            text: '" . $this->notification['html'] . "',
+            dismissQueue: true, // If you want to use queue feature set this true
+            timeout: 3000,
+            });";
+        return '<script>$(document).ready(function(){' . $js . '});</script>';
+    }
 
-
-
-
+    public function setNotification($notification) {
+        $this->notification = $notification;
+    }
 
 }
 ?>

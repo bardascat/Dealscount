@@ -43,8 +43,10 @@ $route['admin'] = "admin/dashboard";
 $route['categorii/(:any)'] = "categorii/load_categories";
 
 //oferte
-$route['oferte/(:any)'] = "oferte/view";
+$route['oferte/add_to_cart/(:any)'] = "oferte/add_to_cart";
 $route['oferte/show_offer'] = "oferte/show_offer";
+$route['oferte/(:any)'] = "oferte/view";
+
 
 $route['404_override'] = '';
 

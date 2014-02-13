@@ -4,7 +4,8 @@ class DLConstants {
 
     private static $JS_FILES = array(
         'assets/js/jquery.1.10.min.js',
-        'assets/js/global.js'
+        'assets/js/global.js',
+        'assets/js/noty-2.2.2/js/noty/packaged/jquery.noty.packaged.js'
     );
     private static $CSS_FILES = array(
         'assets/css/main.css'

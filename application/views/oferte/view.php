@@ -81,8 +81,11 @@ $images = $offer->getImages();
 
                                             <!-- <h2 style="color:#D00; margin-right:20px;">Sold Out</h2> -->
 
-
-                                            <a class="cumpara_btn" href="<?= base_url('oferte/' . $offer->getIdItem()) ?>"></a>
+                                            <form id="cart_form" method="post" action="<?php echo base_url('neocart/add_to_cart') ?>">
+                                                <input type="hidden" name="id_item" value="<?php echo $offer->getIdItem() ?>"/>
+                                                <input type="hidden" name="quantity" value="1"/>
+                                                <a class="cumpara_btn" href="javascript:add_to_cart()"></a>
+                                            </form>
 
                                         </td>
                                     </tr>
@@ -182,6 +185,7 @@ $images = $offer->getImages();
 <script type="text/javascript">
 
     $(document).ready(function() {
+     
 <?php if ($offer->getLongitude() && $offer->getLatitude()) { ?>
             displayMap("<?php echo $offer->getLatitude() ?>", "<?php echo $offer->getLongitude() ?>");
 <?php } ?>
@@ -212,15 +216,14 @@ $images = $offer->getImages();
                 $('#' + info + "_td").addClass("selected");
                 $('.' + info).fadeIn(100, function() {
                     google.maps.event.trigger(map, 'resize');
-                    map.setCenter(new google.maps.LatLng('<?=$offer->getLatitude()?>','<?=$offer->getLongitude()?>'));
+                    map.setCenter(new google.maps.LatLng('<?= $offer->getLatitude() ?>', '<?= $offer->getLongitude() ?>'));
                 })
             });
-
-
-
         }
+    }
 
-
+    function add_to_cart() {
+        $('#cart_form').submit();
     }
 
 </script>
