@@ -5,7 +5,7 @@
  */
 class users extends CI_Controller {
 
-    private $CategoriesModel;
+   
 
     function __construct() {
         parent::__construct();
@@ -107,7 +107,7 @@ class users extends CI_Controller {
             "user" => $user
         );
         if ($this->uri->segment(5) == "popup")
-            $this->load_view_admin('admin/users/company/edit_company_popup', $data);
+            $this->load_view_admin_popup('admin/users/company/edit_company_popup', $data);
         else
             $this->load_view_admin('admin/users/company/edit_company', $data);
     }

@@ -110,6 +110,14 @@
                                         <input type="text" value="<?php echo set_value('price') ?>" name="price"/>
                                     </td>
                                 </tr>
+                                 <tr>
+                                    <td class="label">
+                                        Pret cu cupon
+                                    </td>
+                                    <td class='small_input'>
+                                        <input type="text" value="<?php echo set_value('voucher_price') ?>" name="voucher_price"/>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td class="label">
                                         Pret Vanzare

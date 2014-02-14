@@ -17,7 +17,6 @@ class offer extends CI_Controller {
         parent::__construct();
         $this->load->library('user_agent');
         $this->load->library('form_validation');
-
         $this->setAccessLevel(DLConstants::$ADMIN_LEVEL);
         $this->OffersModel = new Dealscount\Models\OffersModel();
     }
@@ -77,6 +76,7 @@ class offer extends CI_Controller {
             $this->OffersModel->addOffer($_POST,$this->getLoggedUser()['id_user']);
 
             $this->session->set_flashdata('form_ok', 'Oferta a fost adaugata');
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Oferta a fost adaugata"));
             redirect(base_url('admin/offer/offers_list'));
         }
     }
@@ -129,7 +129,7 @@ class offer extends CI_Controller {
             $_POST['images'] = $images;
             $this->OffersModel->updateOffer($_POST,$this->getLoggedUser()['id_user']);
             $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Oferta a fost salvata</div>');
-            
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Oferta a fost salvata"));
             redirect(base_url('admin/offer/editOffer/' . $id));
         }
     }
@@ -140,8 +140,8 @@ class offer extends CI_Controller {
             $id = $this->uri->segment(3);
 
             $this->OffersModel->deleteOffer($id);
-
-            header("Location: " . $this->getRefPage());
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Oferta a fost stearsa"));
+            redirect($this->agent->referrer());
         }
     }
 

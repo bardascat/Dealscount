@@ -125,8 +125,7 @@ class NeoCartModel extends AbstractModel {
     }
 
     public function getNrItems() {
-
-        $hash = \NeoMvc\Controllers\controller::getHash();
+        $hash = \CI_Controller::getCartHash();
         if (!$hash)
             return 0;
 
@@ -158,7 +157,7 @@ class NeoCartModel extends AbstractModel {
     public function emptyCart() {
 
         $dql = $this->em->createQuery('delete Entities:NeoCart cart where cart.hash=:hash');
-        $dql->setParameter(":hash", \NeoMvc\Controllers\NeoCart::getHash());
+        $dql->setParameter(":hash", \CI_Controller::getCartHash());
         $dql->execute();
         return true;
     }
@@ -173,16 +172,17 @@ class NeoCartModel extends AbstractModel {
         $nextOrderId = $this->getNextId("orders", "id_order");
 
         //luam shopping cart
-        $cart = $this->getCart(\NeoMvc\Controllers\NeoCart::getHash());
+        $cart = $this->getCart(\CI_Controller::getCartHash());
         if (!$cart) {
-            header('Location: ' . URL);
+            redirect(base_url());
             exit();
         }
 
         $cartItems = $cart->getCartItems();
+
         if (!count($cartItems)) {
             //nu are nimic in cos
-            header("Location: " . URL . 'cart');
+            redirect(base_url());
             exit();
         }
         $order = new Entities\Order();
@@ -191,44 +191,35 @@ class NeoCartModel extends AbstractModel {
         /**
          * Generam item-urile comenzii
          */
-        /* @var $cartItem Entities\CartItem */
         foreach ($cartItems as $cartItem) {
             $orderItem = new Entities\OrderItem();
 
             $item = $cartItem->getItem();
 
-            /* @var $itemDetails Entities\Product */ // sau Entities\Offer
-            $itemDetails = $item->getItemDetails();
-
             $orderItem->setQuantity($cartItem->getQuantity());
-            $orderItem->setTotal($cartItem->getTotal($itemDetails->getSale_price()));
+            $orderItem->setTotal($cartItem->getTotal($item->getSale_price()));
             $orderItem->setItem($item);
-            if ($cart->hasOnlyOffers())
-                $orderItem->setStatus("F");
-            else
-                $orderItem->setStatus("W");
-            //daca itemul are varianta o adaugam
-            if ($cartItem->getProductVariant())
-                $orderItem->setProductVariant($cartItem->getProductVariant());
+
+            /*
+              if ($cartItem->getProductVariant())
+              $orderItem->setProductVariant($cartItem->getProductVariant());
+             */
 
             $total+=$orderItem->getTotal();
 
             /**
-             * Daca Itemul este oferta, atunci trebuie sa adaugam vouchere
              * Observatie: item-ul poate fi facut si cadou atunci mai avem in post pe langa nume si emailul prietenului
              */
-            if ($item->getItem_type() == "offer") {
-                for ($i = 0; $i < $orderItem->getQuantity(); $i++) {
-                    $voucher = new Entities\OrderVoucher();
-                    $voucher->setRecipientName($post['name_' . $cartItem->getId()][$i]);
-                    if ($cartItem->getIs_gift()) {
-                        $voucher->setRecipientEmail($post['email_' . $cartItem->getId()][$i]);
-                        $voucher->setIs_gift(1);
-                    }
-                    $code = "ORV" . $nextOrderId . 'V' . substr(uniqid(), -4);
-                    $voucher->setCode($code);
-                    $orderItem->addVoucher($voucher);
+            for ($i = 0; $i < $orderItem->getQuantity(); $i++) {
+                $voucher = new Entities\OrderVoucher();
+                $voucher->setRecipientName($params['name_' . $cartItem->getId()][$i]);
+                if ($cartItem->getIs_gift()) {
+                    $voucher->setRecipientEmail($params['email_' . $cartItem->getId()][$i]);
+                    $voucher->setIs_gift(1);
                 }
+                $code = "GAD" . $nextOrderId . 'V' . substr(uniqid(), -4);
+                $voucher->setCode(strtoupper($code));
+                $orderItem->addVoucher($voucher);
             }
 
             $order->addOrderItem($orderItem);
@@ -245,95 +236,28 @@ class NeoCartModel extends AbstractModel {
         if (isset($post['installments']))
             $order->setInstallments($post['installments']);
 
-        if (isset($post['christmas_shipping']))
-            $order->setChristmas_shipping(1);
-
         $order->setShipping_cost($this->getShippingCost($params, $total));
         $order->setTotal($total + $order->getShipping_cost());
         $order->setUser($user);
-        $orderCode = "ORO" . $nextOrderId . 'O' . $last_four;
+        $orderCode = "GAD" . $nextOrderId . 'O' . $last_four;
         $order->setOrderNumber($orderCode);
 
-        //daca comanda contine doar cupoane este confirmata automat
-        if ($cart->hasOnlyOffers()) {
-            $order->setPayment_status("F"); // 
-            $order->setOrderStatus("F");
-            $order->setMail_notification(1);
-        }
-
-        /**
-         * Adresa de livrare/facturare. Doar atunci cand comanda contine si produse
-         * Sunt 2 situatii:
-         *  1. Userul decide ca vrea o adresa de livrare noua si atunci id-ul adresei de livrare este new.
-         *  2. Userul alege o adresa de livrare deja existenta
-         */
-        if (!$cart->hasOnlyOffers()) {
-            if ($post['shipping_address_id'] == "new") {
-                $shippingAddress = new Entities\ShippingAddress();
-                $shippingAddress->postHydrate($post);
-                $cargusDistrict = $this->em->getRepository("Entities:CargusDistrict")->findBy(array("district_code" => $shippingAddress->getShipping_district_code()));
-                if (isset($cargusDistrict[0]))
-                    $shippingAddress->setShipping_district($cargusDistrict[0]->getDistrict());
-                else
-                    $shippingAddress->setShipping_district($post['shipping_district_code']);
-                $user->setShippingAddresses($shippingAddress);
-            }
-            else {
-                $shippingAddress = $this->em->find("Entities:ShippingAddress", $post['shipping_address_id']);
-            }
-
-            if (!$shippingAddress) {
-                exit("Eroare: 1:22. Adresa de livrare aleasă nu există");
-            }
-
-            /* Daca datele omului nu sunt completate le luam din adresa de livrare */
-            if (!$user->getNume())
-                $user->setNume($shippingAddress->getShipping_name());
-
-            if (!$user->getPhone())
-                $user->setPhone($shippingAddress->getShipping_phone());
-
-            /**
-             * Adresa de facturare
-             */
-            $billingAddress = new Entities\BillingAddress();
-            //factura persoana juridica
-
-            if (isset($post['new_billing_address'])) {
-                $billingAddress->postHydrate($post);
-                $billingAddress->setBilling_type("legal");
-            }
-            //factura persoana fizica, datele de pe pe factura sunt aceleasi ca cele din adresa de livrare
-            else {
-                $billingAddress->setIndividualDetails($shippingAddress);
-                $billingAddress->setBilling_type("individual");
-            }
-
-            //adaugam noua adresa de facturare la user
-            $user->setBillingAddresses($billingAddress);
-
-            $order->setShippingAddress($shippingAddress);
-            $order->setBillingAddress($billingAddress);
-
-            //setam numele si telefonul userului din adresa de livrare, daca nu sunt setate
-            if (!$user->getNume())
-                $user->getNume($shippingAddress->getShipping_name());
-
-            if (!$user->getPhone())
-                $user->getNume($shippingAddress->getShipping_phone());
-        } //end adresa de facturare/livrare
+        //daca comanda contine doar cupoane gratuite este confirmata automat
+        $order->setPayment_status(\DLConstants::$PAYMENT_STATUS_CONFIRMED); // 
+        $order->setOrderStatus(\DLConstants::$ORDER_STATUS_CONFIRMED);
+        $order->setMail_notification(1);
 
         $this->em->persist($order);
         $this->em->persist($user);
         $this->em->flush();
-        $this->emptyCart();
+       // $this->emptyCart();
         return $order;
     }
 
     public function getShippingCost($params, $total) {
-        //daca suma dapaseste 250 lei transprot grauit
-        if ($total >= \NeoMvc\Controllers\controller::TRANSPORT_GRATIS)
-            return 0;
+        //cupoanele nu au  taxa de transport
+        return 0;
+
         $tax = 0;
         switch ($params['payment_method']) {
             case "card": {
@@ -368,28 +292,26 @@ class NeoCartModel extends AbstractModel {
         $vouchers_list = array();
         $orderItems = $order->getItems();
         foreach ($orderItems as $orderItem) {
+            
+            $offer=$orderItem->getItem();
+            $company = $offer->getCompany();
+            $companyDetails = $company->getCompanyDetails();
+            $vouchers = $orderItem->getVouchers();
+            foreach ($vouchers as $voucher) {
 
-            if ($orderItem->getItem()->getItem_type() == "offer") {
-                $item = $orderItem->getItem();
-                $offer = $item->getOffer();
-                $company = $item->getCompany();
-                $companyDetails = $company->getCompanyDetails();
-                $vouchers = $orderItem->getVouchers();
-                foreach ($vouchers as $voucher) {
+                $file = "application_uploads/vouchers/" . $order->getId_order() . '/' . $voucher->getId_voucher() . '.pdf';
+                ob_start();
+                require('application/views/popups/voucher.php');
+                $voucherHtml = ob_get_clean();
+                
+                require_once("application/libraries/mpdf54/mpdf.php");
+                $mpdf = new \mPDF('utf-8', array(190, 536), '', 'Arial', 2, 2, 2, 2, 2, 2);
+                $mpdf->WriteHTML(utf8_encode($voucherHtml));
 
-                    $file = "application_uploads/vouchers/" . $order->getId_order() . '/' . $voucher->getId_voucher() . '.pdf';
-                    ob_start();
-                    require('views/popups/voucher.php');
-                    $voucherHtml = ob_get_clean();
-                    require_once("NeoMvc/Libs/mpdf54/mpdf.php");
-                    $mpdf = new \mPDF('utf-8', array(190, 536), '', 'Arial', 2, 2, 2, 2, 2, 2);
-                    $mpdf->WriteHTML(utf8_encode($voucherHtml));
-
-                    if (!is_dir("application_uploads/vouchers/" . $order->getId_order()))
-                        mkdir("application_uploads/vouchers/" . $order->getId_order(), 0777);
-                    $mpdf->Output($file);
-                    $vouchers_list[] = $file;
-                }
+                if (!is_dir("application_uploads/vouchers/" . $order->getId_order()))
+                    mkdir("application_uploads/vouchers/" . $order->getId_order(), 0777);
+                $mpdf->Output($file);
+                $vouchers_list[] = $file;
             }
         }
         if (count($vouchers_list) < 1)

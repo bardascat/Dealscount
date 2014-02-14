@@ -38,5 +38,13 @@ class oferte extends CI_Controller {
         
         echo $offer->getName();
     }
+    
+    public function increment_offer_view(){
+        $id_item=$this->input->post("id_item");
+       
+        if($id_item)
+            $this->OffersModel->increment_offer_view($id_item);
+        
+    }
 
 }

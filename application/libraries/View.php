@@ -10,6 +10,7 @@ class View {
     private $populate_form;
     private $categories;
     private $notification;
+    private $nrCartItems;
 
     function __construct() {
         
@@ -24,8 +25,19 @@ class View {
         return $this;
     }
 
-    public function getCss($admin = false) {
-        $cssFiles = ($admin ? DLConstants::getADMIN_CSS_FILES() : DLConstants::getCSS_FILES());
+    public function getCss($type = false) {
+        switch ($type) {
+            case "admin": {
+                    $cssFiles = DLConstants::getADMIN_CSS_FILES();
+                }break;
+            case "admin_popup": {
+                    $cssFiles = DLConstants::getADMIN_CSS_FILES_POPUP();
+                }break;
+            default: {
+                    $cssFiles = DLConstants::getCSS_FILES();
+                }
+        }
+
         if ($cssFiles) {
             $scripts = '';
             foreach ($cssFiles as $css) {
@@ -88,7 +100,8 @@ class View {
     }
 
     public function getNotification() {
-        if(!$this->notification) return false;
+        if (!$this->notification)
+            return false;
         $js = "var n=noty({
             layout: 'topCenter',
             type: '" . $this->notification['type'] . "',
@@ -101,6 +114,15 @@ class View {
 
     public function setNotification($notification) {
         $this->notification = $notification;
+    }
+
+    public function getNrCartItems() {
+        return $this->nrCartItems;
+    }
+
+    public function setNrCartItems($nrCartItems) {
+        $this->nrCartItems = $nrCartItems;
+        return $this;
     }
 
 }

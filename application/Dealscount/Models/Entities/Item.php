@@ -115,16 +115,22 @@ class Item extends AbstractEntity {
     protected $benefits;
 
     /**
-     *
+     *Pret fara cupon
      * @Column(type="float")
      */
     protected $price;
 
     /**
-     *
+     * Pret cu cupon
      * @Column(type="float")
      */
-    protected $sale_price;
+    protected $voucher_price;
+
+    /**
+     * Pret de vanzare in sistem. 0 lei pentru cazul de fata
+     * @Column(type="float")
+     */
+    protected $sale_price=0;
 
     /**
      *
@@ -247,9 +253,10 @@ class Item extends AbstractEntity {
         $this->tags->add($tag);
     }
 
-    public function getTags(){
+    public function getTags() {
         return $this->tags;
     }
+
     public function addImage(ItemImage $image) {
         $image->setItem($this);
         if (!($this->images instanceof ArrayCollection))
@@ -298,14 +305,14 @@ class Item extends AbstractEntity {
      */
     public function getMainImage($type = "thumb") {
         $itemImages = $this->getImages();
-        if(!file_exists($itemImages[0]->getThumb())) return 'application_uploads/items/image_not_found.png';
-        
+        if (!file_exists($itemImages[0]->getThumb()))
+            return 'application_uploads/items/image_not_found.png';
+
         if ($type == "thumb")
             return ($itemImages[0]->getThumb());
 
         if ($type == "image")
             return ($itemImages[0]->getImage());
-
     }
 
     public function getId_item() {
@@ -519,7 +526,7 @@ class Item extends AbstractEntity {
     }
 
     public function getVoucher_start_date() {
-        return $this->voucher_start_date;
+        return $this->voucher_start_date->format("Y-m-d");
     }
 
     public function setVoucher_start_date($voucher_start_date) {
@@ -528,7 +535,7 @@ class Item extends AbstractEntity {
     }
 
     public function getVoucher_end_date() {
-        return $this->voucher_end_date;
+        return $this->voucher_end_date->format("Y-m-d");
     }
 
     public function setVoucher_end_date($voucher_end_date) {
@@ -606,24 +613,34 @@ class Item extends AbstractEntity {
         $this->updated_by = $updated_by;
         return $this;
     }
-    
+
     /**
      * Metode particulare
      */
-    
-    public function getRemainingHours(){
-        
-        $date1=date("Y-m-d H:i:s");
-        $date2=date("Y-m-d");
-        $diff = abs(strtotime($date2.' 23:59:59') - strtotime($date1));
-        
-        return round($diff/3600);
-        
+    public function getRemainingHours() {
+
+        $date1 = date("Y-m-d H:i:s");
+        $date2 = date("Y-m-d");
+        $diff = abs(strtotime($date2 . ' 23:59:59') - strtotime($date1));
+
+        return round($diff / 3600);
     }
-    
-    public function getPercentageDiscount(){
+
+    public function getPercentageDiscount() {
         return round(100 - ($this->getSale_price() * 100 ) / $this->getPrice());
     }
+    
+    public function getVoucher_price() {
+        return $this->voucher_price;
+    }
+
+    public function setVoucher_price($voucher_price) {
+        $this->voucher_price = $voucher_price;
+        return $this;
+    }
+
+
+
 
 }
 

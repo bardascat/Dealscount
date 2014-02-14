@@ -322,6 +322,16 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             echo $e->getMessage();
         }
     }
+    
+    public function increment_offer_view($id_item){
+        $qb=$this->em->createQueryBuilder();
+        $qb->update("Entities:ItemStats", 'stats')
+                ->set("stats.views",'stats.views+1')
+                ->where('stats.id_item=:id_item')
+                ->setParameter(":id_item", $id_item)
+                ->getQuery()
+                ->execute();
+    }
 
 }
 

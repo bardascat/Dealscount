@@ -37,6 +37,11 @@ class ItemStats extends AbstractEntity {
     /**
      * @Column(type="integer")
      */
+    protected $sales = 0;
+
+    /**
+     * @Column(type="integer")
+     */
     protected $views = 0;
 
     public function __construct() {
@@ -66,7 +71,7 @@ class ItemStats extends AbstractEntity {
     public function setRating($rating) {
         $this->rating = $rating;
     }
-   
+
     public function getViews() {
         return $this->views;
     }
@@ -82,6 +87,16 @@ class ItemStats extends AbstractEntity {
     public function setId_item($id_item) {
         $this->id_item = $id_item;
     }
+    
+    public function getSales() {
+        return $this->sales;
+    }
+    public function setSales($sales) {
+        $this->sales = $sales;
+        return $this;
+    }
+
+
 
 }
 

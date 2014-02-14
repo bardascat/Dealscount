@@ -6,8 +6,6 @@
  */
 class neocart extends CI_Controller {
 
-    private $NeoCartModel;
-
     function __construct() {
         parent::__construct();
         $this->load->library('user_agent');
@@ -15,7 +13,8 @@ class neocart extends CI_Controller {
     }
 
     public function index() {
-        
+        $cart = $this->NeoCartModel->getCart(self::getCartHash());
+        $this->load_view('cart/index', array("neoCart" => $cart));
     }
 
     public function update_quantity() {
@@ -47,66 +46,52 @@ class neocart extends CI_Controller {
      * Payment methods
      */
     public function process_payment() {
-        $cart = $this->NeoCartModel->getCart(self::getHash());
+        $this->load->library('form_validation');
+        $cart = $this->NeoCartModel->getCart(CI_Controller::getCartHash());
 
-        $errors = $this->validateForm($_POST, $cart);
-
+        $errors = $this->validatePaymentProcess($_POST, $cart);
         if ($errors) {
-            $this->setCargusDistricts();
-            $validator = $errors['shipping_address_errors'];
-            if ($validator)
-                $this->view->form_js.= $validator->form_js("newAddressMessages", "Toate câmpurile sunt obligatorii", array("shipping_address_id"));
 
-
-            $validator = $errors['billing_address_errors'];
-            if ($validator)
-                $this->view->form_js.= $validator->form_js("newBillingMessages", "Toate câmpurile sunt obligatorii", array("shipping_address_id"));
-
-
-            $alertErrors = "<br/> Înainte de a continua vă rugăm: <br/>";
-            foreach ($errors as $error) {
-                if (is_string($error))
-                    $alertErrors.=$error;
-            }
-
-            $this->set_alert_message($alertErrors);
-            $this->view->cart = $cart;
-            $this->view->post = $_POST;
-            $this->view->render('cart/index');
+            $notification = array("type" => "error", "html" => "Va rugam completati toate datele");
+            $this->session->set_flashdata('notification', $notification);
+            $this->session->set_flashdata('process_payment_errors', $errors);
+            redirect(base_url('cart'));
         }
-
+        
         switch ($_POST['payment_method']) {
-            case "card": {
-                    $this->processCardPayment();
+            case "CARD": {
+                   // $this->processCardPayment();
                 }break;
-            case "op": {
-                    $this->processOpPayment();
+            case "OP": {
+                   // $this->processOpPayment();
                 }break;
-            case "ramburs": {
-                    $this->processRambursPayment();
+            case "RAMBURS": {
+                  //  $this->processRambursPayment();
                 }break;
-            case "free": {
+            case "FREE": {
                     $this->processFreePayment();
                 }break;
         }
     }
 
     private function processFreePayment() {
+      
         /* @var $order Entity\Order */
-        $order = $this->NeoCartModel->insertOrder($this->logged_user['orm'], $_POST);
-
+        $order = $this->NeoCartModel->insertOrder($this->getLoggedUser(true), $_POST);
+        
+       
         $email = $order->getUser()->getEmail();
 
         ob_start();
-        require_once("mailMessages/freeOrder.php");
+        require_once("application/views/mailMessages/freeOrder.php");
         $body = ob_get_clean();
         $subject = "Comanda " . $order->getOrderNumber() . ' ORINGO';
 
         $vouchers = $this->NeoCartModel->generateVouchers($order);
-        NeoMail::getInstance()->genericMailAttach($body, $subject, $email, $vouchers);
-
-        $this->informOwner($order);
-        header('Location:' . URL . 'cont/finalizare_free?code=' . $order->getOrderNumber());
+        NeoMail::genericMailAttach($body, $subject, $email, $vouchers);
+        //$this->informOwner($order);
+        
+        redirect(base_url('account/finalizare?type=free&code=' . $order->getOrderNumber()));
         exit();
     }
 
@@ -239,7 +224,44 @@ class neocart extends CI_Controller {
         require_once("mailMessages/informOwner.php");
         $body = ob_get_clean();
         $subject = "A fost plasata comanda " . $order->getOrderNumber() . ' Sa curga banii !';
-        NeoMail::getInstance()->genericMail($body, $subject, 'comenzi@oringo.ro');
+        NeoMail::getInstance()->genericMail($body, $subject,$email);
+    }
+
+    private function validatePaymentProcess($post, Dealscount\Models\Entities\NeoCart $cart) {
+
+        $hasErrors = false;
+        $cartItems = $cart->getCartItems();
+        if (!$cartItems) {
+            header('Location: ' . base_url());
+            exit();
+        }
+
+        foreach ($cartItems as $cartItem) {
+            $item = $cartItem->getItem();
+            for ($i = 0; $i < $cartItem->getQuantity(); $i++) {
+                if ($cartItem->getIs_gift()) {
+                    if (strlen($post['name_' . $cartItem->getId()][$i]) < 2 || !filter_var($post['email_' . $cartItem->getId()][$i], FILTER_VALIDATE_EMAIL)) {
+                        $errors[] = "Introduceți  corect datele prietenului !";
+                        $hasErrors = true;
+                        break 2;
+                    }
+                } else
+                if (strlen($post['name_' . $cartItem->getId()][$i]) < 2) {
+                    $errors[] = "Completati datele beneficiarului voucherului!";
+                    $hasErrors = true;
+                    break 2;
+                }
+            }
+        }
+
+        if (!isset($_POST['payment_method']))
+            $errors[] = "Alegeti metoda de plata";
+
+
+        if ($hasErrors)
+            return $errors;
+        else
+            return false;
     }
 
 }

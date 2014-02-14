@@ -8,20 +8,23 @@
 
     <table id='main_table' border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
-            <? require_once('views/admin/left_menu.php'); ?> 
+            <?php $this->load->view('admin/left_menu'); ?>
 
             <td class='content index'>
                 <!-- content -->
+                <div>
+                    <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
+                </div>
 
                 <div class="paginator">
                     <form method="get" action="?" class="paginateForm">
-                        Pagina: <input style="width: 20px; text-align: center; padding: 2px; font-size: 15px;" type="text" name="page" value="<? if (isset($_GET['page'])) echo $_GET['page'] ?>"/>
-                        din  <?= round(count($this->orders) / 100) ?>
+                        Pagina: <input style="width: 20px; text-align: center; padding: 2px; font-size: 15px;" type="text" name="page" value="<?php if (isset($_GET['page'])) echo $_GET['page'] ?>"/>
+                        din  <?php echo round(count($orders) / 100) ?>
                     </form>
 
                     <div class="searchForm">
-                        <form method="get" action="<?= URL ?>admin/orders/searchOrder">
-                            <input type="text" value="<? if (isset($_GET['search'])) echo $_GET['search'] ?>" name="search" placeholder="Cauta dupa nume/email client sau cod comanda"/>
+                        <form method="get" action="<?php echo base_url() ?>admin/orders/searchOrder">
+                            <input type="text" value="<?php if (isset($_GET['search'])) echo $_GET['search'] ?>" name="search" placeholder="Cauta dupa nume/email client sau cod comanda"/>
                         </form>
                     </div>
 
@@ -37,41 +40,32 @@
                         <th style="padding-left: 20px;">
                             Cumparator
                         </th>
-                        <th >
-                            Pret
-                        </th>
-                        <th>
-                            Status Plata
-                        </th>
-                        <th>
-                            Status Livrare
-                        </th>
+                       
+                        <th>Email</th>
                         <th class="cell_right">
 
                         </th>
 
                     </tr>
-                    <?
-                    /* @var $order \NeoMvc\Models\Entity\Order */
-                    foreach ($this->orders as $order) {
+                    <?php
+                    /* @var $order \Dealscount\Models\Entities\Order */
+                    foreach ($orders as $order) {
+                        
+                    
                         ?>
 
-                        <tr>
-                            <td width="10%"><a href="<?= URL ?>admin/orders/edit_order/<?= $order->getId_order() ?>"><?= $order->getOrderNumber() ?></a></td>
-                            <td width="15%"><?= $order->getOrderedOn() ?></td>
-                            <td style="padding-left: 20px;" width="15%"><?= $order->getUser()->getNume() ?></td>
-
-                            <td width="15%"><?= $order->getTotal() ?> ron</td>
-                            <td wdith="15%"><?= $this->getHumanPaymentStatus($order->getPayment_status(), false); ?></td>
-                            <td wdith="15%"><?= $this->getHumanOrderStatus($order->getOrderStatus(), false); ?></td>
-                          
-                            <td width="15%" class="list_buttons cell_right">
-                                <a href="<?= URL ?>admin/orders/edit_order/<?= $order->getId_order() ?>">Editeaza</a>
-                                <a  href="javascript:triggerDeleteConfirm('.delete_<?= $order->getId_order() ?>',1)">Sterge</a>
-                                <a style='display: none;'  class="delete_<?= $order->getId_order() ?>"  href="<?= URL ?>admin/orders/delete_order/<?= $order->getId_order() ?>">Sterge</a>
-                            </td>
-                        </tr>
-                    <? } ?>
+                    <tr>
+                        <td width="20%"><a href="<?= base_url() ?>admin/orders/edit_order/<?= $order->getId_order() ?>"><?php echo $order->getOrderNumber() ?></a></td>
+                        <td width="20%"><?php echo $order->getOrderedOn() ?></td>
+                        <td style="padding-left: 20px;" width="15%"><?php echo $order->getUser()->getFirstname().' '.$order->getUser()->getLastname() ?></td>
+                        <td><?php echo $order->getUser()->getEmail()?></td>
+                        <td width="20%" class="list_buttons cell_right">
+                            <a href="<?= base_url() ?>admin/orders/edit_order/<?= $order->getId_order() ?>">Editeaza</a>
+                            <a  href="javascript:triggerDeleteConfirm('.delete_<?= $order->getId_order() ?>',1)">Sterge</a>
+                            <a style='display: none;'  class="delete_<?= $order->getId_order() ?>"  href="<?= base_url() ?>admin/orders/delete_order/<?= $order->getId_order() ?>">Sterge</a>
+                        </td>
+                    </tr>
+                    <?php } ?>
                 </table
 
                 <!-- end content -->

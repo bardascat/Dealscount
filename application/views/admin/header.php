@@ -7,9 +7,10 @@
         <?php echo $this->view->getCss('admin'); ?>
          <?php echo $this->view->getJs('admin'); ?>
          <?php echo $this->view->getPopulate_form() ?>
+          <?php echo $this->view->getNotification() ?>
             <meta name="description" content=""/>
             <link rel="shortcut icon"  type="image/png"  href="<?php echo base_url() ?>assets/images_fdd/favicon.ico">
-                </head>
+           </head>
                 <body>
                     <div id="wrapper">
                         <div id="header">

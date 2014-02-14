@@ -39,13 +39,14 @@ class Doctrine {
 
     private function initDB() {
         require_once APPPATH . 'config/database.php';
+     
         // Database connection information
         $dbParams = array(
             'driver' => 'pdo_mysql',
-            'user' => $db['default']['username'],
-            'password' => $db['default']['password'],
-            'host' => $db['default']['hostname'],
-            'dbname' => $db['default']['database']
+            'user' => 'dev',
+            'password' => 'G3DJ3XvQ3Q',
+            'host' => 'localhost',
+            'dbname' => 'dev'
         );
 
         $path = array(APPPATH . 'Dealscount/Models/Entities');

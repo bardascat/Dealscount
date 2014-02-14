@@ -86,6 +86,11 @@ class CI_Controller {
         $this->load->view($view, $vars);
     }
 
+    public function load_view_admin_popup($view, $vars = array()) {
+        $this->load->view('admin/header_popup', $vars);
+        $this->load->view($view, $vars);
+    }
+
     //intoarce userul curent
     public function getLoggedUser($orm = false) {
         $user = get_cookie('dl_loggedin');

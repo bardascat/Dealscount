@@ -58,6 +58,10 @@ class NeoCart {
         $this->hash = $hash;
     }
 
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\CartItem
+     */
     public function getCartItems() {
         return $this->CartItems;
     }

@@ -96,6 +96,12 @@ class Company extends AbstractEntity {
     protected $send_order = 0;
 
     /**
+     *default P = Pending
+     * @Column(type="string",nullable=true)
+     */
+     protected $status="P";
+
+    /**
      * @OneToOne(targetEntity="User",inversedBy="company")
      * @JoinColumn(name="id_user", referencedColumnName="id_user" ,onDelete="CASCADE")
      */
@@ -233,13 +239,21 @@ class Company extends AbstractEntity {
     public function setCommercial_name($commercial_name) {
         $this->commercial_name = $commercial_name;
     }
-    
+
     public function getDescription() {
         return $this->description;
     }
 
     public function setDescription($description) {
         $this->description = $description;
+        return $this;
+    }
+    public function getStatus() {
+        return $this->status;
+    }
+
+    public function setStatus($status) {
+        $this->status = $status;
         return $this;
     }
 

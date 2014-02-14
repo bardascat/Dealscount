@@ -6,10 +6,10 @@
         <meta http-equiv="Content-Language" content="ro" />
         <?php echo $this->view->getCss(); ?>
         <link href='http://fonts.googleapis.com/css?family=Oxygen&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-        <?php echo $this->view->getJs(); ?>
-        <?php echo $this->view->getNotification()?>
-        <link rel="shortcut icon"  type="image/png"  href="<?php echo base_url() ?>assets/images_fdd/favicon.ico">
-    </head>
+            <?php echo $this->view->getJs(); ?>
+            <?php echo $this->view->getNotification() ?>
+            <link rel="shortcut icon"  type="image/png"  href="<?php echo base_url() ?>assets/images_fdd/favicon.ico">
+                </head>
                 <body>
                     <div id="wrapper">
 
@@ -99,15 +99,23 @@
                                 <div class="search_bar">
                                     <form method="post" action="index.php?">
                                         <input type="text" name="query" class="query_field" value="Cauta" 
-                                                           onfocus="if (this.value == 'Cauta') {                                             this.value = '';
-                                                                   }" onblur="if (this.value == '') {                                             this.value = 'Cauta';
-                                                               }" />
+                                               onfocus="if (this.value == 'Cauta') {
+                                            this.value = '';
+                                        }" onblur="if (this.value == '') {
+                                            this.value = 'Cauta';
+                                        }" />
                                         <input type="hidden" name="search" value="true" />
                                         <input type="submit" value="" class="search_submit" />
                                     </form>
                                 </div>
 
                                 <ul class="meniu">
+                                    <a href="<?php echo base_url('cart')?>">
+                                        <li class="oferte">
+                                            <div class="icon"></div>
+                                            <span>Cos(<?php echo $this->view->getNrCartItems()?>)</span>
+                                        </li>
+                                    </a>
                                     <a href="">
                                         <li class="oferte">
                                             <div class="icon"></div>

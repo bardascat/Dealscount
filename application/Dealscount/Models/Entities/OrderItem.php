@@ -60,7 +60,7 @@ class OrderItem extends AbstractEntity {
      * C - anulat
      * @Column(type="string")
      */
-    protected $status = "W";
+    protected $status = "F";
 
 
     function __construct() {
@@ -101,7 +101,7 @@ class OrderItem extends AbstractEntity {
 
     /**
      * 
-     * @return \NeoMvc\Models\Entity\Item
+     * @return \Dealscount\Models\Entities\Item
      */
     public function getItem() {
         return $this->item;
@@ -114,7 +114,7 @@ class OrderItem extends AbstractEntity {
 
     /**
      * 
-     * @return \NeoMvc\Models\Entity\OrderVoucher
+     * @return \Dealscount\Models\Entities\OrderVoucher
      */
     public function getVouchers() {
         return $this->vouchers;

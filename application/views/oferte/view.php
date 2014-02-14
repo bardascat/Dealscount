@@ -85,8 +85,15 @@ $images = $offer->getImages();
                                                 <input type="hidden" name="id_item" value="<?php echo $offer->getIdItem() ?>"/>
                                                 <input type="hidden" name="quantity" value="1"/>
                                                 <a class="cumpara_btn" href="javascript:add_to_cart()"></a>
-                                            </form>
+                                                
+                                                 <?php if ($this->view->getUser() && $this->view->getUser()['access_level']==DLConstants::$ADMIN_LEVEL) : ?>
 
+                                                        <a href='javascript:triggerAddOfferPopup()' style='margin-left: 0px; float: left;' class='greenButton '>Adaugă la Comandă</a>
+                                                        <a class="fancybox.iframe adminAdaugaItem" id="triggerAddItemPopup" href=""></a>
+
+                                                <?php endif; ?>
+                                                    
+                                            </form>
                                         </td>
                                     </tr>
                                 </table>
@@ -189,6 +196,8 @@ $images = $offer->getImages();
 <?php if ($offer->getLongitude() && $offer->getLatitude()) { ?>
             displayMap("<?php echo $offer->getLatitude() ?>", "<?php echo $offer->getLongitude() ?>");
 <?php } ?>
+    $(".adminAdaugaItem").fancybox({width: 550, height: 250, autoResize: false, autoSize: false, openEffect: 'none', closeEffect: 'none'});
+        increment_offer_view(<?php echo $offer->getIdItem()?>);
     })
     function optBox(id) {
         var html = $('#offer_' + id).html();

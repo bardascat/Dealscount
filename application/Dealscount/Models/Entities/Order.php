@@ -109,7 +109,7 @@ class Order extends AbstractEntity {
     }
 
     public function getOrderedOn() {
-        return $this->orderedOn->format("d-m-Y");
+        return $this->orderedOn->format("d-m-Y H:i:s");
     }
 
     public function getShippedOn() {
@@ -185,7 +185,7 @@ class Order extends AbstractEntity {
 
     /**
      * 
-     * @return \NeoMvc\Models\Entity\User
+     * @return \Dealscount\Models\Entities\User
      */
     public function getUser() {
         return $this->user;
