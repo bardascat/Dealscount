@@ -18,6 +18,9 @@ class pages extends CI_Controller {
         $this->PagesModel = new Dealscount\Models\PagesModel();
     }
 
+    /**
+     * @AclResource "Admin: Editeaza Pagina"
+     */
     public function edit_page() {
         if ($this->uri->segment(4)) {
             $page = $this->PagesModel->getPageByPk($this->uri->segment(4));
@@ -25,16 +28,14 @@ class pages extends CI_Controller {
                 exit('page not found');
             $this->populate_form($page);
             $this->load_view_admin('admin/pages/edit_page', array("page" => $page));
-        }
-        else
+        } else
             exit("Page not found");
     }
-
+    
     public function updatePageSubmit() {
-        
+
         $this->PagesModel->updatePage($_POST);
-        header('Location: ' .$this->agent->referrer());
+        header('Location: ' . $this->agent->referrer());
     }
 
 }
-

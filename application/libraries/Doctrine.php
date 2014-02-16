@@ -65,7 +65,7 @@ class Doctrine {
 
         $em = EntityManager::create($dbParams, $config);
 
-      // $this->updateSchema($em);
+        //$this->updateSchema($em);
 
         return $em;
     }
@@ -95,6 +95,9 @@ class Doctrine {
             $em->getClassMetadata("Entities:SimplePage"),
             $em->getClassMetadata("Entities:ItemTags"),
             $em->getClassMetadata("Entities:NeoCart"),
+            $em->getClassMetadata("Entities:AclRole"),
+            $em->getClassMetadata("Entities:Acl"),
+            $em->getClassMetadata("Entities:AclResource"),
             $em->getClassMetadata("Entities:CartItem")
         );
         $tool->updateSchema($classes);

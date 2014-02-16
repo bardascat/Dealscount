@@ -15,8 +15,9 @@ class account extends \CI_Controller {
         $this->load_view('index/landing', array("test" => "pula"));
     }
 
+    
     public function login_submit() {
-        
+
         //userul este deja logat, ii facem redirect la homepage
         if ($this->getLoggedUser()) {
             redirect(base_url());
@@ -71,6 +72,9 @@ class account extends \CI_Controller {
         return false;
     }
 
+    /**
+     * @AclResource "User: Finalizare comanda"
+     */
     public function finalizare() {
 
         $order_code = $this->input->get("code");
@@ -99,6 +103,9 @@ class account extends \CI_Controller {
         redirect(base_url());
     }
 
+    /**
+     * @AclResource "User: Lista Comenzi"
+     */
     public function orders() {
         $user = $this->getLoggedUser(true);
         $this->view->setPage_name("Cupoanele tale");
@@ -114,6 +121,7 @@ class account extends \CI_Controller {
     /**
      * @param: $params este un array cu index 0 id-ul orderItem-ului care contine lista de vouchere
      * Genereaza un popup cu lista voucherelor
+     * @AclResource User:Descarca Vouchere
      */
     public function downloadVouchers($params) {
         $this->initHeaderFilesPopup();
@@ -129,7 +137,7 @@ class account extends \CI_Controller {
     }
 
     /**
-     * 
+     * @AclResource User:Descarca Voucher
      * @param $voucher[0] contine id-ul voucherului ce urmeaza a fi downloadat
      */
     public function download_voucher() {
@@ -152,7 +160,7 @@ class account extends \CI_Controller {
             header('Content-type: application/pdf');
             readfile($file);
         } else {
-           // daca se fac modificari la voucher, trebuie sa il regeneram
+            // daca se fac modificari la voucher, trebuie sa il regeneram
             $voucher = $this->OrderModel->getVoucherByPk($id_voucher);
             $orderItem = $voucher->getOrderItem();
             $offer = $orderItem->getItem();

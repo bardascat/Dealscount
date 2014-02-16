@@ -64,8 +64,8 @@
         </tr>
 
     </table>
-    
-       <table border='0' width='100%' cellpadding='0' cellspacing='0'>
+
+    <table border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
             <th>Pagini</th>
         </tr>
@@ -75,13 +75,13 @@
             </td>
         </tr>  
         <?php // foreach ($this->pages as $page) { ?>
-       
-            <tr>
-                <td>
-                    <a href='<?= base_url() ?>admin/pages/updatePage/<?php //$page->getId_page() ?>'><?php  //$page->getName() ?></a>
-                </td>
-            </tr>
-      
+
+        <tr>
+            <td>
+                <a href='<?= base_url() ?>admin/pages/updatePage/<?php //$page->getId_page()  ?>'><?php //$page->getName()  ?></a>
+            </td>
+        </tr>
+
         <?php // } ?>
     </table>
 
@@ -94,6 +94,12 @@
                 <a href='<?= base_url() ?>admin/index/logout'>Logout</a>
             </td>
         </tr>
+        <tr>
+            <td>
+                <a href='<?= base_url() ?>admin/acl_settings'>Permisiuni</a>
+            </td>
+        </tr>
+
 
     </table>
 

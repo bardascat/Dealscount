@@ -54,10 +54,19 @@ class User extends AbstractEntity {
     private $password;
 
     /**
-     * @Column(type="string") @var string 
-     * Level 1 admin, level 2 partener, level 3 user
+     * @Column(type="integer",nullable=true) @var string 
      */
-    protected $access_level = 3;
+    protected $id_role;
+
+    /**
+     * @ManyToOne(targetEntity="AclRole")
+     * @JoinColumn(name="id_role", referencedColumnName="id_role")
+     * */
+    private $AclRole;
+
+    /**
+     * @Column(type="integer") @var string 
+     */
     protected $fromFb = 0;
 
     /**
@@ -104,7 +113,8 @@ class User extends AbstractEntity {
         $this->operator_items->add($item);
         $item->setOperator($this);
     }
-    public function getOperatorItems(){
+
+    public function getOperatorItems() {
         return $this->operator_items;
     }
 
@@ -241,15 +251,6 @@ class User extends AbstractEntity {
         return $this;
     }
 
-    public function getAccessLevel() {
-        return $this->access_level;
-    }
-
-    public function setAccess_level($access_level) {
-        $this->access_level = $access_level;
-        return $this;
-    }
-
     public function getUsername() {
         return $this->username;
     }
@@ -265,6 +266,28 @@ class User extends AbstractEntity {
 
     public function setGender($gender) {
         $this->gender = $gender;
+        return $this;
+    }
+
+    public function getId_role() {
+        return $this->id_role;
+    }
+
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\AclRole
+     */
+    public function getAclRole() {
+        return $this->AclRole;
+    }
+
+    public function setId_role($id_role) {
+        $this->id_role = $id_role;
+        return $this;
+    }
+
+    public function setAclRole(AclRole $AclRole) {
+        $this->AclRole = $AclRole;
         return $this;
     }
 

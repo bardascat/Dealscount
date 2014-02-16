@@ -51,8 +51,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
-
-$autoload['libraries'] = array('session','doctrine','view','DLConstants','NeoMail');
+$autoload['libraries'] = array('session','doctrine','view','DLConstants','NeoMail',"Zacl");
 
 
 /*

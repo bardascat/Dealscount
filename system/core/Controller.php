@@ -67,6 +67,8 @@ class CI_Controller {
         $this->view->setUser($this->getLoggedUser());
         $this->view->setCategories($this->CategoriesModel->getRootCategories('offer', true));
         $this->view->setNotification($this->session->flashdata('notification'));
+        //$this->UserModel->setAclResources($this->zacl->generateResource());
+        
         $this->setHash();
         log_message('debug', "Controller Class Initialized");
     }

@@ -6,8 +6,6 @@
  */
 class Categories extends CI_Controller {
 
-    private $CategoriesModel;
-
     function __construct() {
         parent::__construct();
         $this->load->library('user_agent');
@@ -15,6 +13,9 @@ class Categories extends CI_Controller {
         $this->CategoriesModel = new Dealscount\Models\CategoriesModel();
     }
 
+    /**
+     * @AclResource Lista Categorii
+     */
     public function categories_list() {
         $category_type = $this->uri->segment(4);
        
@@ -26,6 +27,9 @@ class Categories extends CI_Controller {
         $this->load_view_admin('admin/categories/categories_list.php', array("menu" => $menu));
     }
 
+    /**
+     * @AclResource Admin: Adauga Categorie
+     */
     public function add_category() {
         if ($_POST['category_name']) {
 
@@ -38,6 +42,9 @@ class Categories extends CI_Controller {
         }
     }
 
+    /**
+     * @AclResource User:Sterge Categorie
+     */
     public function deleteCategory() {
         if ($_POST['id_category'])
             $this->CategoriesModel->deleteCategory($_POST['id_category']);
@@ -54,6 +61,9 @@ class Categories extends CI_Controller {
         }
     }
 
+    /**
+     * @AclResource User: Modifica Categorie
+     */
     public function updateCategory() {
 
         if ($_POST['category_name']) {

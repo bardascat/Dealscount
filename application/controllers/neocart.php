@@ -43,7 +43,7 @@ class neocart extends CI_Controller {
     }
 
     /**
-     * Payment methods
+     * @AclResource User: Comanda
      */
     public function process_payment() {
         $this->load->library('form_validation');
@@ -57,16 +57,16 @@ class neocart extends CI_Controller {
             $this->session->set_flashdata('process_payment_errors', $errors);
             redirect(base_url('cart'));
         }
-        
+
         switch ($_POST['payment_method']) {
             case "CARD": {
-                   // $this->processCardPayment();
+                    // $this->processCardPayment();
                 }break;
             case "OP": {
-                   // $this->processOpPayment();
+                    // $this->processOpPayment();
                 }break;
             case "RAMBURS": {
-                  //  $this->processRambursPayment();
+                    //  $this->processRambursPayment();
                 }break;
             case "FREE": {
                     $this->processFreePayment();
@@ -75,11 +75,11 @@ class neocart extends CI_Controller {
     }
 
     private function processFreePayment() {
-      
+
         /* @var $order Entity\Order */
         $order = $this->NeoCartModel->insertOrder($this->getLoggedUser(true), $_POST);
-        
-       
+
+
         $email = $order->getUser()->getEmail();
 
         ob_start();
@@ -90,7 +90,7 @@ class neocart extends CI_Controller {
         $vouchers = $this->NeoCartModel->generateVouchers($order);
         NeoMail::genericMailAttach($body, $subject, $email, $vouchers);
         //$this->informOwner($order);
-        
+
         redirect(base_url('account/finalizare?type=free&code=' . $order->getOrderNumber()));
         exit();
     }
@@ -224,7 +224,7 @@ class neocart extends CI_Controller {
         require_once("mailMessages/informOwner.php");
         $body = ob_get_clean();
         $subject = "A fost plasata comanda " . $order->getOrderNumber() . ' Sa curga banii !';
-        NeoMail::getInstance()->genericMail($body, $subject,$email);
+        NeoMail::getInstance()->genericMail($body, $subject, $email);
     }
 
     private function validatePaymentProcess($post, Dealscount\Models\Entities\NeoCart $cart) {

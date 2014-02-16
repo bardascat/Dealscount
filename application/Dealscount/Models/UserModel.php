@@ -31,8 +31,7 @@ class UserModel extends AbstractModel {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
             $user->setRealPassword($new_password);
-        }
-        else
+        } else
             $user->setPassword(sha1($params['password']));
 
         $this->em->persist($user);
@@ -56,8 +55,7 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
             return true;
-        }
-        else
+        } else
             return false;
     }
 
@@ -210,9 +208,8 @@ class UserModel extends AbstractModel {
         if (!$params['password']) {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
-        }
-        else
-        $user->setPassword(sha1($params['password']));
+        } else
+            $user->setPassword(sha1($params['password']));
         $user->setAccess_level(\DLConstants::$PARTNER_LEVEL);
         $user->setCompany($company);
         try {
@@ -265,6 +262,33 @@ class UserModel extends AbstractModel {
     }
 
     /*     * *********************** END PARTENER  ******************** */
+
+    public function setAclResources($resources) {
+        $resourcesRep = $this->em->getRepository("Entities:AclResource");
+        foreach ($resources as $name => $alias) {
+            $rep = $resourcesRep->findBy(array("name" => $name, "alias" => $alias));
+            if (!isset($rep[0])) {
+                $entity = new Entities\AclResource();
+                $entity->setName($name);
+                $entity->setAlias($alias);
+                $this->em->persist($entity);
+                $this->em->flush();
+            }
+        }
+    }
+
+    public function getRoles() {
+        $rep = $this->em->getRepository("Entities:AclRole");
+        $r = $rep->findAll();
+        return $r;
+    }
+
+    public function getAclResources() {
+        $rep = $this->em->getRepository("Entities:AclResource");
+        $r = $rep->findAll();
+        return $r;
+    }
+
 }
 ?>
 

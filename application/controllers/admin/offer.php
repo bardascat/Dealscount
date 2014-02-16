@@ -21,6 +21,9 @@ class offer extends CI_Controller {
         $this->OffersModel = new Dealscount\Models\OffersModel();
     }
 
+    /**
+     * @AclResource Admin:Lista Oferte
+     */
     public function offers_list() {
         if ($this->input->get('page'))
             $page = $this->input->get('page');
@@ -37,6 +40,9 @@ class offer extends CI_Controller {
         $this->load_view_admin('admin/offer/offers_list', $data);
     }
 
+    /**
+     * @AclResource Admin:Adauga Oferta
+     */
     public function add_offer() {
         $this->view->setPage_name("Adauga Oferta");
 
@@ -73,7 +79,7 @@ class offer extends CI_Controller {
             $id = $this->OffersModel->getNextId("items", "id_item");
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
-            $this->OffersModel->addOffer($_POST,$this->getLoggedUser()['id_user']);
+            $this->OffersModel->addOffer($_POST, $this->getLoggedUser()['id_user']);
 
             $this->session->set_flashdata('form_ok', 'Oferta a fost adaugata');
             $this->session->set_flashdata('notification', array("type" => "success", "html" => "Oferta a fost adaugata"));
@@ -81,6 +87,9 @@ class offer extends CI_Controller {
         }
     }
 
+    /**
+     * @AclResource Admin:Editeaza Oferta
+     */
     public function editOffer() {
         $this->view->setPage_name("Editeaza Oferta");
 
@@ -107,13 +116,13 @@ class offer extends CI_Controller {
         $this->form_validation->set_rules('categories', 'Categorie', 'callback_categories_check');
 
         if ($this->form_validation->run() == FALSE) {
-            $tree = $this->CategoriesModel->createCheckboxList("offer",$this->input->post("id_item"));
+            $tree = $this->CategoriesModel->createCheckboxList("offer", $this->input->post("id_item"));
             $item = $this->OffersModel->getOffer($this->input->post("id_item"));
             $companies = $this->UserModel->getCompaniesList();
             $this->populate_form($item);
-            
+
             $data = array(
-                'item'=>$item,
+                'item' => $item,
                 'companies' => $companies,
                 'tree' => $tree,
                 "notification" => array(
@@ -127,13 +136,16 @@ class offer extends CI_Controller {
             $id = $this->input->post('id_item');
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
-            $this->OffersModel->updateOffer($_POST,$this->getLoggedUser()['id_user']);
+            $this->OffersModel->updateOffer($_POST, $this->getLoggedUser()['id_user']);
             $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Oferta a fost salvata</div>');
             $this->session->set_flashdata('notification', array("type" => "success", "html" => "Oferta a fost salvata"));
             redirect(base_url('admin/offer/editOffer/' . $id));
         }
     }
 
+    /**
+     * @AclResource Admin:Sterge Oferta
+     */
     public function delete_offer() {
         if ($this->uri->segment(3)) {
 
@@ -166,65 +178,7 @@ class offer extends CI_Controller {
         $this->view->render('admin/offer/offers_list', true);
     }
 
-    private function load_products($file, $product_data) {
-        $this->load_lib('libs/parsecsv.lib.php');
-        $csv = new parseCSV();
 
-        $csv->offset = 0;
-        $csv->auto($file);
-
-        $product = new stdClass();
-
-        $product->name = null;
-        $product->um = null;
-        $product->price = null;
-
-        $product->tva = $product_data['tva'];
-        $product->tva_val = $product_data['tva'];
-        $product->currency = $product_data['currency'];
-
-        $nr_products = 0;
-        foreach ($csv->data as $key => $row) {
-            $product->name = $row[0];
-            $product->um = $row[1];
-            $product->price = $row[2];
-
-            if ($product->name != null && $product->um != null && $product->price != null) {
-                $nr_products++;
-                //insert product;
-
-                $this->OffersModel->insert_product($product, $this->logged_user['orm']->id_user);
-
-                $product->name = null;
-                $product->um = null;
-                $product->price = null;
-            }
-        }
-        return "Au fost inserate cu succes " . $nr_products . ' produse';
-    }
-
-    public function get_product_updates() {
-        if (isset($_POST['quantity']) && isset($_POST['price']) && isset($_POST['tva'])) {
-
-            if (!is_numeric($_POST['price'])) {
-                echo json_encode(array('type' => 'error', 'msg' => 'Pretul nu este valid'));
-                exit();
-            }
-
-            $product = new product_vo();
-            $product->currency = $_POST['currency'];
-            $product->tva = $_POST['tva'];
-            $product->price = $_POST['price'];
-            $product->quantity = $_POST['quantity'];
-
-            $product->set_internal_values();
-
-            echo json_encode($product);
-            exit();
-        }
-        else
-            echo json_encode(array('type' => 'error', 'msg' => 'ERROR: 105'));
-    }
 
     private function setOfferRules() {
         $config = array(
@@ -304,8 +258,7 @@ class offer extends CI_Controller {
         if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s must be a number');
             return FALSE;
-        }
-        else
+        } else
             return true;
     }
 
@@ -328,5 +281,5 @@ class offer extends CI_Controller {
             return false;
         }
     }
-}
 
+}

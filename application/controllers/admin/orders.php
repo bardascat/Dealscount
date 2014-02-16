@@ -19,6 +19,9 @@ class orders extends CI_Controller {
         $this->OrdersModel = new Dealscount\Models\OrdersModel();
     }
 
+    /**
+     * @AclResource Admin:Lista Comenzi
+     */
     public function orders_list() {
         if ($this->input->get('page'))
             $page = $this->input->get('page');
@@ -43,6 +46,9 @@ class orders extends CI_Controller {
         $this->view->render('admin/orders/orders_list', true);
     }
 
+    /**
+     * @AclResource Admin: Editeaza Comanda
+     */
     public function edit_order() {
 
         if ($this->uri->segment(4)) {
@@ -59,8 +65,10 @@ class orders extends CI_Controller {
         redirect($this->agent->referrer());
     }
 
+    
     /**
-     * Adauga la comanda exista inca un item
+     * Adauga la comanda exista un item
+     * @AclResource Admin: Adauga Voucher in comanda
      */
     public function addOrderItem() {
         if (isset($_POST['id_item'])) {
@@ -88,6 +96,9 @@ class orders extends CI_Controller {
         }
     }
 
+    /**
+     * @AclResource Admin: Modifica Voucher
+     */
     public function updateVoucher() {
         $id_voucher = $_POST['id_voucher'];
         $recipient_name = $_POST['recipient_name'];
@@ -105,6 +116,9 @@ class orders extends CI_Controller {
         redirect($this->agent->referrer());
     }
 
+    /**
+     * @AclResource Admin: Sterge Voucher
+     */
     public function deleteVoucher() {
         $this->OrdersModel->deleteVoucher($_POST['id_voucher']);
         $this->session->set_flashdata('notification', array("type" => "success", "html" => "Voucherul a fost sters"));
@@ -119,7 +133,7 @@ class orders extends CI_Controller {
             redirect($this->agent->referrer());
         }
     }
-
+    
     public function addOrderOfferPopup() {
         $data['id_item'] = $this->uri->segment(4);
         $data['quantity'] = $this->uri->segment(5);
@@ -185,6 +199,9 @@ class orders extends CI_Controller {
         }
     }
 
+    /**
+     * @AclResource Admin:Sterge Voucher
+     */
     public function deleteOrderItem() {
         if ($this->uri->segment(4)) {
             $this->OrdersModel->deleteOrderItem($this->uri->segment(4));
@@ -194,6 +211,9 @@ class orders extends CI_Controller {
         redirect($this->agent->referrer());
     }
 
+    /**
+     * @AclResource Admin:Sterge Comanda
+     */
     public function delete_order() {
         if ($this->uri->segment(4)) {
             $id_order = $this->uri->segment(4);
