@@ -46,6 +46,47 @@ class users extends CI_Controller {
         $this->load_view_admin('admin/users/add_user', array("roles" => $roles));
     }
 
+    public function add_user_submit() {
+        $AclModel = new Dealscount\Models\AclModel();
+        $roles = $AclModel->getRoles();
+
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+        $this->form_validation->set_rules('username', 'Username', 'required');
+        $this->form_validation->set_rules('password', 'Password', 'required');
+
+        if ($this->form_validation->run() == FALSE) {
+            $data = array(
+                "notification" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "ui-state-error ui-corner-all"
+                )
+            );
+            $data['roles']=$roles;
+            $this->load_view_admin('admin/users/add_user',$data);
+        } else {
+            try {
+                $status = $this->UserModel->createUser($_POST);
+            } catch (\Exception $e) {
+                $status = false;
+            }
+            if (!$status) {
+                $data = array(
+                    "notification" => array(
+                        "type" => "form_notification",
+                        "message" => "Datele invalide, emailul sau username-ul deja au fost utilizate",
+                        "cssClass" => "ui-state-error ui-corner-all"
+                    )
+                );
+                $data['roles']=$roles;
+                $this->load_view_admin('admin/users/add_user',$data);
+                exit();
+            }
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Userul a fost creat"));
+            redirect(base_url('admin/users/users_list'));
+        }
+    }
+
     public function edit_user() {
         $this->view->setPage_name("Editeaza utilizator");
         $user = $this->UserModel->getUserByPk($this->uri->segment(4), true);

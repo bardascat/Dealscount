@@ -102,10 +102,11 @@ class View {
     public function getNotification() {
         if (!$this->notification)
             return false;
+        $text=$this->notification['html'];
         $js = "var n=noty({
             layout: 'topCenter',
             type: '" . $this->notification['type'] . "',
-            text: '" . $this->notification['html'] . "',
+            text: '".trim(preg_replace('/\s+/', ' ',$text))."',
             dismissQueue: true, // If you want to use queue feature set this true
             timeout: 3000,
             });";

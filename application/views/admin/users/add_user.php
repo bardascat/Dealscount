@@ -16,7 +16,9 @@
             <td class='content index'>
                 <!-- content -->
 
-
+                <div>
+                    <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
+                </div>
                 <div id="submit_btn_right">
 
                 </div>
@@ -25,11 +27,11 @@
                         <li><a href="#tabs-1">Detalii Utilizator</a></li>
                     </ul>
                     <div id="tabs-1">
-                        <form method="post" action="<?php echo base_url() ?>admin/users/edit_user_submit"  enctype="multipart/form-data">
+                        <form method="post" action="<?php echo base_url() ?>admin/users/add_user_submit"  enctype="multipart/form-data">
                             <table  border='0' width='100%' id='add_table'>
                                 <tr>
                                     <td colspan="2" style='padding-bottom: 15px;'>
-                                        <input style="float: right; width: 100px;" type="submit" value="Salveaza"/>
+                                        <input style="float: right; width: 100px;" type="submit" value="Adauga"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -37,7 +39,7 @@
                                         <label>Nume </label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='lastname'/>
+                                        <input type='text'value="<?php echo set_value('lastname') ?>" name='lastname'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -45,7 +47,18 @@
                                         <label>Prenume</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='firstname'/>
+                                        <input type='text'value="<?php echo set_value('firstname') ?>" name='firstname'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>Sex</label>
+                                    </td>
+                                    <td class='input' >
+                                        <select name="gender">
+                                            <option vlaue="M">M</option>
+                                            <option vlaue="F">F</option>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -54,9 +67,12 @@
                                     </td>
                                     <td class='input' >
                                         <select name='id_role'>
-                                            <?php foreach ($roles as $role) { ?>
+                                            <?php foreach ($roles as $role) {
+                                                if ($role->getName() == "guest")
+                                                    continue;
+                                                ?>
                                                 <option value='<?php echo $role->getId_role() ?>'><?php echo $role->getName() ?></option>
-                                            <?php } ?>
+<?php } ?>
                                         </select>
                                     </td>
                                 </tr>
@@ -65,7 +81,7 @@
                                         <label>Email(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='email'/>
+                                        <input type='text' value="<?php echo set_value('email') ?>" name='email'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -73,7 +89,7 @@
                                         <label>Username(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='username'/>
+                                        <input type='text' value="<?php echo set_value('username') ?>" name='username'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -81,15 +97,15 @@
                                         <label>Telefon</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='phone'/>
+                                        <input type='text' value="<?php echo set_value('phone') ?>" name='phone'/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class='label'>
-                                        <label>Dată creare</label>
+                                        <label>Password(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input disabled="" type='text' name='created_date'/>
+                                        <input type='password' name='password'/>
                                     </td>
                                 </tr>
                             </table>

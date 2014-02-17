@@ -26,17 +26,24 @@ class UserModel extends AbstractModel {
             throw new \Exception("Adresa email deja folosita", 1);
         }
         $user = new Entities\User();
-
+        $user->postHydrate($params);
+        $role=$this->em->find("Entities:AclRole", $params['id_role']);
+        $user->setAclRole($role);
         if (!$params['password']) {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
             $user->setRealPassword($new_password);
-        }
-        else
+        } else
             $user->setPassword(sha1($params['password']));
 
-        $this->em->persist($user);
-        $this->em->flush();
+        try {
+            $this->em->persist($user);
+            $this->em->flush();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            exit();
+            return false;
+        }
         // $this->sendNotification($user, $type);
         //  $this->subscribeUser($user);
         return $user;
@@ -56,8 +63,7 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
             return true;
-        }
-        else
+        } else
             return false;
     }
 
@@ -219,8 +225,7 @@ class UserModel extends AbstractModel {
         if (!$params['password']) {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
-        }
-        else
+        } else
             $user->setPassword(sha1($params['password']));
         $roleRep = $this->em->getRepository("Entities:AclRole");
         $r = $roleRep->findBy(array("name" => \DLConstants::$PARTNER_ROLE));
