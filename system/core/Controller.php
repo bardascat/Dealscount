@@ -62,14 +62,9 @@ class CI_Controller {
         $this->load = & load_class('Loader', 'core');
 
         $this->load->initialize();
-        $this->UserModel = new \Dealscount\Models\UserModel();
-        $this->CategoriesModel = new Dealscount\Models\CategoriesModel();
-        $this->view->setUser($this->getLoggedUser());
-        $this->view->setCategories($this->CategoriesModel->getRootCategories('offer', true));
-        $this->view->setNotification($this->session->flashdata('notification'));
-        //$this->UserModel->setAclResources($this->zacl->generateResource());
+        $this->checkPermission();
+        $this->initDependencies();
         
-        $this->setHash();
         log_message('debug', "Controller Class Initialized");
     }
 
@@ -136,13 +131,7 @@ class CI_Controller {
     }
 
     public function setAccessLevel($level) {
-
-        $user = $this->getLoggedUser();
-        if (!$user)
-            redirect(base_url());
-        else
-        if ($user['access_level'] > $level)
-            redirect(base_url());
+        echo 'Access level';
     }
 
     protected function upload_images($upload_images, $path, $Entity = "Dealscount\Models\Entities\ItemImage", $resize = true) {
@@ -232,6 +221,51 @@ class CI_Controller {
         $this->view->setPopulate_form($js);
     }
 
+    private function initDependencies() {
+        $this->UserModel = new \Dealscount\Models\UserModel();
+        $this->CategoriesModel = new Dealscount\Models\CategoriesModel();
+        $this->view->setUser($this->getLoggedUser());
+        $this->view->setCategories($this->CategoriesModel->getRootCategories('offer', true));
+        $this->view->setNotification($this->session->flashdata('notification'));
+        $this->generateAclResources();
+        $this->setHash();
+    }
+
+    private function checkPermission() {
+
+        $user = $this->getLoggedUser();
+        if (!$user)
+            $role = DLConstants::$DEFAULT_ROLE;
+        else
+            $role = $user['role'];
+
+        $controller = $this->router->class;
+        $method = $this->router->method;
+
+         
+        if ($this->uri->segment(1) == "admin") {
+            //validam daca are acces in admin
+            if (!$this->zacl->check_acl('admin', $role)) {
+                redirect(base_url('util/permission_denied'));
+            }
+            //verificam daca are acces pe metoda
+            $resource = 'admin/' . $controller . '/' . $method;
+            
+            if (!$this->zacl->check_acl($resource, $role)) {
+                redirect(base_url('util/permission_denied'));
+            }
+        } else {
+            $resource = $controller . '/' . $method;
+            if (!$this->zacl->check_acl($resource,$role)) {
+                redirect(base_url('util/permission_denied'));
+            }
+        }
+    }
+
+    private function generateAclResources(){
+        $aclModel=new Dealscount\Models\AclModel();
+        //$aclModel->setAclResources($this->zacl->generateResource());
+    }
 }
 
 // END Controller class

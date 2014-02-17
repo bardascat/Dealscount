@@ -3,9 +3,6 @@
         $("#tabs").tabs();
         $("#tabs_add").tabs();
         $("input[type=submit]").button();
-
-
-
         $(".update_category_trigger").fancybox({
             maxHeight: 500,
             height: 500,
@@ -20,8 +17,9 @@
 <style>
     .acl_ul{
         list-style-type: none;
+        margin-top:10px;
     }
-     .acl_ul li{margin-bottom: 5px;}
+    .acl_ul li{margin-bottom: 5px;}
 </style>
 <div id="admin_content">
 
@@ -40,7 +38,7 @@
                                 Seteaza permisiun pentru
                             </td>
                             <td>
-                                <form method="post" id="role_form" action="<?php echo base_url('admin/acl_settings/load_acl') ?>">
+                                <form method="get" id="role_form" action="<?php echo base_url('admin/acl_settings/load_acl') ?>">
                                     <select name="role" onchange="$('#role_form').submit()">
                                         <option value="">Alege rol</option>
                                         <?php foreach ($roles as $role) { ?>
@@ -54,24 +52,35 @@
                     </table>
 
                     <?php if (isset($aclResources)) { ?>
-                        <ul class="acl_ul">
-                            <?php foreach ($aclResources as $aclResource) { ?>
-                                <li>
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <input type="checkbox" name="acl_allow"/>
-                                            </td>
-                                            <td>
-                                                <?php echo $aclResource->getAlias() ?> - <span style="font-size: 11px; color: #ababab"><?php echo $aclResource->getName()?></span>
-                                            </td>
-                                        </tr>
-                                    </table>
+                        <form method="post" style="margin-top: 10px;" action="<?php echo base_url('admin/acl_settings/set_acl') ?>">
+                            <table>
+                                <tr>
+                                    <td onclick="$('input:checkbox').attr('checked','checked')"><a href="#">Check All</a></td>
+                                    <td style="padding-left: 20px;" onclick="$('input:checkbox').removeAttr('checked')"><a href="#">Uncheck All</a></td>
+                                </tr>
+                            </table>
+                            <input type="hidden" name="id_role" value="<?php echo $selected_role?>"/>
+                            <ul class="acl_ul">
+                                <?php foreach ($aclResources as $aclResource) { ?>
+                                    <li>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <input id="<?php echo $aclResource->getId_resource()?>" <?php if (isset($aclResource->checked)) echo 'checked'; ?> type="checkbox" value="<?php echo $aclResource->getId_resource()?>" name="acl_rule[]"/>
+                                                </td>
+                                                <td>
+                                                    <label for="<?php echo $aclResource->getId_resource()?>"><?php echo $aclResource->getAlias() ?> - <span style="font-size: 11px; color: #ababab"><?php echo $aclResource->getName() ?></span></label>
+                                                </td>
+                                            </tr>
+                                        </table>
 
-                                </li>
-                            <?php } ?>
-                        </ul>
-
+                                    </li>
+                                <?php } ?>
+                            </ul>
+                             <div style="padding:20px; padding-left: 0px;">
+                                <input  type="submit" value="Salveaza" />
+                            </div>
+                        </form>
                     <?php } ?>
 
                 </div>

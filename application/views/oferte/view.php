@@ -86,7 +86,7 @@ $images = $offer->getImages();
                                                 <input type="hidden" name="quantity" value="1"/>
                                                 <a class="cumpara_btn" href="javascript:add_to_cart()"></a>
                                                 
-                                                 <?php if ($this->view->getUser() && $this->view->getUser()['access_level']==DLConstants::$ADMIN_LEVEL) : ?>
+                                                 <?php if ($this->view->getUser() && $this->view->getUser()['role']==DLConstants::$ADMIN_ROLE) : ?>
 
                                                         <a href='javascript:triggerAddOfferPopup()' style='margin-left: 0px; float: left;' class='greenButton '>Adaugă la Comandă</a>
                                                         <a class="fancybox.iframe adminAdaugaItem" id="triggerAddItemPopup" href=""></a>

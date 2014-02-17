@@ -9,12 +9,11 @@ class Categories extends CI_Controller {
     function __construct() {
         parent::__construct();
         $this->load->library('user_agent');
-        $this->setAccessLevel(DLConstants::$ADMIN_LEVEL);
         $this->CategoriesModel = new Dealscount\Models\CategoriesModel();
     }
 
     /**
-     * @AclResource Lista Categorii
+     * @AclResource Admin: Categorii: Lista Categorii
      */
     public function categories_list() {
         $category_type = $this->uri->segment(4);
@@ -28,7 +27,7 @@ class Categories extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin: Adauga Categorie
+     * @AclResource Admin: Categorii: Adauga Categorie
      */
     public function add_category() {
         if ($_POST['category_name']) {
@@ -43,7 +42,7 @@ class Categories extends CI_Controller {
     }
 
     /**
-     * @AclResource User:Sterge Categorie
+     * @AclResource Admin: Categorii: Sterge Categorie
      */
     public function deleteCategory() {
         if ($_POST['id_category'])
@@ -62,7 +61,7 @@ class Categories extends CI_Controller {
     }
 
     /**
-     * @AclResource User: Modifica Categorie
+     * @AclResource Admin: Categorii: Modifica Categorie
      */
     public function updateCategory() {
 

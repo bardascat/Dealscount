@@ -11,30 +11,33 @@
     <table id='main_table' border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
 
-            <? require_once('views/admin/left_menu.php'); ?> 
+            <?php $this->load->view('admin/left_menu'); ?>
 
             <td class='content index'>
                 <!-- content -->
 
-                <form method="post" action="<?= URL ?>admin/users/editUser"  enctype="multipart/form-data">
-                    <input type="hidden" name="id_user" value="<?= $this->user->getId_user() ?>"/>
-                    <div id="submit_btn_right">
-                     
-                    </div>
-                    <div id="tabs">
-                        <ul>
-                            <li><a href="#tabs-1">Detalii Utilizator</a></li>
-                            <li><a href="#tabs-2">Detalii Adrese</a></li>
-                        </ul>
-                        <div id="tabs-1">
 
+                <div id="submit_btn_right">
+
+                </div>
+                <div id="tabs">
+                    <ul>
+                        <li><a href="#tabs-1">Detalii Utilizator</a></li>
+                    </ul>
+                    <div id="tabs-1">
+                        <form method="post" action="<?php echo base_url() ?>admin/users/edit_user_submit"  enctype="multipart/form-data">
                             <table  border='0' width='100%' id='add_table'>
+                                <tr>
+                                    <td colspan="2" style='padding-bottom: 15px;'>
+                                        <input style="float: right; width: 100px;" type="submit" value="Salveaza"/>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td class='label'>
                                         <label>Nume </label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='nume'/>
+                                        <input type='text' name='lastname'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -42,7 +45,19 @@
                                         <label>Prenume</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='prenume'/>
+                                        <input type='text' name='firstname'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>Rol</label>
+                                    </td>
+                                    <td class='input' >
+                                        <select name='id_role'>
+                                            <?php foreach ($roles as $role) { ?>
+                                                <option value='<?php echo $role->getId_role() ?>'><?php echo $role->getName() ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -55,10 +70,10 @@
                                 </tr>
                                 <tr>
                                     <td class='label'>
-                                        <label>Parola(*)</label>
+                                        <label>Username(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='real_password'/>
+                                        <input type='text' name='username'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -78,29 +93,9 @@
                                     </td>
                                 </tr>
                             </table>
-
-                        </div>
-                        <div id="tabs-2">
-                            <table  border='0' width='100%' id='add_table'>
-                                <tr>
-                                    <? $shippingAddresses = $this->user->getShippingAddresses() ?>
-                                    <td class='label'>
-                                        <h3>Adrese de livrare</h3>
-                                        <?
-                                        foreach ($shippingAddresses as $address): ?>
-                                        
-                                        <div style="margin-top: 50px;">
-                                            <?=$address->getFullAddress().', Judet: '.$address->getShipping_district().'<br/> Telefon:'.$address->getShipping_phone().'<br/> CNP:'.$address->getShipping_cnp()?>
-                                        </div>
-                                            
-                                        <? endforeach; ?>
-                                    </td>
-
-                                </tr>
-                            </table>
-                        </div>
-
+                        </form>
                     </div>
+                </div>
                 </form>
                 <!-- end content -->
             </td>

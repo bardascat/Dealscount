@@ -11,7 +11,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 class User extends AbstractEntity {
 
     /**
-     *
      * @Id  @Column(type="integer")
      * @GeneratedValue
      */
@@ -109,7 +108,7 @@ class User extends AbstractEntity {
         $this->invoices = new ArrayCollection();
     }
 
-    public function addIOperatorItem(Item $item) {
+    public function addOperatorItem(Item $item) {
         $this->operator_items->add($item);
         $item->setOperator($this);
     }
@@ -196,6 +195,10 @@ class User extends AbstractEntity {
             foreach ($extra as $key => $value)
                 $iteration[$key] = $value;
         }
+        
+        //adaugam rolul
+        $role=$this->getAclRole();
+        $iteration[$role->getId_role()] = $role->getId_role();
         return $iteration;
     }
 
@@ -272,7 +275,7 @@ class User extends AbstractEntity {
     public function getId_role() {
         return $this->id_role;
     }
-
+    
     /**
      * 
      * @return \Dealscount\Models\Entities\AclRole

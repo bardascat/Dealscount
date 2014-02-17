@@ -31,7 +31,8 @@ class UserModel extends AbstractModel {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
             $user->setRealPassword($new_password);
-        } else
+        }
+        else
             $user->setPassword(sha1($params['password']));
 
         $this->em->persist($user);
@@ -55,7 +56,8 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
             return true;
-        } else
+        }
+        else
             return false;
     }
 
@@ -90,12 +92,19 @@ class UserModel extends AbstractModel {
         NeoMail::getInstance()->genericMail($body, $subject, $email);
     }
 
-    public function updateUser($post, $user) {
-
-        $user->postHydrate($post);
-        $this->em->persist($user);
-        $this->em->flush();
-        return true;
+    public function updateUser($post) {
+        $user = $this->getUserByPk($post['id_user']);
+        $role = $this->em->find("Entities:AclRole", $post['id_role']);
+        try {
+            $user->setAclRole($role);
+            $user->postHydrate($post);
+            $this->em->persist($user);
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $e = explode('Integrity', $e->getMessage());
+            return $e[1];
+        }
+        return 1;
     }
 
     public function updateCompanyDetails($post) {
@@ -113,8 +122,6 @@ class UserModel extends AbstractModel {
      * @return Entities:User
      */
     public function find_user($email, $password = false) {
-
-
         $qb = $this->em->createQueryBuilder();
         $qb->select("u")
                 ->from("Entities:User", 'u')
@@ -155,15 +162,19 @@ class UserModel extends AbstractModel {
     }
 
     public function deleteUser($id_user) {
-
-        $dql = $this->em->createQuery("delete from Entities:User u where u.id_user='$id_user'");
-        $dql->execute();
+        try {
+            $dql = $this->em->createQuery("delete from Entities:User u where u.id_user='$id_user'");
+            $dql->execute();
+        } catch (\Exception $e) {
+            return false;
+        }
         return true;
     }
 
     public function getUsers($page, $limit = 30) {
         try {
-            $query = $this->em->createQuery("select users from Entities:User  users where users.access_level=3  order by users.id_user desc")
+            $query = $this->em->createQuery("select users from Entities:User  users join users.AclRole r where r.name!=:role_name order by users.id_user desc")
+                    ->setParameter("role_name", \DLConstants::$PARTNER_ROLE)
                     ->setFirstResult(( $page * $limit) - $limit)
                     ->setMaxResults($limit);
             $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
@@ -208,9 +219,17 @@ class UserModel extends AbstractModel {
         if (!$params['password']) {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
-        } else
+        }
+        else
             $user->setPassword(sha1($params['password']));
-        $user->setAccess_level(\DLConstants::$PARTNER_LEVEL);
+        $roleRep = $this->em->getRepository("Entities:AclRole");
+        $r = $roleRep->findBy(array("name" => \DLConstants::$PARTNER_ROLE));
+        if (!isset($r[0]))
+            exit('No partner role defined');
+        else
+            $partner = $r[0];
+
+        $user->setAclRole($partner);
         $user->setCompany($company);
         try {
             $this->em->persist($user);
@@ -224,10 +243,10 @@ class UserModel extends AbstractModel {
     }
 
     public function getCompaniesList() {
-        $partnerRep = $this->em->getRepository("Entities:User");
-        $partnersList = $partnerRep->findBy(array("access_level" => \DLConstants::$PARTNER_LEVEL), array("id_user" => "desc"));
-
-        return $partnersList;
+        $query = $this->em->createQuery('select u from Entities:User u join u.AclRole r where r.name=:role_name');
+        $query->setParameter(":role_name", \DLConstants::$PARTNER_ROLE);
+        $r = $query->getResult();
+        return $r;
     }
 
     /**
@@ -236,8 +255,10 @@ class UserModel extends AbstractModel {
      * @return \NeoMvc\Models\Entity\User
      */
     public function getCompanyByPk($id_company) {
-        $partnerRep = $this->em->getRepository("Entities:User");
-        $partner = $partnerRep->findBy(array("access_level" => 2, "id_user" => $id_company));
+        $query = $this->em->createQuery('select u from Entities:User u join u.AclRole r where r.name=:role_name and u.id_user=:id_user');
+        $query->setParameter(":role_name", \DLConstants::$PARTNER_ROLE);
+        $query->setParameter(":id_user", $id_company);
+        $partner = $query->getResult();
         if (isset($partner[0]))
             return $partner[0];
         else
@@ -262,33 +283,6 @@ class UserModel extends AbstractModel {
     }
 
     /*     * *********************** END PARTENER  ******************** */
-
-    public function setAclResources($resources) {
-        $resourcesRep = $this->em->getRepository("Entities:AclResource");
-        foreach ($resources as $name => $alias) {
-            $rep = $resourcesRep->findBy(array("name" => $name, "alias" => $alias));
-            if (!isset($rep[0])) {
-                $entity = new Entities\AclResource();
-                $entity->setName($name);
-                $entity->setAlias($alias);
-                $this->em->persist($entity);
-                $this->em->flush();
-            }
-        }
-    }
-
-    public function getRoles() {
-        $rep = $this->em->getRepository("Entities:AclRole");
-        $r = $rep->findAll();
-        return $r;
-    }
-
-    public function getAclResources() {
-        $rep = $this->em->getRepository("Entities:AclResource");
-        $r = $rep->findAll();
-        return $r;
-    }
-
 }
 ?>
 

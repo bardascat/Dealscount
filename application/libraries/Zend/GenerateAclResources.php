@@ -53,7 +53,8 @@ class GenerateAclResources {
 
     public function buildActionArrays() {
         if (count($this->arrControllers) > 0) {
-
+            
+            $this->acl['admin']='Modul Administrare';
             foreach ($this->arrControllers as $strModule => $arrController) {
 
                 foreach ($arrController as $strController) {
@@ -88,8 +89,8 @@ class GenerateAclResources {
             }
         }
         //modules
-        $this->acl['admin']='admin';
-        $this->acl['frontend']='frontend';
+        
+       
         return $this->acl;
     }
 

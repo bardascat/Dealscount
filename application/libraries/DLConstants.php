@@ -34,12 +34,13 @@ class DLConstants {
         "assets/js/source_fancy/jquery.fancybox.css",
         "assets/js/custom_alert/customAlert.css"
     );
+    public static $DEFAULT_ROLE = "guest";
+    public static $PARTNER_ROLE = "partener";
+    public static $ADMIN_ROLE = "admin";
+    
     public static $WEBSITE = "dev.getadeal.ro";
     public static $WEBSITE_COMMERCIAL_NAME = "getadeal.ro";
     public static $OFFICE_EMAIl = "office@getadeal.ro";
-    public static $ADMIN_LEVEL = 1;
-    public static $PARTNER_LEVEL = 2;
-    public static $USER_LEVEL = 3;
     //PAYMENT METHODS
     public static $PAYMENT_METHOD_CARD = 'CARD';
     public static $PAYMENT_METHOD_OP = 'OP';

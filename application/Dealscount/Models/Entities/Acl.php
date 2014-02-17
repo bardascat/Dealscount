@@ -64,6 +64,10 @@ class Acl extends AbstractEntity {
         return $this->role;
     }
 
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\AclResource
+     */
     public function getResource() {
         return $this->resource;
     }

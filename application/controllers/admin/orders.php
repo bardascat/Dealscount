@@ -13,14 +13,13 @@ class orders extends CI_Controller {
     function __construct() {
         parent::__construct();
         $this->load->library('user_agent');
-        $this->setAccessLevel(DLConstants::$ADMIN_LEVEL);
         $this->view->setPage_name("Lista comenzi");
         $this->OffersModel = new \Dealscount\Models\OffersModel();
         $this->OrdersModel = new Dealscount\Models\OrdersModel();
     }
 
     /**
-     * @AclResource Admin:Lista Comenzi
+     * @AclResource Admin: Comenzi: Lista Comenzi
      */
     public function orders_list() {
         if ($this->input->get('page'))
@@ -47,7 +46,7 @@ class orders extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin: Editeaza Comanda
+     * @AclResource Admin: Comenzi: Editeaza Comanda
      */
     public function edit_order() {
 
@@ -68,7 +67,7 @@ class orders extends CI_Controller {
     
     /**
      * Adauga la comanda exista un item
-     * @AclResource Admin: Adauga Voucher in comanda
+     * @AclResource Admin: Comenzi: Adauga Voucher in comanda
      */
     public function addOrderItem() {
         if (isset($_POST['id_item'])) {
@@ -97,7 +96,7 @@ class orders extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin: Modifica Voucher
+     * @AclResource Admin: Comenzi: Modifica Voucher
      */
     public function updateVoucher() {
         $id_voucher = $_POST['id_voucher'];
@@ -117,7 +116,7 @@ class orders extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin: Sterge Voucher
+     * @AclResource Admin: Comenzi: Sterge Voucher
      */
     public function deleteVoucher() {
         $this->OrdersModel->deleteVoucher($_POST['id_voucher']);
@@ -200,7 +199,7 @@ class orders extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin:Sterge Voucher
+     * @AclResource Admin: Comenzi: Sterge Voucher
      */
     public function deleteOrderItem() {
         if ($this->uri->segment(4)) {
@@ -212,7 +211,7 @@ class orders extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin:Sterge Comanda
+     * @AclResource Admin: Comenzi: Sterge Comanda
      */
     public function delete_order() {
         if ($this->uri->segment(4)) {

@@ -15,7 +15,6 @@ class account extends \CI_Controller {
         $this->load_view('index/landing', array("test" => "pula"));
     }
 
-    
     public function login_submit() {
 
         //userul este deja logat, ii facem redirect la homepage
@@ -52,14 +51,14 @@ class account extends \CI_Controller {
     }
 
     private function login_user($email, $password = false) {
-        /* @var   $user User  */
+        /* @var  $user \Dealscount\Models\Entities\User  */
         if (!$password)
             $user = $this->UserModel->checkEmail($email);
         else
-            $user = $this->UserModel->find_user($email, md5($password));
-
+            $user = $this->UserModel->find_user($email, sha1($password));
+       
         if ($user) {
-            $cookie = array('id_user' => $user->getId_user(), 'email' => $user->getEmail(), 'access_level' => $user->getAccessLevel(), "gender" => $user->getGender(), "firstname" => $user->getFirstname(), "lastname" => $user->getLastname(), "username" => $user->getUsername());
+            $cookie = array('id_user' => $user->getId_user(), 'email' => $user->getEmail(), 'role' => $user->getAclRole()->getName(), "gender" => $user->getGender(), "firstname" => $user->getFirstname(), "lastname" => $user->getLastname(), "username" => $user->getUsername());
             $cookie = array(
                 'name' => 'dl_loggedin',
                 'value' => serialize($cookie),
@@ -121,7 +120,7 @@ class account extends \CI_Controller {
     /**
      * @param: $params este un array cu index 0 id-ul orderItem-ului care contine lista de vouchere
      * Genereaza un popup cu lista voucherelor
-     * @AclResource User:Descarca Vouchere
+     * @AclResource User: Descarca Vouchere
      */
     public function downloadVouchers($params) {
         $this->initHeaderFilesPopup();
@@ -137,7 +136,7 @@ class account extends \CI_Controller {
     }
 
     /**
-     * @AclResource User:Descarca Voucher
+     * @AclResource User: Descarca Voucher
      * @param $voucher[0] contine id-ul voucherului ce urmeaza a fi downloadat
      */
     public function download_voucher() {

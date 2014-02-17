@@ -5,27 +5,27 @@
  */
 class users extends CI_Controller {
 
-   
-
     function __construct() {
         parent::__construct();
         $this->load->library('user_agent');
         $this->load->library('form_validation');
-        $this->setAccessLevel(DLConstants::$ADMIN_LEVEL);
     }
 
     /**
-     * Utilizatori
+     * @AclResource Admin: Users: Lista Utilizatori
      */
     public function users_list() {
         if (isset($_GET['page']))
             $page = $_GET['page'];
         else
             $_GET['page'] = 1;
-        $this->view->pageName = "Lista utilizatori";
+        $this->view->setPage_name("Lista utilizatori");
+
         $users = $this->UserModel->getUsers($_GET['page']);
-        $this->view->users = $users;
-        $this->view->render("admin/users/users_list", true);
+        $data = array(
+            "users" => $users
+        );
+        $this->load_view_admin("admin/users/users_list", $data);
     }
 
     public function searchUser() {
@@ -39,16 +39,35 @@ class users extends CI_Controller {
         $this->view->render("admin/users/users_list", true);
     }
 
-    public function view_user() {
-        $this->view->pageName = "Utilizatori";
-        $this->view->user = $this->UserModel->getUserByPk($param[0], true);
+    public function add_user() {
+        $AclModel = new Dealscount\Models\AclModel();
+        $roles = $AclModel->getRoles();
+        $this->view->setPage_name("Adauga Utilizator");
+        $this->load_view_admin('admin/users/add_user', array("roles" => $roles));
+    }
 
-        $this->populate_form($this->view->user);
-        $this->view->render("admin/users/view_user", true);
+    public function edit_user() {
+        $this->view->setPage_name("Editeaza utilizator");
+        $user = $this->UserModel->getUserByPk($this->uri->segment(4), true);
+        $this->populate_form($user);
+        $AclModel = new Dealscount\Models\AclModel();
+        $roles = $AclModel->getRoles();
+        $this->load_view_admin("admin/users/edit_user", array("user" => $user, "roles" => $roles));
+    }
+
+    public function edit_user_submit() {
+
+        $id_user = $this->input->post("id_user");
+        $status = $this->UserModel->updateUser($_POST);
+        if ($status == 1)
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Userul a fost salvat cu success"));
+        else
+            $this->session->set_flashdata('notification', array("type" => "error", "html" => "Datele nu sunt corecte: " . str_replace('"', '', str_replace("'", '', $status))));
+        redirect($this->agent->referrer());
     }
 
     /**
-     * Companii
+     * @AclResource Admin: Partener: Lista Parteneri
      */
     public function company_list() {
         $this->view->setPage_name("Lista parteneri");
@@ -57,6 +76,9 @@ class users extends CI_Controller {
         $this->load_view_admin("admin/users/company/company_list", array("companies" => $companies));
     }
 
+    /**
+     * @AclResource Admin: Partener: Adauga Partener
+     */
     public function add_company() {
         $this->view->setPage_name("Adauga Partener");
         $this->load_view_admin('admin/users/company/add_company');
@@ -82,6 +104,7 @@ class users extends CI_Controller {
             try {
                 $user = $this->UserModel->createPartner($_POST);
                 $this->session->set_flashdata("form_message", "Partenerul a fost inserat");
+                $this->session->set_flashdata('notification', array("type" => "success", "html" => "Partnerul a fost salvat"));
                 redirect(base_url('admin/users/company_list'));
             } catch (\Exception $e) {
                 //email invalid
@@ -97,6 +120,9 @@ class users extends CI_Controller {
         }
     }
 
+    /**
+     * @AclResource Admin: Partener: Editeaza Parteneri
+     */
     public function edit_company() {
         $id_user = $this->uri->segment(4);
 
@@ -155,11 +181,16 @@ class users extends CI_Controller {
         }
     }
 
-    public function delete_user($params) {
-
-        $this->UserModel->deleteUser($params[0]);
-
-        header('Location:' . base_url('admin/users'));
+    /**
+     * @AclResource Admin: Partener: Sterge Partener
+     */
+    public function delete_user() {
+        $result = $this->UserModel->deleteUser($this->uri->segment(4));
+        if ($result)
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Userul a fost sters cu success"));
+        else
+            $this->session->set_flashdata('notification', array("type" => "error", "html" => "Userul nu a fost sters din motive de integritate a datelor."));
+        redirect($this->agent->referrer());
     }
 
     private function validate_company() {
@@ -315,4 +346,5 @@ class users extends CI_Controller {
     }
 
 }
+
 ?>

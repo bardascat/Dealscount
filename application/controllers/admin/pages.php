@@ -13,13 +13,11 @@ class pages extends CI_Controller {
         parent::__construct();
         $this->load->library('user_agent');
         $this->load->library('form_validation');
-
-        $this->setAccessLevel(DLConstants::$ADMIN_LEVEL);
         $this->PagesModel = new Dealscount\Models\PagesModel();
     }
 
     /**
-     * @AclResource "Admin: Editeaza Pagina"
+     * @AclResource "Admin: Pagini: Editeaza pagini statice"
      */
     public function edit_page() {
         if ($this->uri->segment(4)) {

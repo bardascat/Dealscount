@@ -43,7 +43,7 @@ class neocart extends CI_Controller {
     }
 
     /**
-     * @AclResource User: Comanda
+     * @AclResource User: Genereaza Comanda
      */
     public function process_payment() {
         $this->load->library('form_validation');

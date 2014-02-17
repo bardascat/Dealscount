@@ -17,12 +17,11 @@ class offer extends CI_Controller {
         parent::__construct();
         $this->load->library('user_agent');
         $this->load->library('form_validation');
-        $this->setAccessLevel(DLConstants::$ADMIN_LEVEL);
         $this->OffersModel = new Dealscount\Models\OffersModel();
     }
 
     /**
-     * @AclResource Admin:Lista Oferte
+     * @AclResource Admin: Oferte: Lista Oferte
      */
     public function offers_list() {
         if ($this->input->get('page'))
@@ -41,7 +40,7 @@ class offer extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin:Adauga Oferta
+     * @AclResource Admin: Oferte: Adauga Oferta
      */
     public function add_offer() {
         $this->view->setPage_name("Adauga Oferta");
@@ -88,7 +87,7 @@ class offer extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin:Editeaza Oferta
+     * @AclResource Admin: Oferte: Editeaza Oferta
      */
     public function editOffer() {
         $this->view->setPage_name("Editeaza Oferta");
@@ -144,7 +143,7 @@ class offer extends CI_Controller {
     }
 
     /**
-     * @AclResource Admin:Sterge Oferta
+     * @AclResource Admin: Oferte: Sterge Oferta
      */
     public function delete_offer() {
         if ($this->uri->segment(3)) {
