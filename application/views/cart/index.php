@@ -2,13 +2,8 @@
 /* @var  $neoCart \Dealscount\Models\Entities\NeoCart */ $neoCart;
 $cartItems = $neoCart->getCartItems();
 ?>
-<div class="content general_page">
-    <div class="info_bar">
-        <div class="breadcrumbs" style="clear: both;">
-            Lista cumparaturi
-        </div>
-    </div>
-
+<div id="content">
+    
     <?php if (!count($cartItems)) { ?>
         <div>Nu exista niciun produs in cos</div>
     <?php } else { ?>
@@ -70,5 +65,6 @@ $cartItems = $neoCart->getCartItems();
             </table>
         <?php } ?>
     </form>
+        <div id="clear"></div>
 </div>
 

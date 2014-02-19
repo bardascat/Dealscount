@@ -5,12 +5,52 @@
         <meta name="language" content="Romanian" />
         <meta http-equiv="Content-Language" content="ro" />
         <?php echo $this->view->getCss(); ?>
-        <link href='http://fonts.googleapis.com/css?family=Oxygen&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Noto+Sans' rel='stylesheet' type='text/css'>
             <?php echo $this->view->getJs(); ?>
             <?php echo $this->view->getNotification() ?>
             <link rel="shortcut icon"  type="image/png"  href="<?php echo base_url() ?>assets/images_fdd/favicon.ico">
                 </head>
                 <body>
+
+                    <div id="wrapper">
+                        <div id="header">
+                            <div class="center_header">
+                                <div class="logo">
+                                    <img src="<?php echo base_url('assets/gad_images_fdd/getadeal_logo.png') ?>"/>
+                                </div>
+                                <div class="header_search">
+                                    <form method="get" action="">
+                                        <input type="text" name="q"/>
+                                        <input type="submit" value=""/>
+                                    </form>
+                                </div>
+                                <ul class="header_menu">
+                                    <li class="my_account">
+                                        <a href="">Contul Meu</a>
+                                    </li>
+                                    <li class="shopping_cart">
+                                        <a href="<?php echo base_url('cart') ?>">Cos Cumparaturi</a>
+                                    </li>
+                                </ul>
+
+                                <ul class="header_categories">
+                                    <li>
+                                        <a href="">Toate Ofertele</a>
+                                        <div class="elipse"></div>
+                                    </li>
+                                    <li class="bullet"></li>
+                                    <li class="last">
+                                        <a href="">Frumusete</a>
+
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                            
+                    
+
+                    <!--
                     <div id="wrapper">
 
                         <div id="left_side">
@@ -22,21 +62,21 @@
                             </div>
                             <div class="left_side_inner_content">
                                 <ul class="categorii">
-                                    <?php
-                                    foreach ($this->view->getCategories() as $category) {
-                                        $parent = $category['parent'];
-                                        ?>
-                                        <li class = "main_<?php echo $parent['id_category'] ?>" class = "cat_selected">
-                                            <a onmouseover = "show_subcats(<?php echo $parent['id_category'] ?>)" style = "width:100%;" href = "<?php echo base_url('categorii/' . $parent['slug']) ?>"><?php echo $parent['name'] ?></a>
-                                        </li>
+                    <?php
+                    foreach ($this->view->getCategories() as $category) {
+                        $parent = $category['parent'];
+                        ?>
+                                                        <li class = "main_<?php echo $parent['id_category'] ?>" class = "cat_selected">
+                                                            <a onmouseover = "show_subcats(<?php echo $parent['id_category'] ?>)" style = "width:100%;" href = "<?php echo base_url('categorii/' . $parent['slug']) ?>"><?php echo $parent['name'] ?></a>
+                                                        </li>
 
-                                        <ul id="<?php echo $parent['id_category'] ?>" class="subcats">
-                                            <div class="arrow"></div>
-                                            <?php foreach ($category['childs'] as $category) { ?>
-                                                <li><a style="display: block; width:100%;" href="<?php echo base_url('categorii/' . $parent['slug'] . '/' . $category['category_slug']) ?>"><?php echo $category['category_name'] ?></a></li>
-                                            <?php } ?>
-                                        </ul>
-                                    <?php } ?>
+                                                        <ul id="<?php echo $parent['id_category'] ?>" class="subcats">
+                                                            <div class="arrow"></div>
+                        <?php foreach ($category['childs'] as $category) { ?>
+                                                                                <li><a style="display: block; width:100%;" href="<?php echo base_url('categorii/' . $parent['slug'] . '/' . $category['category_slug']) ?>"><?php echo $category['category_name'] ?></a></li>
+                        <?php } ?>
+                                                        </ul>
+                    <?php } ?>
                                 </ul>
                                 <table border="0" class="promo">
                                     <tr>
@@ -110,10 +150,10 @@
                                 </div>
 
                                 <ul class="meniu">
-                                    <a href="<?php echo base_url('cart')?>">
+                                    <a href="<?php echo base_url('cart') ?>">
                                         <li class="oferte">
                                             <div class="icon"></div>
-                                            <span>Cos(<?php echo $this->view->getNrCartItems()?>)</span>
+                                            <span>Cos(<?php echo $this->view->getNrCartItems() ?>)</span>
                                         </li>
                                     </a>
                                     <a href="">
@@ -131,33 +171,33 @@
                                     </a>
 
                                     <li class="contul_meu">
-                                        <?php
-                                        $user = $this->view->getUser();
-                                        ?>
+                    <?php
+                    $user = $this->view->getUser();
+                    ?>
                                         <a
                                             style="display:block; display:block; margin:0px; padding:0px; width:80px;"
                                             href="javascript:login">
                                             <div class="icon"style="<?php if (isset($user['gender'])) { ?>background-image:url('<?php echo base_url() . '/assets' ?>/images_fdd/<?php echo (strtoupper($user['gender'] == "F") ? "lady.png" : "sir.png") ?>'); <?php
-                                                if (strtoupper($user['gender'] == "F"))
-                                                    echo "width: 23px";
-                                                else
-                                                    echo "margin-top:8px; height:29px";
-                                            }
-                                            ?>">
+                        if (strtoupper($user['gender'] == "F"))
+                            echo "width: 23px";
+                        else
+                            echo "margin-top:8px; height:29px";
+                    }
+                    ?>">
                                             </div>
                                         </a>
 
-                                        <?php if ($this->view->getUser()) { ?>
-                                            <a href="javascript:contul_meu()">Contul meu</a>
-                                            <div class="contul_meu_container">
-                                                <a style="padding-right:0px;" href="<?= base_url('account/orders') ?>">Voucherele mele</a>
-                                                <a style="padding-right:0px;" href="<?= base_url('account') ?>">Contul meu</a>
-                                                <a style="padding-right:0px;" href='<?= base_url('admin') ?>'>Admin</a>
-                                                <a style="padding-right:0px;" href="<?= base_url('account/logout') ?>">Logout</a>
-                                            </div>
-                                        <?php } else { ?>
-                                            <a href="javascript:login()">Contul meu</a>
-                                        <?php } ?>
+                    <?php if ($this->view->getUser()) { ?>
+                                                            <a href="javascript:contul_meu()">Contul meu</a>
+                                                            <div class="contul_meu_container">
+                                                                <a style="padding-right:0px;" href="<?= base_url('account/orders') ?>">Voucherele mele</a>
+                                                                <a style="padding-right:0px;" href="<?= base_url('account') ?>">Contul meu</a>
+                                                                <a style="padding-right:0px;" href='<?= base_url('admin') ?>'>Admin</a>
+                                                                <a style="padding-right:0px;" href="<?= base_url('account/logout') ?>">Logout</a>
+                                                            </div>
+                    <?php } else { ?>
+                                                            <a href="javascript:login()">Contul meu</a>
+                    <?php } ?>
 
                                         <div id="login_form">
                                             <form method="post" action="<?= base_url('account/login_submit') ?>">
@@ -205,3 +245,5 @@
                                     </li>
                                 </ul>
                             </div>
+                    
+                    -->
