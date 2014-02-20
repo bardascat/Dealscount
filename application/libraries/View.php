@@ -11,7 +11,9 @@ class View {
     private $categories;
     private $notification;
     private $nrCartItems;
-
+    private $metaTitle;
+    private $metaDesc;
+    private $metaKeywords;
     function __construct() {
         
     }
@@ -125,6 +127,34 @@ class View {
         $this->nrCartItems = $nrCartItems;
         return $this;
     }
+    public function getMetaTitle() {
+        return $this->metaTitle;
+    }
+
+    public function getMetaDesc() {
+        return $this->metaDesc;
+    }
+
+    public function getMetaKeywords() {
+        return $this->metaKeywords;
+    }
+
+    public function setMetaTitle($metaTitle) {
+        $this->metaTitle = $metaTitle;
+        return $this;
+    }
+
+    public function setMetaDesc($metaDesc) {
+        $this->metaDesc = $metaDesc;
+        return $this;
+    }
+
+    public function setMetaKeywords($metaKeywords) {
+        $this->metaKeywords = $metaKeywords;
+        return $this;
+    }
+
+
 
 }
 ?>

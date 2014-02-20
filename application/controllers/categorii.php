@@ -33,8 +33,6 @@ class categorii extends CI_Controller {
         if(isset($child_category)) $category=$child_category;
         else
             $category=$parent_category;
-        
-        
         $offers = $this->OffersModel->getOffersByParentCategory($category->getSlug());
         
         $data = array(

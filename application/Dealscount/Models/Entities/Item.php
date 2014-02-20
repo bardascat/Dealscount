@@ -115,7 +115,7 @@ class Item extends AbstractEntity {
     protected $benefits;
 
     /**
-     *Pret fara cupon
+     * Pret fara cupon
      * @Column(type="float")
      */
     protected $price;
@@ -130,7 +130,7 @@ class Item extends AbstractEntity {
      * Pret de vanzare in sistem. 0 lei pentru cazul de fata
      * @Column(type="float")
      */
-    protected $sale_price=0;
+    protected $sale_price = 0;
 
     /**
      *
@@ -253,8 +253,20 @@ class Item extends AbstractEntity {
         $this->tags->add($tag);
     }
 
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\ItemTags
+     */
     public function getTags() {
         return $this->tags;
+    }
+
+    public function getTagsInfo() {
+        $text = "";
+        if ($this->getTags())
+            foreach ($this->getTags() as $tag)
+                $text.=$tag->getValue() . ',';
+        return $text;
     }
 
     public function addImage(ItemImage $image) {
@@ -618,18 +630,23 @@ class Item extends AbstractEntity {
      * Metode particulare
      */
     public function getRemainingHours() {
+        $date1 = strtotime(date("Y-m-d H:i:s"));
+        $date2 = strtotime(date("Y-m-d") . ' 23:59:59');
 
-        $date1 = date("Y-m-d H:i:s");
-        $date2 = date("Y-m-d");
-        $diff = abs(strtotime($date2 . ' 23:59:59') - strtotime($date1));
-
-        return round($diff / 3600);
+        $all = round(($date2 - $date1) / 60);
+        $d = floor($all / 1440);
+        $h = floor(($all - $d * 1440) / 60);
+        $m = $all - ($d * 1440) - ($h * 60);
+        if ($h < 2)
+            return $h . ' ora  ' . $m . ' m';
+        else
+            return $h . ' ore  ' . $m . ' m';
     }
 
     public function getPercentageDiscount() {
         return round(100 - ($this->getSale_price() * 100 ) / $this->getPrice());
     }
-    
+
     public function getVoucher_price() {
         return $this->voucher_price;
     }
@@ -638,9 +655,6 @@ class Item extends AbstractEntity {
         $this->voucher_price = $voucher_price;
         return $this;
     }
-
-
-
 
 }
 

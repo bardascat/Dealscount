@@ -33,7 +33,10 @@ img{border:0px;}
     font-family: 'Noto Sans';
     font-size: 15px;
     line-height: 25px;
-    margin-top: 6px;
+    margin-top: 0px;
+    border:0px solid #ccc;
+    float:left;
+    margin-top:5px;
 }
 #header .center_header .header_search input[type='submit']{
     width: 34px;
@@ -85,13 +88,63 @@ img{border:0px;}
 }
 
 #header .header_categories{
-
+    width: 900px;
     list-style-type: none;
     float: left;
     clear: both;
     margin-left: 20px;
     font-family: 'Noto Sans';
-    margin-top:30px;
+    margin-top:31px;
+}
+
+#header .header_categories .subcats a{
+    color: #1d1d1d;
+    font-size: 13px;
+    font-weight: normal;
+}
+#header .header_categories .subcats{
+    position: absolute;
+    left: 50%;
+    margin-left:-92px;
+    z-index: 999;
+    display: none;
+    *margin-top:20px;
+}
+#header .header_categories .subcats ul{
+    list-style-type: none;
+
+    padding: 0px;
+    background-image: url('../images_fdd/home-meniu-a_02.png');
+    padding-top: 23px;
+    width: 184px;
+    background-repeat: no-repeat;background-position: top left;
+    float: left;
+    height: auto;
+    margin: 0px; 
+    margin-top:0px;
+
+
+
+
+}
+#header .header_categories .subcats li a:hover{text-decoration: underline}
+#header .header_categories .subcats li{
+    padding-left: 24px;
+    width: 160px;
+    background-image: url('../images_fdd/home-meniu-b.png');
+}
+#header .header_categories .subcats li div{
+    padding-bottom: 4px;
+    border-bottom: 1px solid #f1f1f1;
+    padding-top: 4px;
+
+    width: 137px;
+}
+#header .header_categories .subcats .footer_end{
+    background-image: url('../images_fdd/home-meniu-c_02.png');
+    width: 160px;
+    height: 19px;
+    background-repeat: no-repeat;
 }
 #header .header_categories .elipse{
     background-image: url('../images_fdd/fab_elipse.png');
@@ -121,6 +174,8 @@ img{border:0px;}
     float: left;
     font-size: 14px;
     font-weight: bold;
+    z-index: 999;
+
 }
 #header .header_categories li a{
     color: #FFF;
@@ -133,28 +188,41 @@ img{border:0px;}
     width: 1000px;
     margin: auto;
     min-height: 300px;
-    background-color: #CCC;
     margin-top:40px;
 }
 #clear{clear: both}
-.offers_list .offer{
-    width: 233px; height: 295px;
-    background-color: #ffffff;
 
+.offers_list {
+
+}
+.offers_list .offer{
+
+    width: 233px; height: 295px;
+    background-color: #fff;
     margin-right: 17px;
     float: left;
     margin-bottom: 17px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+
+    -moz-box-shadow: 0px 0px 4px #b8b8b8;
+    -webkit-box-shadow: 0px 0px 4px #b8b8b8;
+    box-shadow: 0px 0px 4px #b8b8b8;
 }
 .offers_list .offer .image{
     position: relative;
     width: 233px; height: 190px;
+    overflow: hidden;   
 }
 .offers_list .offer .image .time_left{
     background-image: url('../images_fdd/fab_green_clock.png');
     width: 16px; height: 20px;
-    padding-left: 20px;
+    padding-left: 17px;
     background-repeat: no-repeat;
     width: 100%;
+    letter-spacing: 0px;
+    word-spacing: -1px;
     background-position: 0px 2px;
 }
 .offers_list .offer .image .discount{
@@ -163,11 +231,10 @@ img{border:0px;}
 }
 .offers_list .offer .image .image_over{
     background-image: url('../images_fdd/fab_grey_transparent.png');
-    width: 65px;
-
+    width: 77px;
     top:10px;
     color: #fff;
-    padding-left: 10px;
+    padding-left: 5px;
     height: 20px;
     line-height: 20px;
     position: absolute;
@@ -262,5 +329,124 @@ img{border:0px;}
     font-family: 'Noto Sans';
     font-size: 15px;
     line-height: 25px;
-    margin-top: 6px;
+    margin-top: 0px;
+    border:0px solid #ccc;
+    float:left;
+    margin-top:5px;
 }
+
+/* oferta pagina */
+#content .oferta_view{
+    width: 1000px;
+    min-height: 700px;
+    color: #333333;
+}
+#content .oferta_view .row{
+    width: 960px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 30px;
+}
+#content .oferta_view .row_one{
+    background-color: #FFF;
+}
+
+#content .oferta_view .row_one{
+    background-color: #FFF;
+}
+#content .oferta_view h1{
+    margin: 0px;
+    font-size: 25px;
+    color: #333333;
+    font-weight: normal;
+}
+
+#content .oferta_view .brief{
+    font-size: 15px;
+    color: #333333;
+    margin-top: 15px;
+}
+
+#content .oferta_view .oferta_detalii{
+
+    margin-top:25px;
+    height: 384px;
+}
+#content .oferta_view .oferta_detalii .image{
+    height: 384px;
+    width: 600px;
+    overflow: hidden;
+
+    float: left;
+}
+#content .oferta_view .oferta_detalii .price_block{
+    float: left;
+    color: #404040;
+    margin-left: 20px;
+    padding-top: 16px;
+    height: 364px;
+
+}
+#content .oferta_view .oferta_detalii .price_block .price{
+    font-size: 45px;
+}
+#content .oferta_view .oferta_detalii .price_block  .currency{
+    font-size: 19px;
+}
+#content .oferta_view #cart_form{
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+#content .oferta_view #cart_form .cumpara_btn{
+    display: block;
+    background-image: url('../images_fdd/fab_adauga_cos.png');
+    width: 237px; height: 69px;
+
+}
+#content .oferta_view .sales_details td{
+    border-top:1px solid #d3d3d3;
+    font-size: 14px;
+    padding-bottom:9px;
+    padding-top: 9px;
+    padding-left: 4px;
+
+}
+#content .oferta_view .sales_details img{
+    padding-right: 8px;
+}
+#content .oferta_view .descriere{
+    margin-top: 25px;
+}
+#content .oferta_view .descriere h2{
+    font-size: 22px;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+#content .oferta_view .row_two{
+    background-color: #FFF;
+    margin-top: 20px;
+}
+#content .oferta_view .row_two h2{
+    font-size: 22px;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+#content .oferta_view .row_two ul{
+    margin-left: 20px;
+}
+
+#content .oferta_view .row_three{
+    background-color: #FFF;
+    margin-top: 20px;
+}
+#content .oferta_view .row_three .compay_details{
+    margin-top: 36px;
+}
+#content .oferta_view .row_three h2{
+    font-size: 22px;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+/* end oferta pagina */

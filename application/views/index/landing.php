@@ -12,24 +12,26 @@
                 <div class="offer">
                     <div class="image">
                         <div class="image_over">
-                            <div class="time_left">3h 12min</div>
+                            <div class="time_left"><?php echo $offer->getRemainingHours() ?></div>
                         </div>
-                        <div class="image_over" style="top: 37px;">-50%</div>
-                        <img src="<?php echo base_url('assets/images_fdd/sample_offer.png') ?>"/>
+                        <div class="image_over" style="top: 37px; text-align: center;">-<?php echo $offer->getPercentageDiscount() ?>%</div>
+                        <a href="<?php echo base_url('oferte/' . $offer->getSlug()) ?>">
+                            <img width="233" src="<?php echo base_url($offer->getMainImage()) ?>"/>
+                        </a>
                     </div>
                     <div class="info">
-                        Ecografie mamara bilaterala + Consultatie mamara bilaterala + Buletin ecografic scris + 
+                        <?php echo $offer->getName() ?>
                     </div>
                     <table width="100%" border="0" cellpadding="0" cellspacing="0" class="price_details">
                         <tr>
                             <td style="padding-left: 20px;" width="30">
-                                <a class="view" href=""></a>
+                                <a class="view" href="<?php echo base_url('oferte/' . $offer->getSlug()) ?>"></a>
                             </td>
                             <td width="120" class="price">
-                                123 <span>lei</span>
+                                <?php echo $offer->getSale_price() ?> <span>lei</span>
                             </td>
                             <td style="padding-left: 10px;">
-                                <a class="cart" href="cart"></a>
+                                <a class="cart" href="<?php echo base_url('') ?>"></a>
                             </td>
                         </tr>
                     </table>
@@ -38,7 +40,7 @@
             }
         } else {
             ?>
-        Nu exista oferte active
+            Nu exista oferte active
         <?php } ?>
     </div>
     <div id="clear"></div>

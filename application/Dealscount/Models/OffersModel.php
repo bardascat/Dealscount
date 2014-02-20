@@ -232,7 +232,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
     /**
      * 
-     * Intoarce lista de oferte ce sunt in categoria cautata sau in subcategorii
+     * Intoarce lista de oferte ce sunt in categoria cautata sau in subcategoriile categoriei trimise ca parametru
      * @param type $id_category
      * @return boolean
      */

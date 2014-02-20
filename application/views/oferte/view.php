@@ -10,194 +10,225 @@ $images = $offer->getImages();
 <script type='text/javascript' src='<?php echo base_url('assets/js/jquery.innerfade.js') ?>'></script>
 <script type='text/javascript' src='http://maps.googleapis.com/maps/api/js?sensor=false'></script>
 
-<div class="content offer_page">
-    <div class="info_bar">
-        <div class="breadcrumbs">
-            <?php echo ($offer->getCompany_name() ? $offer->getCompany_name() : $companyDetails->getCommercial_name()) ?>
-        </div>
-        <div class="location">
-            <?php echo $offer->getLocation() ?>
-        </div>
-    </div>
+<div id="content">
+    <div class="oferta_view">
+        <div class="row row_one">
+            <h1><?php echo $offer->getName() ?></h1>
 
-    <div class="offer">
-        <table border="0" height="200" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-                <td style="vertical-align: top;">
+            <div class="brief">
+                <?php echo $offer->getBrief(); ?>
+            </div>
 
-                    <div class="short_desc">
-                        <table border="0">
-                            <tr>
-                                <td>
-                                    <?php echo $offer->getBrief() ?>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <table border="0" width="412" height="95" cellpadding="0" cellspacing="0">
+            <div class="oferta_detalii">
+                <div class="image">
+                    <img height="384" src="<?php echo base_url($offer->getMainImage('image')) ?>" alt="<?php echo $offer->getName() ?>"/>
+                </div>
+                <div class="price_block">
+                    <table cellpadding="0" cellspacing="0">
                         <tr>
                             <td>
-                                <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
-
-
-
-                                    <tr>
-                                        <td class="title_off" width="107">
-
-                                            Timp ramas: <?php echo $offer->getRemainingHours() ?> ore
-                                        </td>
-                                    </tr>
-
-
-                                    <tr>
-                                        <td class="title_off" width="107">Cumparate: 5</td>
-
-                                    </tr>
-                                    <tr>
-                                        <td class="title_off"  width="107">Reducere: - <?php echo $offer->getPercentageDiscount() ?>%</td>
-
-                                    </tr>
-                                    <tr>
-                                        <td class="title_off"  width="107">Pret intreg: <span style="text-decoration: line-through"><?php echo $offer->getPrice() ?> lei</span></td>
-
-                                    </tr>
-
-                                </table>
-
-                            </td>
-
-                            <td height="200" class="buy_offer_container" rowspan="4">
-                                <table border="0" width="100%" class="price_table">
-                                    <tr>
-
-                                        <td class="real_price">
-                                            <?php echo $offer->getSale_price() ?>
-                                            <span style="font-size: 20px;">lei</span>
-
-                                        </td>
-
-                                        <td>
-
-                                            <!-- <h2 style="color:#D00; margin-right:20px;">Sold Out</h2> -->
-
-                                            <form id="cart_form" method="post" action="<?php echo base_url('neocart/add_to_cart') ?>">
-                                                <input type="hidden" name="id_item" value="<?php echo $offer->getIdItem() ?>"/>
-                                                <input type="hidden" name="quantity" value="1"/>
-                                                <a class="cumpara_btn" href="javascript:add_to_cart()"></a>
-                                                
-                                                 <?php if ($this->view->getUser() && $this->view->getUser()['role']==DLConstants::$ADMIN_ROLE) : ?>
-
-                                                        <a href='javascript:triggerAddOfferPopup()' style='margin-left: 0px; float: left;' class='greenButton '>Adaugă la Comandă</a>
-                                                        <a class="fancybox.iframe adminAdaugaItem" id="triggerAddItemPopup" href=""></a>
-
-                                                <?php endif; ?>
-                                                    
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <span class="price"><?php echo $offer->getSale_price() ?></span>
+                                <span class="currency">lei</span>
                             </td>
                         </tr>
-                    </table>
-
-                    <table border="0" cellpadding="0" cellspacing="0" height="55" style="font-size: 13px;" class="info_table" width="100%">
                         <tr>
-                            <td id="beneficii_td" class="selected">
-                                <a style="color:#000" href="javascript:toggle_info('beneficii')">Beneficii</a>
-                            </td>
+                            <td>
+                                <form id="cart_form" method="post" action="<?php echo base_url('neocart/add_to_cart') ?>">
+                                    <input type="hidden" name="id_item" value="<?php echo $offer->getIdItem() ?>"/>
+                                    <input type="hidden" name="quantity" value="1"/>
+                                    <a class="cumpara_btn" href="javascript:add_to_cart()"></a>
 
-                            <td id="termeni_td">
-                                <a style="color:#000" href="javascript:toggle_info('termeni')">Termeni</a>
-                            </td>
+                                    <?php if ($this->view->getUser() && $this->view->getUser()['role'] == DLConstants::$ADMIN_ROLE) : ?>
 
-                            <td id="partener_td">
-                                <a style="color:#000" href="javascript:toggle_info('partener')">Partener</a>
-                            </td>
+                                        <a href='javascript:triggerAddOfferPopup()' style='margin-left: 0px; float: left;' class='greenButton '>Adaugă la Comandă</a>
+                                        <a class="fancybox.iframe adminAdaugaItem" id="triggerAddItemPopup" href=""></a>
 
-                            <td id="telefon_td" width="81">
-                                <a style="color:#000" href="javascript:toggle_info('telefon')">Contact</a>
+                                    <?php endif; ?>
+
+                                </form>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table width="100%" class="sales_details" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td width="100">
+                                            Cumparate:
+                                        </td>
+                                        <td>
+                                            <b>
+                                                <?php
+                                                $stats = $offer->getStats();
+                                                echo $stats->getSales();
+                                                ?>
+                                            </b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Reducere:
+                                        </td>
+                                        <td>
+                                            <b>-<?php echo $offer->getPercentageDiscount() ?>%</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Pret intreg:
+                                        </td>
+                                        <td>
+                                            <span style="text-decoration: line-through"><b><?php echo $offer->getPrice() ?> lei</b></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Share:
+                                        </td>
+                                        <td>
+                                            <table border="0">
+                                                <tr>
+
+                                                    <td style="border:0px;">
+                                                        <div class="fb-like" data-send="false" data-layout="button_count" data-width="50" data-show-faces="false"></div>
+                                                    </td>
+
+                                                    <td style="border:0px;">
+                                                        <g:plusone size="medium" annotation="none"></g:plusone>
+                                                     </td>   
+
+                                                   <td style="border:0px;">
+                                                         <a href="https://twitter.com/share" data-count="none" class="twitter-share-button"></a>
+                                                         <script>!function(d, s, id) {
+                                                            var js, fjs = d.getElementsByTagName(s)[0];
+                                                            if (!d.getElementById(id)) {
+                                                                js = d.createElement(s);
+                                                                js.id = id;
+                                                                js.src = "//platform.twitter.com/widgets.js";
+                                                                fjs.parentNode.insertBefore(js, fjs);
+                                                            }
+                                                        }(document, "script", "twitter-wjs");</script>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
                             </td>
                         </tr>
                     </table>
+                    </td>
+                    </tr>
+                    </table>
+                </div>
+            </div>
 
-                </td>
-                <td width="393" style="text-align: center">
-                    <div id="fader" style="width:393px;height:312px;overflow:hidden;padding-left:0px;">
-                        <ul id="the_fade">
-                            <?php foreach ($images as $image) { ?>
-                                <li><img src="<?php echo base_url($image->getImage()) ?>" width="393" height="312"></li>
-                            <?php } ?>
-                        </ul>
-                    </div>
+            <div class="descriere">
+                <h2>Despre Oferta</h2>
+                <div class="info">
+                    <?php echo $offer->getBenefits() ?>
+                </div>
+            </div>
+        </div>
 
-                    <script type="text/javascript">
-                        /*   $("#the_fade").innerfade({
-                         timeout: 6000
-                         }); */
-                    </script>
+        <div class="row row_two">
+            <div class="termeni">
+                <h2>Termeni Oferta</h2>
+                <div class="info">
+                    <?php echo $offer->getTerms(); ?>
+                </div>
+            </div>
+        </div>
 
-                </td>
-            </tr>
+        <div class="row row_three">
+            <div class="company">
 
-            <tr  style="font-size: 13px;">
-                <td class="desc" colspan="2">
-                    <div class="beneficii">
-                        <?php echo $offer->getBenefits() ?>
-                    </div>
-                    <div class="termeni" style="display: none;">
-                        <?php echo $offer->getTerms() ?>
-                    </div>
-
-                    <div class="partener" style="display: none;">
-                        <?php echo $companyDetails->getDescription() ?>
-                    </div>
-
-                    <div class="telefon" style="display: none;">
-                        <table width="100%">
-                            <tr>
-                                <td style=" ">
-                                    <b>Adresa</b><?php echo $companyDetails->getAddress() ?></br>
-                                    <b>Site</b><?php echo $companyDetails->getWebsite() ?></br>
-                                    <b>Email</b><?php echo $company->getEmail() ?></br>
-                                    <b>Telefon</b><?php echo $companyDetails->getPhone() ?></br>
-                                </td>
-
-
-
-                                <td style="padding-left: 15px;">
-                                    <div style="width: 340px;display:block;float: right; margin-top:0px;">
-                                        <div class="offer_box_head"></div>
-                                        <div class="offer_detalii">
-                                            <?php if ($offer->getLongitude() && $offer->getLatitude()) { ?>
-                                                <div class="googlemap">
-                                                    <div style="width: 360px; height: 285px; margin-top:10px;" id="map_canvas"></div>
-                                                    <span  style=" font-size:11px;">Vezi <a class="harta_popup" href="" style="color:#0000FF;text-align:left" target="_blank">harta mai mare</a> </span>
+                <div class="info">
+                    <table  width="100%" height="200" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="442">
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td height="20">
+                                            <h2><?php echo ($offer->getCompany_name() ? $offer->getCompany_name() : $companyDetails->getCommercial_name()) ?></h2>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="175">
+                                            <?php if ($companyDetails->getImage()) { ?>
+                                                <div style="margin-bottom: 10px;">
+                                                    <img src="<?php echo base_url($companyDetails->getImage()) ?>"/>
                                                 </div>
                                             <?php } ?>
-                                        </div>
+
+                                            <?php if ($companyDetails->getAddress()) { ?>
+
+                                                <label><b>Adresa:</b></label>
+
+                                                <?php echo $companyDetails->getAddress() ?>
+
+                                            <?php } ?>
+                                            <?php if ($companyDetails->getWebsite()) { ?>
+
+                                                <div>
+                                                    <label><b>Site:</b></label>
+                                                    <?php echo $companyDetails->getWebsite() ?>
+                                                </div>
+                                            <?php } ?>
+                                            <div>
+                                                <label><b>Email:</b></label>
+
+                                                <?php echo $company->getEmail() ?>
+                                            </div>
+                                            <div>
+                                                <label><b>Telefon:</b></label>
+
+                                                <?php echo $companyDetails->getPhone() ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <?php if ($offer->getLongitude() && $offer->getLatitude()) { ?>
+                                    <div class="googlemap" style="float: right;">
+                                        <div style="width: 430px; height: 200px" id="map_canvas"></div>
+                                        <span  style=" font-size:11px;">Vezi <a class="harta_popup" href="" style="color:#0000FF;text-align:left" target="_blank">harta mai mare</a> </span>
                                     </div>
-                                </td>
+                                <?php } ?>
+                            </td>
+                        </tr>
+                    </table>
 
-                            </tr>
-                        </table>
+                    <div class="compay_details">
+                        <?php echo $companyDetails->getDescription() ?>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                </td>
-            </tr>
-        </table>
     </div>
-</div>
+</div>  
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id))
+            return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 
 <script type="text/javascript">
 
     $(document).ready(function() {
-     
+
 <?php if ($offer->getLongitude() && $offer->getLatitude()) { ?>
             displayMap("<?php echo $offer->getLatitude() ?>", "<?php echo $offer->getLongitude() ?>");
 <?php } ?>
-    $(".adminAdaugaItem").fancybox({width: 550, height: 250, autoResize: false, autoSize: false, openEffect: 'none', closeEffect: 'none'});
-        increment_offer_view(<?php echo $offer->getIdItem()?>);
+        $(".adminAdaugaItem").fancybox({width: 550, height: 250, autoResize: false, autoSize: false, openEffect: 'none', closeEffect: 'none'});
+        increment_offer_view(<?php echo $offer->getIdItem() ?>);
     })
     function optBox(id) {
         var html = $('#offer_' + id).html();
@@ -210,25 +241,6 @@ $images = $offer->getImages();
             openEffect: 'none',
             closeEffect: 'none'
         });
-    }
-
-    function toggle_info(info) {
-
-        var current_selected = $('.info_table .selected');
-
-        if (info + '_td' != current_selected.attr('id')) {
-            var id = $(current_selected).attr('id');
-            var myArray = id.split('_');
-
-            $('.' + myArray[0]).fadeOut(100, function() {
-                $(current_selected).removeClass("selected");
-                $('#' + info + "_td").addClass("selected");
-                $('.' + info).fadeIn(100, function() {
-                    google.maps.event.trigger(map, 'resize');
-                    map.setCenter(new google.maps.LatLng('<?= $offer->getLatitude() ?>', '<?= $offer->getLongitude() ?>'));
-                })
-            });
-        }
     }
 
     function add_to_cart() {

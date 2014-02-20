@@ -22,6 +22,10 @@ class oferte extends CI_Controller {
         $data = array(
             "offer" => $offer
         );
+        $this->view->setMetaTitle(($offer->getMeta_title() ? $offer->getMeta_title() : $offer->getName()));
+        $this->view->setMetaDesc(($offer->getMeta_desc() ? $offer->getMeta_desc() : $offer->getBrief()));
+        $this->view->setMetaKeywords($offer->getTagsInfo());
+        
         $this->load_view('oferte/view', $data);
     }
 
@@ -35,16 +39,15 @@ class oferte extends CI_Controller {
         if (!$offer) {
             exit('page not found');
         }
-        
+
         echo $offer->getName();
     }
-    
-    public function increment_offer_view(){
-        $id_item=$this->input->post("id_item");
-       
-        if($id_item)
+
+    public function increment_offer_view() {
+        $id_item = $this->input->post("id_item");
+
+        if ($id_item)
             $this->OffersModel->increment_offer_view($id_item);
-        
     }
 
 }
