@@ -50,6 +50,7 @@ class CI_Controller {
      */
     public function __construct() {
 
+
         self::$instance = & $this;
 
         // Assign all the class objects that were instantiated by the
@@ -64,7 +65,7 @@ class CI_Controller {
         $this->load->initialize();
         $this->checkPermission();
         $this->initDependencies();
-        
+        $this->devMode();
         log_message('debug', "Controller Class Initialized");
     }
 
@@ -242,7 +243,7 @@ class CI_Controller {
         $controller = $this->router->class;
         $method = $this->router->method;
 
-         
+
         if ($this->uri->segment(1) == "admin") {
             //validam daca are acces in admin
             if (!$this->zacl->check_acl('admin', $role)) {
@@ -250,22 +251,43 @@ class CI_Controller {
             }
             //verificam daca are acces pe metoda
             $resource = 'admin/' . $controller . '/' . $method;
-            
+
             if (!$this->zacl->check_acl($resource, $role)) {
                 redirect(base_url('util/permission_denied'));
             }
         } else {
             $resource = $controller . '/' . $method;
-            if (!$this->zacl->check_acl($resource,$role)) {
+            if (!$this->zacl->check_acl($resource, $role)) {
                 redirect(base_url('util/permission_denied'));
             }
         }
     }
 
-    private function generateAclResources(){
-        $aclModel=new Dealscount\Models\AclModel();
+    private function generateAclResources() {
+        $aclModel = new Dealscount\Models\AclModel();
         //$aclModel->setAclResources($this->zacl->generateResource());
     }
+
+    private function devMode() {
+        if (isset($_POST['access']) && $_POST['access'] == "calorifer") {
+            $cookie = array(
+                'name' => 'secret_access',
+                'value' => 'all',
+                'expire' => time() + 10 * 365 * 24 * 60 * 60,
+                'path' => "/"
+            );
+            set_cookie($cookie);
+            redirect(base_url());
+            exit();
+        }
+        $access = get_cookie('secret_access');
+        if (!$access) {
+
+            echo "<form method='post'><input type='text' name='access'/></form>";
+            exit();
+        }
+    }
+
 }
 
 // END Controller class
