@@ -22,6 +22,7 @@ class neocart extends CI_Controller {
             exit("Page not found");
 
         $this->NeoCartModel->updateQuantity($_POST);
+        
         redirect($this->agent->referrer());
     }
 

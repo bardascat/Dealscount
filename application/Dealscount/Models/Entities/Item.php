@@ -644,7 +644,7 @@ class Item extends AbstractEntity {
     }
 
     public function getPercentageDiscount() {
-        return round(100 - ($this->getSale_price() * 100 ) / $this->getPrice());
+        return round(100 - ($this->getVoucher_price() * 100 ) / $this->getPrice());
     }
 
     public function getVoucher_price() {

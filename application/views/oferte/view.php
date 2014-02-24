@@ -27,7 +27,7 @@ $images = $offer->getImages();
                     <table cellpadding="0" cellspacing="0">
                         <tr>
                             <td>
-                                <span class="price"><?php echo $offer->getSale_price() ?></span>
+                                <span class="price"><?php echo $offer->getVoucher_price() ?></span>
                                 <span class="currency">lei</span>
                             </td>
                         </tr>

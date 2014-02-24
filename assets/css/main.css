@@ -469,8 +469,8 @@ img{border:0px;}
     padding-right: 30px;
 }
 #content form table select{
-     width: 207px;
-    
+    width: 207px;
+
     height: 22px;
     border:1px solid #dadada;
     color: #484848;
@@ -512,3 +512,51 @@ img{border:0px;}
 
 }
 /* register end */
+
+/* cart_page  */
+#content .cart_page{
+    width: 950px;
+    min-height: 700px;
+    color: #1d1d1d;
+    background-color: #FFF;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 25px;
+}
+#content .cart_page .breadcrumbs{margin-bottom: 0px;}
+#content .cart_page h1{border: 0px}
+#content .cart_page .delete{
+    display: block;
+    background-image: url('../images_fdd/fab_delete_icon.png');
+    width: 26px; height: 26px;
+    
+}
+#content .cart_page .table_header td{
+    font-weight: bold; font-size: 14px; color: #232323;
+    text-align: center;
+    border-bottom: 1px solid #dadada;
+    padding-bottom: 10px;
+}
+#content .total_plata,#content .plata_partener,#content .economie{
+    font-weight: bold; font-size: 14px; text-align: center;
+}
+#content .cart_page input[type="text"]{
+    width: 220px; padding-left: 5px;
+    height: 28px;
+    font-size: 15px;
+    color: #232323;
+    border: 1px solid #8c8c8c;
+}
+#content .cart_page td{ padding-bottom: 3px;}
+#content .cart_page .inner_table td{ padding-bottom: 6px;}
+#content .cart_page .finalizare{
+    background-image: url('../images_fdd/fab_download_vochers.png');
+    width: 225px; height: 47px;
+    float: right;
+    border:0px;
+    cursor: pointer;
+    background-color:transparent;
+    margin-top: 30px;
+}
+/* cart_page end  */
+

@@ -28,7 +28,7 @@
                                 <a class="view" href="<?php echo base_url('oferte/' . $offer->getSlug()) ?>"></a>
                             </td>
                             <td width="120" class="price">
-                                <?php echo $offer->getSale_price() ?> <span>lei</span>
+                                <?php echo $offer->getVoucher_price() ?> <span>lei</span>
                             </td>
                             <td style="padding-left: 10px;">
                                 <a class="cart" href="<?php echo base_url('') ?>"></a>
