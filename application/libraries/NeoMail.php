@@ -1,7 +1,7 @@
 <?php
 /* 
  * Mail Service
- * @author Bardsa Catalin
+ * @author Bardas Catalin
  */
 
 class NeoMail {

@@ -38,7 +38,7 @@ class User extends AbstractEntity {
     protected $email;
 
     /**
-     * @Column(type="string",unique=true) @var string 
+     * @Column(type="string",unique=true,nullable=true) @var string 
      */
     protected $username;
 
@@ -46,6 +46,16 @@ class User extends AbstractEntity {
      * @Column(type="string") @var string 
      */
     protected $gender;
+
+    /**
+     * @Column(type="string") @var string 
+     */
+    protected $address;
+
+    /**
+     * @Column(type="string") @var string 
+     */
+    protected $city;
 
     /**
      * @Column(type="string") @var string 
@@ -99,6 +109,8 @@ class User extends AbstractEntity {
      * @OrderBy({"id_invoice" = "desc"})
      */
     protected $invoices;
+    
+    private $realPassword;
 
     function __construct() {
         $this->created_date = new \DateTime("now");
@@ -195,9 +207,9 @@ class User extends AbstractEntity {
             foreach ($extra as $key => $value)
                 $iteration[$key] = $value;
         }
-        
+
         //adaugam rolul
-        $role=$this->getAclRole();
+        $role = $this->getAclRole();
         $iteration[$role->getId_role()] = $role->getId_role();
         return $iteration;
     }
@@ -275,7 +287,7 @@ class User extends AbstractEntity {
     public function getId_role() {
         return $this->id_role;
     }
-    
+
     /**
      * 
      * @return \Dealscount\Models\Entities\AclRole
@@ -293,6 +305,35 @@ class User extends AbstractEntity {
         $this->AclRole = $AclRole;
         return $this;
     }
+
+    public function getAddress() {
+        return $this->address;
+    }
+
+    public function setAddress($address) {
+        $this->address = $address;
+        return $this;
+    }
+    public function getCity() {
+        return $this->city;
+    }
+
+    public function setCity($city) {
+        $this->city = $city;
+        return $this;
+    }
+
+    public function getRealPassword() {
+        return $this->realPassword;
+    }
+
+    public function setRealPassword($realPassword) {
+        $this->realPassword = $realPassword;
+        return $this;
+    }
+
+
+
 
 }
 

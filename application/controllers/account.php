@@ -45,7 +45,58 @@ class account extends \CI_Controller {
             } else {
                 //userul a fost logat
                 //$response = array("type" => "success", "action" => "login", "data" => array("email" => $user->getEmail(), "nume" => $user->getLastname(), "prenume" => $user->getFirstname()));
-                redirect(base_url());
+                redirect(base_url('account'));
+            }
+        }
+    }
+
+    public function register() {
+        //userul este deja logat, ii facem redirect la homepage
+        if ($this->getLoggedUser()) {
+            $this->session->set_flashdata('notification', array("type" => "error", "html" => "Sunteti deja logat !"));
+            redirect(base_url());
+        }
+        $this->load_view('user/register');
+    }
+
+    public function register_submit() {
+        if (!$_POST)
+            redirect(base_url('account/register'));
+
+        //userul este deja logat, ii facem redirect la homepage
+        if ($this->getLoggedUser()) {
+            redirect(base_url());
+        }
+        //procesam requestul
+        $this->form_validation->set_rules('password', 'Parola', 'required|xss_clean|min_length[6]');
+        $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
+        $this->form_validation->set_rules('name', 'Nume', 'required|xss_clean');
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+        $this->form_validation->set_rules('agreement', 'Termeni si conditii', 'callback_accept_terms');
+        $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
+        $this->form_validation->set_message('min_length', '%s prea scurta. Minim %s caractere');
+        if ($this->form_validation->run() == FALSE) {
+
+            $this->load_view('user/register', array("notification" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "error"
+            )));
+        } else {
+            try {
+                $status = $this->UserModel->createUser($_POST);
+                //logam utilizatorul
+                if ($status) {
+                    $this->login_user($status->getEmail());
+                    $this->session->set_flashdata('notification', array("type" => "success", "html" => "Contul dumneavoastra a fost creat. Va multumim !"));
+                    redirect(base_url('account'));
+                }
+            } catch (\Exception $e) {
+                $this->load_view('user/register', array("notification" => array(
+                        "type" => "form_notification",
+                        "message" => $e->getMessage(),
+                        "cssClass" => "error"
+                )));
             }
         }
     }
@@ -56,7 +107,7 @@ class account extends \CI_Controller {
             $user = $this->UserModel->checkEmail($email);
         else
             $user = $this->UserModel->find_user($email, sha1($password));
-       
+
         if ($user) {
             $cookie = array('id_user' => $user->getId_user(), 'email' => $user->getEmail(), 'role' => $user->getAclRole()->getName(), "gender" => $user->getGender(), "firstname" => $user->getFirstname(), "lastname" => $user->getLastname(), "username" => $user->getUsername());
             $cookie = array(
@@ -180,6 +231,13 @@ class account extends \CI_Controller {
             header('Content-type: application/pdf');
             readfile($file);
         }
+    }
+
+    public function accept_terms() {
+        if (isset($_POST['agreement']))
+            return true;
+        $this->form_validation->set_message('accept_terms', 'Va rugam sa acceptati termenii si conditiile');
+        return false;
     }
 
 }

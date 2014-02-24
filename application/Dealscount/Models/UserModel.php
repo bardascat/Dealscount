@@ -27,13 +27,17 @@ class UserModel extends AbstractModel {
         }
         $user = new Entities\User();
         $user->postHydrate($params);
-        $role=$this->em->find("Entities:AclRole", $params['id_role']);
-        $user->setAclRole($role);
+        $roleRep = $this->em->getRepository("Entities:AclRole")->findBy(array("name" => $params['role']));
+        if (!isset($roleRep[0])) {
+            throw new \Exception("Invalid Role", 1);
+        }
+        $user->setAclRole($roleRep[0]);
         if (!$params['password']) {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
             $user->setRealPassword($new_password);
-        } else
+        }
+        else
             $user->setPassword(sha1($params['password']));
 
         try {
@@ -44,7 +48,7 @@ class UserModel extends AbstractModel {
             exit();
             return false;
         }
-        // $this->sendNotification($user, $type);
+        $this->sendNotification($user);
         //  $this->subscribeUser($user);
         return $user;
     }
@@ -63,7 +67,8 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
             return true;
-        } else
+        }
+        else
             return false;
     }
 
@@ -82,20 +87,20 @@ class UserModel extends AbstractModel {
         return true;
     }
 
-    public function sendNotification(Entity\User $user, $type = "user") {
+    public function sendNotification(Entities\User $user) {
         $email = $user->getEmail();
         ob_start();
-        switch ($type) {
-            case "partner": {
-                    require_once("mailMessages/contnou_partener.php");
+        switch ($user->getAclRole()->getName()) {
+            case \DLConstants::$PARTNER_ROLE: {
+                    require_once("application/views/mailMessages/contnou_partener.php");
                 }break;
             default: {
-                    require_once("mailMessages/contnou.php");
+                    require_once("application/views/mailMessages/contnou.php");
                 }break;
         }
         $body = ob_get_clean();
-        $subject = "Confirmare creare cont partener Oringo";
-        NeoMail::getInstance()->genericMail($body, $subject, $email);
+        $subject = "Confirmare creare cont " . \DLConstants::$WEBSITE_COMMERCIAL_NAME;
+        \NeoMail::genericMail($body, $subject, $email);
     }
 
     public function updateUser($post) {
@@ -225,7 +230,8 @@ class UserModel extends AbstractModel {
         if (!$params['password']) {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
-        } else
+        }
+        else
             $user->setPassword(sha1($params['password']));
         $roleRep = $this->em->getRepository("Entities:AclRole");
         $r = $roleRep->findBy(array("name" => \DLConstants::$PARTNER_ROLE));
