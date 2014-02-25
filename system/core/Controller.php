@@ -77,6 +77,7 @@ class CI_Controller {
         $this->load->view('header', $vars);
         $this->load->view($view, $vars);
         $this->load->view('footer');
+        exit();
     }
 
     public function load_view_admin($view, $vars = array()) {
@@ -105,12 +106,12 @@ class CI_Controller {
      * Genereaza un un hash unic pentru cart
      * @return type
      */
-    protected function setHash() {
+    protected static function setHash() {
         if (get_cookie('cart_id')) {
             $cookie_id = unserialize(get_cookie('cart_id'));
             return $cookie_id;
         } else {
-            $cookie_id = $this->generateHash();
+            $cookie_id = $self::generateHash();
             $cookie = array(
                 'name' => 'cart_id',
                 'value' => serialize($cookie_id),
@@ -123,11 +124,11 @@ class CI_Controller {
         }
     }
 
-    protected function getCartHash() {
-        return $this->setHash();
+    public static function getCartHash() {
+        return self::setHash();
     }
 
-    private function generateHash() {
+    private static function generateHash() {
         return md5(uniqid(microtime()) . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
     }
 
@@ -229,7 +230,7 @@ class CI_Controller {
         $this->view->setCategories($this->CategoriesModel->getRootCategories('offer', true));
         $this->view->setNotification($this->session->flashdata('notification'));
         $this->generateAclResources();
-        $this->setHash();
+        self::setHash();
     }
 
     private function checkPermission() {
@@ -237,8 +238,10 @@ class CI_Controller {
         $user = $this->getLoggedUser();
         if (!$user)
             $role = DLConstants::$DEFAULT_ROLE;
-        else
+        elseif (isset($user['role']))
             $role = $user['role'];
+        else
+            $role = null;
 
         $controller = $this->router->class;
         $method = $this->router->method;

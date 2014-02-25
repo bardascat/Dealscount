@@ -61,6 +61,9 @@ class DLConstants {
     public static $PARTNER_PENDING = "W";
     public static $PARTNER_SUSPENDED = "C";
     
+    //prefix
+    public static $CODE_PREFIX="GAD";
+    
     public static function pushCSS($css) {
         array_push(self::$CSS_FILES, $css);
     }

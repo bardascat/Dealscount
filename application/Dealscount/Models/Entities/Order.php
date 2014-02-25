@@ -57,21 +57,22 @@ class Order extends AbstractEntity {
      * statusurile by default sunt: F(finalizat), W(waiting), C(anulat),R(refund)
      */
     protected $payment_status = "W";
-    
+
     /**
      * @Column(type="string",nullable=true) @var string
      */
     protected $installments;
+
     /**
      * @Column(type="string",nullable=true) @var string
      */
-    protected $free=0;
-    
+    protected $free = 0;
+
     /**
      * @Column(type="string",nullable=true) @var string
      */
-    protected $mail_notification=0;
-    
+    protected $mail_notification = 0;
+
     /**
      * @Column(type="string") @var string
      * statusurile by default sunt: 
@@ -199,7 +200,6 @@ class Order extends AbstractEntity {
         $this->id_order = $id_order;
     }
 
-   
     public function getOrderStatus() {
         return $this->order_status;
     }
@@ -250,6 +250,7 @@ class Order extends AbstractEntity {
          */
         return $iteration;
     }
+
     public function getMail_notification() {
         return $this->mail_notification;
     }
@@ -266,8 +267,38 @@ class Order extends AbstractEntity {
         $this->free = $free;
     }
 
+    /**
+     * 
+     * Summary functions
+     */
+    public function getTotalPaymentPartner() {
+        $orderItems = $this->getItems();
+        $total = 0;
+        foreach ($orderItems as $orderItem) {
+            $item = $orderItem->getItem();
+            $total+=$orderItem->getQuantity() * $item->getVoucher_price();
+        }
+        return $total;
+    }
 
+    public function getTotalDiscount() {
+        $orderItems = $this->getItems();
+        $total = 0;
+        foreach ($orderItems as $orderItem) {
+            $item = $orderItem->getItem();
+            $total+=($orderItem->getQuantity() * $item->getPrice()) - ($orderItem->getQuantity() * $item->getVoucher_price());
+        }
+        return $total;
+    }
 
+    public function getVouchersNr() {
+        $orderItems = $this->getItems();
+        $nr = 0;
+        foreach ($orderItems as $orderItem) {
+            $nr+= $orderItem->getQuantity();
+        }
+        return $nr;
+    }
 
 }
 

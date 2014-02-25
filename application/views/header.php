@@ -11,6 +11,7 @@
         <link href='http://fonts.googleapis.com/css?family=Noto+Sans' rel='stylesheet' type='text/css'>
             <?php echo $this->view->getJs(); ?>
             <?php echo $this->view->getNotification() ?>
+            <?php echo $this->view->getPopulate_form() ?>
             <link rel="shortcut icon"  type="image/png"  href="<?php echo base_url() ?>assets/images_fdd/favicon.ico">
                 </head>
                 <body>

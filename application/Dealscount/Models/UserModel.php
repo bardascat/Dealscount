@@ -36,8 +36,7 @@ class UserModel extends AbstractModel {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
             $user->setRealPassword($new_password);
-        }
-        else
+        } else
             $user->setPassword(sha1($params['password']));
 
         try {
@@ -67,8 +66,7 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
             return true;
-        }
-        else
+        } else
             return false;
     }
 
@@ -105,17 +103,31 @@ class UserModel extends AbstractModel {
 
     public function updateUser($post) {
         $user = $this->getUserByPk($post['id_user']);
-        $role = $this->em->find("Entities:AclRole", $post['id_role']);
+        $roleRep = $this->em->getRepository("Entities:AclRole");
+        $r = $roleRep->findBy(array("name" => \DLConstants::$USER_ROLE));
+        if (!isset($r[0]))
+            throw new \Exception("Internal error: User role does not exists", 1);
+        else
+            $role = $r[0];
+
         try {
             $user->setAclRole($role);
             $user->postHydrate($post);
             $this->em->persist($user);
             $this->em->flush();
         } catch (\Exception $e) {
-            $e = explode('Integrity', $e->getMessage());
-            return $e[1];
+            //nu exista alta exceptie in cazul de fata
+            throw new \Exception("Adresa de email este deja in uz", '1');
         }
         return 1;
+    }
+
+    public function updatePassword($post) {
+        $user = $this->getUserByPk($post['id_user'], true);
+        $user->setPassword(sha1($post['new_password']));
+        $this->em->persist($user);
+        $this->em->flush();
+        return true;
     }
 
     public function updateCompanyDetails($post) {
@@ -230,8 +242,7 @@ class UserModel extends AbstractModel {
         if (!$params['password']) {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
-        }
-        else
+        } else
             $user->setPassword(sha1($params['password']));
         $roleRep = $this->em->getRepository("Entities:AclRole");
         $r = $roleRep->findBy(array("name" => \DLConstants::$PARTNER_ROLE));

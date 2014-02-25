@@ -10,9 +10,91 @@ class account extends \CI_Controller {
         $this->load->library('form_validation');
     }
 
+    /**
+     * @AclResource "User: Date cont"
+     */
     public function index() {
-        $t = new Dealscount\Models\LandingModel();
-        $this->load_view('index/landing', array("test" => "pula"));
+        $user = $this->getLoggedUser(true);
+        $this->populate_form($user);
+
+        $this->load_view('user/settings', array("user" => $user));
+    }
+
+    /**
+     * @AclResource "User: Lista Comenzi"
+     */
+    public function orders() {
+        $user = $this->getLoggedUser(true);
+        $this->view->setPage_name("Cupoanele tale");
+        $orders = $user->getOrders();
+        $data = array(
+            "user" => $user,
+            "orders" => $orders
+        );
+
+        $this->load_view('user/orders', $data);
+    }
+
+    public function change_settings() {
+        $user = $this->getLoggedUser(true);
+        if (!$_POST)
+            redirect(base_url('account'));
+        $this->populate_form($user);
+
+        //procesam requestul
+        $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
+        $this->form_validation->set_rules('lastname', 'Nume', 'required|xss_clean');
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+        $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
+
+        if ($this->form_validation->run() == FALSE) {
+
+            $this->load_view('user/settings', array("notification" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "error"
+                ), "user" => $user));
+        } else {
+            try {
+                $status = $this->UserModel->updateUser($_POST);
+            } catch (\Exception $e) {
+                $this->load_view('user/settings', array("notification" => array(
+                        "type" => "form_notification",
+                        "message" => $e->getMessage(),
+                        "cssClass" => "error"
+                    ), "user" => $user));
+            }
+        }
+
+        $this->session->set_flashdata('notification', array("type" => "success", "html" => "Modificarile au fost salvate cu success"));
+        redirect(base_url('account'));
+    }
+
+    public function change_password() {
+        $user = $this->getLoggedUser(true);
+        if (!$_POST)
+            redirect(base_url('account'));
+        $this->populate_form($user);
+
+        //procesam requestul
+        $this->form_validation->set_rules('new_password', 'Parola noua', 'required|xss_clean');
+        $this->form_validation->set_rules('old_password', 'Parola veche', 'required|xss_clean');
+        $this->form_validation->set_rules('old_password', 'Parola veche', 'callback_password_match');
+        $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
+        $this->form_validation->set_message('min_length', '%s prea scurta. Minim %s caractere');
+
+        if ($this->form_validation->run() == FALSE) {
+
+            $this->load_view('user/settings', array("notification_password" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "error"
+                ), "user" => $user));
+        } else {
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Parola a fost resetata"));
+            $status = $this->UserModel->updatePassword($_POST);
+        }
+        redirect(base_url('account#change_password'));
     }
 
     public function login_submit() {
@@ -129,15 +211,17 @@ class account extends \CI_Controller {
 
         $order_code = $this->input->get("code");
         if (!$order_code)
-            exit("page not found");
+            show_404();
 
         $order = $this->OrderModel->getOrderByCode($order_code);
-        if (!$order)
-            exit("page not found");
+        //daca nu exista comanda, sau trimite prin get codul comenzii unui alt utilizator
+        if (!$order || $order->getUser()->getId_user() != $this->getLoggedUser()['id_user'])
+            show_404();
 
         $data = array(
             "order" => $order
         );
+
         $this->load_view('user/finalizare', $data);
     }
 
@@ -151,21 +235,6 @@ class account extends \CI_Controller {
         );
         set_cookie($cookie);
         redirect(base_url());
-    }
-
-    /**
-     * @AclResource "User: Lista Comenzi"
-     */
-    public function orders() {
-        $user = $this->getLoggedUser(true);
-        $this->view->setPage_name("Cupoanele tale");
-        $orders = $user->getOrders();
-        $data = array(
-            "user" => $user,
-            "orders" => $orders
-        );
-
-        $this->load_view('user/orders', $data);
     }
 
     /**
@@ -238,6 +307,15 @@ class account extends \CI_Controller {
             return true;
         $this->form_validation->set_message('accept_terms', 'Va rugam sa acceptati termenii si conditiile');
         return false;
+    }
+
+    public function password_match() {
+        $old_password = $_POST['old_password'];
+        if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
+            $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
+            return false;
+        } else
+            return true;
     }
 
 }

@@ -217,7 +217,7 @@ class NeoCartModel extends AbstractModel {
                     $voucher->setRecipientEmail($params['email_' . $cartItem->getId()][$i]);
                     $voucher->setIs_gift(1);
                 }
-                $code = "GAD" . $nextOrderId . 'V' . substr(uniqid(), -4);
+                $code = \DLConstants::$CODE_PREFIX . $nextOrderId . 'V' . substr(uniqid(), -4);
                 $voucher->setCode(strtoupper($code));
                 $orderItem->addVoucher($voucher);
             }
@@ -239,7 +239,7 @@ class NeoCartModel extends AbstractModel {
         $order->setShipping_cost($this->getShippingCost($params, $total));
         $order->setTotal($total + $order->getShipping_cost());
         $order->setUser($user);
-        $orderCode = "GAD" . $nextOrderId . 'O' . $last_four;
+        $orderCode = \DLConstants::$CODE_PREFIX . $nextOrderId . 'O' . $last_four;
         $order->setOrderNumber($orderCode);
 
         //daca comanda contine doar cupoane gratuite este confirmata automat
@@ -276,11 +276,6 @@ class NeoCartModel extends AbstractModel {
                     exit("Err:12:00 Payment method not implemented");
                 }break;
         }
-
-        if (isset($params['christmas_shipping']))
-            $tax = $tax + (20 - $tax);
-
-
         return $tax;
     }
 

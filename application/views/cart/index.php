@@ -35,13 +35,17 @@ $cartItems = $neoCart->getCartItems();
                 <div style="margin-top: 20px"></div>
                 <table border="0" width="100%" style="font-size: 12px;">
                     <tr>
-                        <td>
+                        <td style="color:#f00">
                             <?php
                             $errors = $this->session->flashdata('process_payment_errors');
-                            if ($errors)
+                            if ($errors){
+                                echo '<div style="padding:10px; font-size:15px;">';
                                 foreach ($errors as $error) {
-                                    echo $error;
+                                    echo $error.'<br/>';
                                 }
+                                echo "</div>";
+                                
+                            }
                             ?>
                         </td>
                     </tr>

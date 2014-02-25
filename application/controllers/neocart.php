@@ -52,7 +52,6 @@ class neocart extends CI_Controller {
 
         $errors = $this->validatePaymentProcess($_POST, $cart);
         if ($errors) {
-
             $notification = array("type" => "error", "html" => "Va rugam completati toate datele");
             $this->session->set_flashdata('notification', $notification);
             $this->session->set_flashdata('process_payment_errors', $errors);
@@ -86,7 +85,7 @@ class neocart extends CI_Controller {
         ob_start();
         require_once("application/views/mailMessages/freeOrder.php");
         $body = ob_get_clean();
-        $subject = "Comanda " . $order->getOrderNumber() . ' ORINGO';
+        $subject = "Comanda " . $order->getOrderNumber() . DLConstants::$WEBSITE_COMMERCIAL_NAME;
 
         $vouchers = $this->NeoCartModel->generateVouchers($order);
         NeoMail::genericMailAttach($body, $subject, $email, $vouchers);
@@ -248,7 +247,7 @@ class neocart extends CI_Controller {
                     }
                 } else
                 if (strlen($post['name_' . $cartItem->getId()][$i]) < 2) {
-                    $errors[] = "Completati datele beneficiarului voucherului!";
+                    $errors[] = "Completati numele beneficiarilor!";
                     $hasErrors = true;
                     break 2;
                 }

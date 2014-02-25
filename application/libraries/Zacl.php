@@ -27,7 +27,7 @@ class Zacl extends Zend_Acl {
     private function setAclRules() {
         ob_start();
         $resources = $this->AclModel->getAclResources();
-        //adaucam resursele
+        //adaugam resursele
         foreach ($resources as $resource)
             $this->add(new Zend_Acl_Resource($resource->getName()));
 

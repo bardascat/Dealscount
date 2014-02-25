@@ -529,7 +529,7 @@ img{border:0px;}
     display: block;
     background-image: url('../images_fdd/fab_delete_icon.png');
     width: 26px; height: 26px;
-    
+
 }
 #content .cart_page .table_header td{
     font-weight: bold; font-size: 14px; color: #232323;
@@ -559,4 +559,90 @@ img{border:0px;}
     margin-top: 30px;
 }
 /* cart_page end  */
+
+/* thankyou page */
+#content .thankyou_page{
+    width: 950px;
+    min-height: 700px;
+    color: #1d1d1d;
+    background-color: #FFF;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 25px;
+}
+#content .thankyou_page .breadcrumbs{margin-bottom: 0px;}
+#content .thankyou_page h1{border: 0px}
+
+#content .thankyou_page .summary{
+    
+}
+#content .thankyou_page .summary th{font-size: 15px; border-bottom: 1px solid #dadada; padding-bottom: 10px;}
+#content .thankyou_page .summary td{border-bottom: 1px solid #dadada; padding-bottom: 10px; padding-top: 10px;}
+#content .thankyou_page .summary span{font-size: 14px;}
+#content .thankyou_page .summary .center_bold{ text-align: center; font-weight: bold; font-size: 22px;}
+
+#content .thankyou_page .message{font-size: 25px; margin-top: 90px;}
+#content .thankyou_page .message .text{float: left}
+#content .thankyou_page .message a{float: left;display: block; margin-left: 60px; margin-top: 15px; font-size: 16px; line-height: 44px;}
+/* end thankyou page */
+
+/* user acount */
+#content .util{
+        width: 950px;
+    min-height: 700px;
+    color: #1d1d1d;
+    background-color: #FFF;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 25px;
+}
+#content .account{
+        width: 950px;
+    min-height: 700px;
+    color: #1d1d1d;
+    background-color: #FFF;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 25px;
+}
+#content .account h1{border: 0px}
+#content .account .breadcrumbs{margin: 0px;}
+#content .account .user_menu{
+    list-style-type: none;
+    border-bottom: 1px solid #dadada;
+    float: right;
+    margin-top: -15px; /* sorry */
+    width: 100%;
+    padding-bottom: 12px;
+}
+#content .account .user_menu li a{
+    color: #00a5e2;
+    font-size: 15px;
+}
+#content .account .user_menu li{
+    float: right;
+    margin-left: 40px;
+    height: 20px;
+    background-repeat: no-repeat;
+}
+#content .account .user_menu .date_cont{
+    background-image: url('../images_fdd/fab_date_cont_icon.png');
+    padding-left: 20px;
+}
+#content .account .user_menu .vouchere{
+    background-image: url('../images_fdd/fav_vouchere_icon.png');
+    padding-left: 19px;
+}
+
+#content .account .username{
+    float: right;
+    font-size: 18px; margin-top: 20px;
+}
+
+#content .account .change_settings{
+    float: left;
+    clear: both;
+    margin-top: -30px;
+}
+/* end user acount */
 

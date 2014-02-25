@@ -18,6 +18,8 @@ class orders extends CI_Controller {
         $this->OrdersModel = new Dealscount\Models\OrdersModel();
     }
 
+
+
     /**
      * @AclResource Admin: Comenzi: Lista Comenzi
      */
@@ -64,7 +66,6 @@ class orders extends CI_Controller {
         redirect($this->agent->referrer());
     }
 
-    
     /**
      * Adauga la comanda exista un item
      * @AclResource Admin: Comenzi: Adauga Voucher in comanda
@@ -74,8 +75,7 @@ class orders extends CI_Controller {
 
             $this->OrdersModel->addOrderItem($_POST);
             echo "<b>Voucherul a fost adaugat cu success<b/>";
-        }
-        else
+        } else
             exit("page not found");
     }
 
@@ -132,7 +132,7 @@ class orders extends CI_Controller {
             redirect($this->agent->referrer());
         }
     }
-    
+
     public function addOrderOfferPopup() {
         $data['id_item'] = $this->uri->segment(4);
         $data['quantity'] = $this->uri->segment(5);
@@ -151,9 +151,9 @@ class orders extends CI_Controller {
             $text = "Client: " . $order->getUser()->getFirstname() . ' ' . $order->getUser()->getLastname();
             $text.='<br/> Total Plata: ' . $order->getTotal();
             $text.='<br/> Data Comanda: ' . $order->getOrderedOn();
-            $data=array(
-                'data'=>$_POST,
-                'order'=>$order
+            $data = array(
+                'data' => $_POST,
+                'order' => $order
             );
         }
         $this->load_view_admin_popup('popups/addOrderItem', $data);
@@ -245,8 +245,7 @@ class orders extends CI_Controller {
             if (!$order) {
                 exit("<h2>Comanda invalida</h2>");
             }
-        }
-        else
+        } else
             exit("eroare");
     }
 
@@ -320,4 +319,3 @@ class orders extends CI_Controller {
     }
 
 }
-

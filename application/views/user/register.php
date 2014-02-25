@@ -17,7 +17,7 @@
                         <label>Nume:</label>
                     </td>
                     <td>
-                        <input type="text" name="name" value="<?php echo set_value('name') ?>"/>
+                        <input type="text" name="lastname" value="<?php echo set_value('lastname') ?>"/>
                     </td>
                 </tr>
                 <tr>
