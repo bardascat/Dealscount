@@ -71,7 +71,9 @@ class NeoCartModel extends AbstractModel {
      * @param type $hash
      * @return \Dealscount\Models\Entities\NeoCart
      */
-    public function getCart($hash) {
+    public function getCart($hash = false) {
+        if (!$hash)
+            $hash = \CI_Controller::getCartHash();
 
         $cartRep = $this->em->getRepository("Entities:NeoCart");
 
@@ -250,7 +252,7 @@ class NeoCartModel extends AbstractModel {
         $this->em->persist($order);
         $this->em->persist($user);
         $this->em->flush();
-       // $this->emptyCart();
+        // $this->emptyCart();
         return $order;
     }
 
@@ -287,8 +289,8 @@ class NeoCartModel extends AbstractModel {
         $vouchers_list = array();
         $orderItems = $order->getItems();
         foreach ($orderItems as $orderItem) {
-            
-            $offer=$orderItem->getItem();
+
+            $offer = $orderItem->getItem();
             $company = $offer->getCompany();
             $companyDetails = $company->getCompanyDetails();
             $vouchers = $orderItem->getVouchers();
@@ -298,7 +300,7 @@ class NeoCartModel extends AbstractModel {
                 ob_start();
                 require('application/views/popups/voucher.php');
                 $voucherHtml = ob_get_clean();
-                
+
                 require_once("application/libraries/mpdf54/mpdf.php");
                 $mpdf = new \mPDF('utf-8', array(190, 536), '', 'Arial', 2, 2, 2, 2, 2, 2);
                 $mpdf->WriteHTML(utf8_encode($voucherHtml));

@@ -40,10 +40,14 @@ class CI_Controller {
     protected $UserModel;
 
     /**
-     *
      * @var \Dealscount\Models\CategoriesModel
      */
     protected $CategoriesModel = null;
+    
+    /**
+     * @var \Dealscount\Models\NeoCartModel
+     */
+    protected $NeocartModel = null;
 
     /**
      * Constructor
@@ -226,9 +230,11 @@ class CI_Controller {
     private function initDependencies() {
         $this->UserModel = new \Dealscount\Models\UserModel();
         $this->CategoriesModel = new Dealscount\Models\CategoriesModel();
+        $this->NeocartModel=new Dealscount\Models\NeoCartModel();
         $this->view->setUser($this->getLoggedUser());
         $this->view->setCategories($this->CategoriesModel->getRootCategories('offer', true));
         $this->view->setNotification($this->session->flashdata('notification'));
+        $this->view->setCart($this->NeocartModel);
         $this->generateAclResources();
         self::setHash();
     }

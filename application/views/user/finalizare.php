@@ -46,8 +46,9 @@
                 Sa te bucuri de vouchere sa fii sanatos si voios.<br/>
                 Pentru a le utiliza, trebuie sa le descarci din contul tau.
             </div>
-            <a href="<?php echo base_url('account') ?>" id="greenButton">Contul meu</a>
+            <a href="<?php echo base_url('account/orders') ?>" id="greenButton">Contul meu</a>
         </div>
 
     </div>
+    <div id="clear"></div>
 </div>

@@ -5,6 +5,7 @@ class View {
     private $css;
     private $js;
     private $logged_user = FALSE;
+    private $cart;
     private $page_name;
     private $page_description;
     private $populate_form;
@@ -153,6 +154,16 @@ class View {
         $this->metaKeywords = $metaKeywords;
         return $this;
     }
+
+    public function getCartModel() {
+        return $this->cart;
+    }
+
+    public function setCart($cart) {
+        $this->cart = $cart;
+        return $this;
+    }
+
 
 
 

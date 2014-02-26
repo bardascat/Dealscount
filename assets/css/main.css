@@ -75,6 +75,7 @@ img{border:0px;}
     color: #ababab;
     line-height: 27px;
     height: 24px;
+    position: relative;
 }
 
 #header .header_menu{
@@ -179,6 +180,84 @@ img{border:0px;}
 }
 #header .header_categories li a{
     color: #FFF;
+}
+
+#header #cart_header{
+    margin-top: -8px;
+    display: none;
+    position: absolute;
+    left: 0px;
+    margin-left:-370px;
+}
+#header #cart_header .pointing_arrow{
+    background-image: url('../images_fdd/fab_smoc_arrow.png');
+    width: 15px;
+    height: 5px;
+    position: absolute;
+    right: 55px;
+    margin-top: 8px;
+
+}
+#header #cart_header .inner .empty_cart{
+    color: #1d1d1d;
+    text-align: left;
+    font-size: 15px;
+}
+#header #cart_header .inner{
+
+    padding: 15px;
+    margin-top:13px;
+    background-color: #FFF;
+    width: 466px;
+    min-height: 30px;
+    -webkit-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.4);
+    -moz-box-shadow:    0px 0px 5px 0px rgba(50, 50, 50, 0.4);
+    box-shadow:         0px 0px 5px 0px rgba(50, 50, 50, 0.4);
+}
+#header #cart_header .inner td{
+    line-height: 17px;
+    color: #1d1d1d;
+}
+#header #cart_header .inner td td{
+    padding-bottom: 5px;
+}
+#header .shopping_cart #cart_header .brief a{
+    color: #1d1d1d;
+}
+#header .shopping_cart #cart_header .brief{
+    font-size: 12px;
+}
+#header .shopping_cart #cart_header .title{
+    font-size: 14px;
+    text-align: left;
+    color: #161616;
+    padding-bottom: 15px;
+}
+#header .shopping_cart #cart_header .discount{
+    font-size: 14px;
+    text-align: right;
+    color: #161616;
+    padding-bottom: 15px;
+}
+#header #cart_header .summary_discount{
+    padding-top: 15px;
+    font-size: 14px;
+
+    text-align: right;
+}
+#header #cart_header .download{
+    padding-top: 15px;
+}
+#header #cart_header .space{
+    padding-top: 10px;
+    border-bottom:1px solid #cccccc;
+}
+#header #cart_header .download a{
+    display: block;
+    background-image: url('../images_fdd/fab_descarca_voucherele_header.png');
+    width: 197px; height: 29px;
 }
 #form_notification{
     font-size: 12px;
@@ -574,7 +653,7 @@ img{border:0px;}
 #content .thankyou_page h1{border: 0px}
 
 #content .thankyou_page .summary{
-    
+
 }
 #content .thankyou_page .summary th{font-size: 15px; border-bottom: 1px solid #dadada; padding-bottom: 10px;}
 #content .thankyou_page .summary td{border-bottom: 1px solid #dadada; padding-bottom: 10px; padding-top: 10px;}
@@ -588,7 +667,7 @@ img{border:0px;}
 
 /* user acount */
 #content .util{
-        width: 950px;
+    width: 950px;
     min-height: 700px;
     color: #1d1d1d;
     background-color: #FFF;
@@ -597,8 +676,10 @@ img{border:0px;}
     padding-top: 25px;
 }
 #content .account{
-        width: 950px;
+    width: 950px;
     min-height: 700px;
+    float: left;
+    padding-bottom: 50px;
     color: #1d1d1d;
     background-color: #FFF;
     padding-left: 25px;
@@ -611,7 +692,7 @@ img{border:0px;}
     list-style-type: none;
     border-bottom: 1px solid #dadada;
     float: right;
-    margin-top: -15px; /* sorry */
+    margin-top: -20px; /* sorry */
     width: 100%;
     padding-bottom: 12px;
 }
@@ -636,13 +717,65 @@ img{border:0px;}
 
 #content .account .username{
     float: right;
-    font-size: 18px; margin-top: 20px;
+    font-size: 18px; margin-top: 10px;
 }
 
 #content .account .change_settings{
     float: left;
     clear: both;
-    margin-top: -30px;
+    margin-top: -25px;
 }
 /* end user acount */
+
+/* user orders list */
+
+#content .account .search_vouchers form{width: 359px; height: 39px;
+                                        background-image: url('../images_fdd/fab_search_bar_border.png');
+                                        background-repeat: no-repeat;
+                                        float: left;
+                                        margin-top:10px;
+                                        margin-left: 5px;
+}
+#content .account .search_vouchers form input[type="submit"]{
+    width: 34px;
+    height: 32px;
+    margin-top: 2px;
+    border:0px;
+    background-color: transparent;
+    cursor: pointer;
+}
+#content .account .search_vouchers form input[type="text"]{
+    width:302px;    
+    height: 25px;
+    margin-left: 6px;
+    border:0px;
+    font-family: 'Noto Sans';
+    font-size: 15px;
+    line-height: 25px;
+    margin-top: 0px;
+    border:0px solid #ccc;
+    float:left;
+    margin-top:5px;
+}
+
+#content .account .orders_list td{
+    border-bottom: 1px solid #dadada;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+#content .account .orders_list{
+
+    clear: both;
+    float: left;
+    font-size: 14px;
+    margin-top: 5px;
+    width: 100%;
+    border-top: 1px solid #dadada;
+
+}
+#content .account .orders_list .inner td{
+    padding-bottom: 10px;
+    border:0px;
+}
+/* end user orders list */
 

@@ -26,7 +26,12 @@ class account extends \CI_Controller {
     public function orders() {
         $user = $this->getLoggedUser(true);
         $this->view->setPage_name("Cupoanele tale");
-        $orders = $user->getOrders();
+
+        if ($this->input->get("voucher"))
+            $orders = $this->OrderModel->searchVouchers($this->input->get("voucher"), $this->getLoggedUser()['id_user']);
+        else
+            $orders = $user->getOrders();
+        
         $data = array(
             "user" => $user,
             "orders" => $orders

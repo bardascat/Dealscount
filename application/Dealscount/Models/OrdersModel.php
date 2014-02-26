@@ -76,6 +76,7 @@ class OrdersModel extends AbstractModel {
         exit();
     }
 
+
     /**
      * 
      * @param type $id_voucher
@@ -411,7 +412,7 @@ class OrdersModel extends AbstractModel {
      * @param type $code
      * @return array
      */
-    public function searchVouchers($id_item, $code = false) {
+    public function getVoucherByCode($id_item, $code = false) {
         $conn = $this->em->getConnection();
         $query = "select ov.* from orders_vouchers ov
         join orders_items oi on (ov.id_order_item=oi.id)
@@ -429,6 +430,34 @@ class OrdersModel extends AbstractModel {
             return false;
         else
             return $r;
+    }
+    
+        /**
+     * Cauta comanda dupa id-ul voucherului
+     * @param type $id_voucher
+     * @return Entities\Order
+     */
+    public function searchVouchers($query,$id_user) {
+        try {
+            $result = $this->em->createQueryBuilder()
+                    ->select("orders,orderItems,items")
+                    ->from("Entities:Order", "orders")
+                    ->join("orders.user", 'u')
+                    ->join("orders.orderItems","orderItems")
+                    ->join("orderItems.item","items")
+                    ->where("items.name like :searchQuery")
+                    ->orWhere("items.brief like :searchQuery")
+                    ->andWhere("orders.id_user=:id_user")
+                    ->setParameter(":searchQuery", '%' . $query . '%')
+                    ->setParameter("id_user", $id_user)
+                    ->getQuery()
+                    ->execute();
+                    
+            return $result;
+        } catch (\Doctrine\ORM\Query\QueryException $e) {
+            echo $e->getMessage();
+        }
+        exit();
     }
 
     /**
