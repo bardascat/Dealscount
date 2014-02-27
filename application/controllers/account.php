@@ -6,6 +6,9 @@ class account extends \CI_Controller {
 
     function __construct() {
         parent::__construct();
+        if ($this->getLoggedUser()['role'] == DLConstants::$PARTNER_ROLE) {
+            redirect(base_url('partener'));
+        }
         $this->OrderModel = new Dealscount\Models\OrdersModel();
         $this->load->library('form_validation');
     }
@@ -31,7 +34,7 @@ class account extends \CI_Controller {
             $orders = $this->OrderModel->searchVouchers($this->input->get("voucher"), $this->getLoggedUser()['id_user']);
         else
             $orders = $user->getOrders();
-        
+
         $data = array(
             "user" => $user,
             "orders" => $orders

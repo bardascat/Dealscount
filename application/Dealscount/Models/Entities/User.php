@@ -333,6 +333,20 @@ class User extends AbstractEntity {
     }
 
 
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\Item
+     */
+    public function getItems() {
+        return $this->items;
+    }
+
+    public function setItems($items) {
+        $this->items = $items;
+        return $this;
+    }
+
+
 
 
 }

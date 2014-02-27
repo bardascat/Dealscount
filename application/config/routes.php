@@ -50,6 +50,9 @@ $route['oferte/(:any)'] = "oferte/view";
 //cart
 $route['cart'] = "neocart";
 
+//partener
+$route['partener/suspenda-oferta/(:any)'] = "partener/suspend_offer";
+$route['partener/activeaza-oferta/(:any)'] = "partener/resume_offer";
 
 $route['404_override'] = '';
 

@@ -66,6 +66,7 @@ img{border:0px;}
     color: #ababab;
     line-height: 27px;
     height: 24px;
+    position: relative;
 }
 #header .center_header .shopping_cart{
     float: left;
@@ -259,6 +260,81 @@ img{border:0px;}
     background-image: url('../images_fdd/fab_descarca_voucherele_header.png');
     width: 197px; height: 29px;
 }
+
+/* header login */
+#header_login{
+    margin-top: -8px;
+    display: block;
+    position: absolute;
+    left: 0px;
+    margin-left:-70px;
+    display: none;
+
+}
+#header_login .pointing_arrow{
+    background-image: url('../images_fdd/fab_smoc_arrow.png');
+    width: 15px;
+    height: 5px;
+    position: absolute;
+    right: 100px;
+    margin-top: 8px;
+}
+#header_login .inner{
+    padding: 12px;
+    padding-top: 5px;
+    margin-top:13px;
+    background-color: #FFF;
+    width: 209px;
+    height: 195px;
+    -webkit-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.4);
+    -moz-box-shadow:    0px 0px 5px 0px rgba(50, 50, 50, 0.4);
+    box-shadow:         0px 0px 5px 0px rgba(50, 50, 50, 0.4);
+}
+#header_login .login_table input[type="text"],#header_login .login_table input[type="password"]{
+    height: 19px;
+    color: #969696;
+    width: 205px;
+    border:1px solid #cccccc;
+}
+#header #header_login h2{
+    color: #161616;
+    font-size: 13px;
+    font-weight: normal;
+    margin-top:0px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+}
+#header #header_login .fb_login{
+    display:  block;
+    background-image: url('../images_fdd/fab_fb_connect.png');
+    width: 71px;
+    height: 20px;
+    float: left;
+    margin-top: 5px;
+}
+#header #header_login .new_account{
+    display:  block;
+    background-image: url('../images_fdd/fab_cont_nou.png');
+    width: 205px;
+    height: 30px;
+    margin: auto;
+    margin-top: 8px;
+}
+#header #header_login .login_btn{
+    display:  block;
+    background-image: url('../images_fdd/fab_login.png');
+    width: 59px;
+    height: 20px;
+    float: right;
+    margin-top: 5px;
+}
+#header  #header_login .login_table td{
+    color: #161616;
+    font-size: 13px;
+}
+/* header login */
 #form_notification{
     font-size: 12px;
 }
@@ -778,4 +854,168 @@ img{border:0px;}
     border:0px;
 }
 /* end user orders list */
+/* partener  */
 
+#content .partner{
+    width: 950px;
+    min-height: 700px;
+    float: left;
+    padding-bottom: 50px;
+    color: #1d1d1d;
+    background-color: #FFF;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 25px;
+}
+
+
+#content .partner .header .name{
+    font-size: 18px;
+    text-align: left;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dadada;
+
+}
+#content .partner a{
+    color: #00a5e2;
+}
+#content .partner .header .minimenu{
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dadada;
+}
+#content .partner .header .minimenu ul{
+    list-style-type: none;
+    margin: 0px;
+    float: right;
+    padding: 0px;
+}
+#content .partner .header .minimenu ul li{
+    float: left;
+    font-size: 15px;
+    margin-left: 20px;
+
+}
+
+#content .partner .header .minimenu .date_cont{
+    background-image: url('../images_fdd/fab_date_cont_icon.png');
+    padding-left: 20px;
+    background-repeat: no-repeat
+}
+
+#content .partner .header .minimenu .abonamente{
+    background-image: url('../images_fdd/fab_abonamente.png');
+    padding-left: 24px;
+    background-position: 0px 3px;
+    background-repeat: no-repeat
+}
+
+#content .partner_menu{
+    margin: 0px;
+   
+    width: 100%;
+    border-bottom: 1px solid #dadada;
+    float: left;
+    margin-top: 50px;
+   
+}
+#content .partner_menu ul{
+     list-style-type: none;
+      float: right;
+}
+
+#content .partner_menu .selected{
+    background-color: #b4b4b4;
+    color: #FFF;
+}
+#content .partner_menu .selected a{color: #fff}
+#content .partner_menu li{
+    float: left;
+    font-size: 15px;
+    margin-left: 20px;
+    padding: 10px;
+    background-repeat: no-repeat;
+}
+
+#content .partner_menu .settings{
+    background-image: url('../images_fdd/fab_ofertele_mele.png');
+    padding-left: 28px;
+    background-position: 10px 11px;
+}
+#content .partner_menu .new_offer{
+    background-image: url('../images_fdd/fab_adauga_oferta.png');
+    padding-left: 30px;
+    background-position: 10px 13px;
+}
+#content .partner_menu .users{
+    background-image: url('../images_fdd/fab_utilizatori.png');
+    padding-left: 37px;
+    background-position: 10px 12px;
+}
+#content .partner_menu .newsletter{
+    background-image: url('../images_fdd/fab_newsletter.png');
+    padding-left: 37px;
+    background-position: 10px 14px;
+}
+#content .partner_menu .invoice{
+    background-image: url('../images_fdd/fab_facturi.png');
+    padding-left: 28px;
+    background-position: 10px 12px;
+}
+#content .partner_menu .vouchers{
+    background-image: url('../images_fdd/fab_ofertele_mele.png');
+    padding-left: 30px;
+    background-position: 10px 12px;
+}
+#content .partner_menu .dashboard{
+    background-image: url('../images_fdd/fab_dashboard.png');
+    padding-left: 30px;
+    background-position: 5px 11px;
+}
+
+#content .partner .offers_list{
+    float: left;
+    width: 100%;
+    font-size: 14px;
+    margin-top: 10px;
+}
+#content .partner .offers_list .brief{
+    padding-left: 20px;
+    padding-right: 30px;
+    font-size: 14px;
+}
+#content .partner .offers_list .inner_table td{
+    padding-top:3px;
+    padding-bottom:3px;
+}
+#content .partner .offers_list .offers_details{
+    display: block;
+    background-image: url('../images_fdd/fab_detalii_oferta.png');
+    width: 154px;
+    height: 35px;
+}
+#content .partner .offers_list .promoted{
+    width: 154px;
+    padding: 5px;
+    
+}
+#content .partner .offers_list .actions,
+#content .partner .offers_list .inner_table,
+#content .partner .offers_list .offer_image,
+#content .partner .offers_list .brief{
+    border-bottom: 1px solid #b4b4b4;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+#content .red_button{
+    display: block;
+    background-image: url('../images_fdd/fab_red_button.png');
+    width: 154px;
+    height: 35px;
+    color: #fff;
+    text-align: center;
+    line-height: 35px;
+    font-weight: bold;
+    
+}
+/* partener  */

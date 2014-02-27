@@ -57,6 +57,12 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         return true;
     }
 
+    public function simpleUpdate($offer) {
+        $this->em->persist($offer);
+        $this->em->flush();
+        return true;
+    }
+
     public function updateOffer($post, $id_operator) {
 
         $item = $this->getOffer($post['id_item']);
@@ -322,11 +328,11 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             echo $e->getMessage();
         }
     }
-    
-    public function increment_offer_view($id_item){
-        $qb=$this->em->createQueryBuilder();
+
+    public function increment_offer_view($id_item) {
+        $qb = $this->em->createQueryBuilder();
         $qb->update("Entities:ItemStats", 'stats')
-                ->set("stats.views",'stats.views+1')
+                ->set("stats.views", 'stats.views+1')
                 ->where('stats.id_item=:id_item')
                 ->setParameter(":id_item", $id_item)
                 ->getQuery()

@@ -502,7 +502,7 @@ class Item extends AbstractEntity {
     }
 
     public function getStart_date() {
-        return $this->start_date;
+        return $this->start_date->format("Y-m-d H:i:s");
     }
 
     public function setStart_date($start_date) {
@@ -511,7 +511,7 @@ class Item extends AbstractEntity {
     }
 
     public function getEnd_date() {
-        return $this->end_date;
+        return $this->end_date->format("Y-m-d H:i:s");
     }
 
     public function setEnd_date($end_date) {
