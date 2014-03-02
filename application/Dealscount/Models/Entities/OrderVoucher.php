@@ -56,6 +56,11 @@ class OrderVoucher extends AbstractEntity {
      * @Column (type="integer",nullable=true)
      */
     protected $used = 0;
+    /**
+     *
+     * @Column (type="datetime",nullable=true)
+     */
+    protected $used_at = 0;
 
     public function getId_voucher() {
         return $this->id_voucher;
@@ -116,6 +121,26 @@ class OrderVoucher extends AbstractEntity {
     public function setIs_gift($is_gift) {
         $this->is_gift = $is_gift;
     }
+
+    public function getUsed_at() {
+        return $this->used_at;
+    }
+
+    public function setUsed_at($used_at) {
+        $this->used_at = $used_at;
+        return $this;
+    }
+    public function getUsed() {
+        return $this->used;
+    }
+
+    public function setUsed($used) {
+        $this->used = $used;
+        return $this;
+    }
+
+
+
 
 }
 

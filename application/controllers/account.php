@@ -47,6 +47,7 @@ class account extends \CI_Controller {
         $user = $this->getLoggedUser(true);
         if (!$_POST)
             redirect(base_url('account'));
+       
         $this->populate_form($user);
 
         //procesam requestul

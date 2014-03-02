@@ -5,10 +5,12 @@
  */
 class users extends CI_Controller {
 
+    private $PartnerModel;
     function __construct() {
         parent::__construct();
         $this->load->library('user_agent');
         $this->load->library('form_validation');
+        $this->PartnerModel=new \Dealscount\Models\PartnerModel();
     }
 
     /**
@@ -112,7 +114,7 @@ class users extends CI_Controller {
      */
     public function company_list() {
         $this->view->setPage_name("Lista parteneri");
-        $companies = $this->UserModel->getCompaniesList();
+        $companies = $this->PartnerModel->getCompaniesList();
 
         $this->load_view_admin("admin/users/company/company_list", array("companies" => $companies));
     }
@@ -143,7 +145,7 @@ class users extends CI_Controller {
             $images = $this->upload_images($_FILES['image'], "application_uploads/company/" . $id, false);
             $_POST['image'] = $images;
             try {
-                $user = $this->UserModel->createPartner($_POST);
+                $user = $this->PartnerModel->createPartner($_POST);
                 $this->session->set_flashdata("form_message", "Partenerul a fost inserat");
                 $this->session->set_flashdata('notification', array("type" => "success", "html" => "Partnerul a fost salvat"));
                 redirect(base_url('admin/users/company_list'));
@@ -167,7 +169,7 @@ class users extends CI_Controller {
     public function edit_company() {
         $id_user = $this->uri->segment(4);
 
-        $user = $this->UserModel->getCompanyByPk($id_user);
+        $user = $this->PartnerModel->getCompanyByPk($id_user);
 
         $this->populate_form($user);
         $data = array(
@@ -184,7 +186,7 @@ class users extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             //forma nu e validata
-            $user = $this->UserModel->getCompanyByPk($this->input->post("id_user"));
+            $user = $this->PartnerModel->getCompanyByPk($this->input->post("id_user"));
             $data['user'] = $user;
             $this->populate_form($user);
             $data["notification"] = array(
@@ -199,7 +201,7 @@ class users extends CI_Controller {
             $_POST['image'] = $images;
 
             try {
-                $this->UserModel->updateCompany($_POST);
+                $this->PartnerModel->updateCompany($_POST);
                 $data['notification'] = array(
                     "type" => "form_notification",
                     "message" => "Userul a fost salvat cu success",
@@ -213,7 +215,7 @@ class users extends CI_Controller {
                     "cssClass" => "ui-state-error ui-corner-all"
                 );
             }
-            $user = $this->UserModel->getCompanyByPk($this->input->post("id_user"));
+            $user = $this->PartnerModel->getCompanyByPk($this->input->post("id_user"));
             $this->populate_form($user);
             $data['user'] = $user;
 

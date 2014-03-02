@@ -911,16 +911,16 @@ img{border:0px;}
 
 #content .partner_menu{
     margin: 0px;
-   
+
     width: 100%;
     border-bottom: 1px solid #dadada;
     float: left;
     margin-top: 50px;
-   
+
 }
 #content .partner_menu ul{
-     list-style-type: none;
-      float: right;
+    list-style-type: none;
+    float: right;
 }
 
 #content .partner_menu .selected{
@@ -996,7 +996,7 @@ img{border:0px;}
 #content .partner .offers_list .promoted{
     width: 154px;
     padding: 5px;
-    
+
 }
 #content .partner .offers_list .actions,
 #content .partner .offers_list .inner_table,
@@ -1016,6 +1016,110 @@ img{border:0px;}
     text-align: center;
     line-height: 35px;
     font-weight: bold;
+
+}
+
+/* partner newsletter page */
+#content .partner .newsletters{
+    font-size: 13px; color: #232323;
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+#content .partner .newsletters h1{
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 30px;  
+}
+#content .partner .newsletters .info{
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+#content .partner .newsletters .left_side{
+    margin-left: 20px;
+    margin-top: 10px;
+    width:680px; float: left;
+}
+
+#content .partner .newsletters .nameInput{
+    width: 350px;
+    height: 22px;
+    border:1px solid #dadada;
+}
+#content .partner .newsletters .programeaza{
+    background-image: url('../images_fdd/fab_calendar.png');
+    padding-left: 33px;
+    height: 25px;
+    background-repeat: no-repeat;
+}
+#content .partner .newsletters .programeaza input{
+    width: 150px;
+    height: 22px;
+    border:1px solid #dadada;
+}
+#content .partner .newsletters td{
+    padding-bottom: 15px;
+    vertical-align: top;
+}
+
+#content .partner .newsletters .filtersTable td label{
+    padding-left: 0px;
+}
+#content .partner .newsletters .filtersTable td{
+    padding-bottom: 10px;
+}
+
+#content .partner .newsletters .genderTable td{
+    vertical-align: middle;
+}
+#content .partner .newsletters .ageTable td{
+    vertical-align: middle;
+}
+#content .partner .newsletters .cities select{
+    width: 200px;
+    border:1px solid #dadada;
+    padding: 3px;
+    height: 100px;
+}
+
+#content .partner .newsletters .rightSide{
+    float: right;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+#content .partner .newsletters .rightSide .vizualizeaza{
+    display: block;
+    background-image: url('../images_fdd/fab_newsletter_vizualizare.png');
+    width: 147px;
+    height: 43px;
+}
+#content .partner .newsletters .rightSide .programeaza{
+    display: block;
+    background-image: url('../images_fdd/fab_newsletter_programeaza.png');
+    width: 147px;
+    height: 43px;
+    border:0px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    
     
 }
+#content .partner .newsletters .newsletters_list{
+    float: left;
+    margin-top: 20px;
+    width: 100%;
+}
+
+#content .partner .newsletters .newsletters_list td{
+    border:1px solid #dadada;
+}
+
+#ui-datepicker-div{
+    font-size: 10px;
+}
+/* partner newsletter page */
+
 /* partener  */

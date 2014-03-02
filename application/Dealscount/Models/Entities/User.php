@@ -50,6 +50,11 @@ class User extends AbstractEntity {
     /**
      * @Column(type="string") @var string 
      */
+    protected $age;
+
+    /**
+     * @Column(type="string") @var string 
+     */
     protected $address;
 
     /**
@@ -89,6 +94,11 @@ class User extends AbstractEntity {
     protected $items;
 
     /**
+     * @OneToMany(targetEntity="PartnerNewsletter",mappedBy="item")
+     */
+    protected $partnerNewsletter;
+
+    /**
      * @OneToMany(targetEntity="Item",mappedBy="operator")
      */
     protected $operator_items;
@@ -109,7 +119,6 @@ class User extends AbstractEntity {
      * @OrderBy({"id_invoice" = "desc"})
      */
     protected $invoices;
-    
     private $realPassword;
 
     function __construct() {
@@ -118,6 +127,7 @@ class User extends AbstractEntity {
         $this->operator_items = new ArrayCollection();
         $this->orders = new ArrayCollection();
         $this->invoices = new ArrayCollection();
+        $this->partnerNewsletter=new ArrayCollection();
     }
 
     public function addOperatorItem(Item $item) {
@@ -194,6 +204,7 @@ class User extends AbstractEntity {
 
     public function getIterationArray() {
 
+        //proprietatile userului
         $iteration = array();
         foreach ($this as $key => $value) {
             if (!is_object($value) || ($value instanceof \DateTime))
@@ -314,6 +325,7 @@ class User extends AbstractEntity {
         $this->address = $address;
         return $this;
     }
+
     public function getCity() {
         return $this->city;
     }
@@ -332,7 +344,6 @@ class User extends AbstractEntity {
         return $this;
     }
 
-
     /**
      * 
      * @return \Dealscount\Models\Entities\Item
@@ -346,7 +357,23 @@ class User extends AbstractEntity {
         return $this;
     }
 
+    public function getAge() {
+        return $this->age;
+    }
 
+    public function setAge($age) {
+        $this->age = $age;
+        return $this;
+    }
+
+    public function getPartnerNewsletter() {
+        return $this->partnerNewsletter;
+    }
+
+    public function setPartnerNewsletter($partnerNewsletter) {
+        $this->partnerNewsletter = $partnerNewsletter;
+        return $this;
+    }
 
 
 }

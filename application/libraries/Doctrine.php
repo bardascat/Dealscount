@@ -98,7 +98,8 @@ class Doctrine {
             $em->getClassMetadata("Entities:AclRole"),
             $em->getClassMetadata("Entities:Acl"),
             $em->getClassMetadata("Entities:AclResource"),
-            $em->getClassMetadata("Entities:CartItem")
+            $em->getClassMetadata("Entities:CartItem"),
+            $em->getClassMetadata("Entities:PartnerNewsletter")
         );
         $tool->updateSchema($classes);
         exit("done");
