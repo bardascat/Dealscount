@@ -94,7 +94,8 @@ class User extends AbstractEntity {
     protected $items;
 
     /**
-     * @OneToMany(targetEntity="PartnerNewsletter",mappedBy="item")
+     * @OneToMany(targetEntity="PartnerNewsletter",mappedBy="user",cascade={"persist"})
+     * @OrderBy({"status"="desc","scheduled" = "asc"})
      */
     protected $partnerNewsletter;
 
@@ -366,13 +367,16 @@ class User extends AbstractEntity {
         return $this;
     }
 
-    public function getPartnerNewsletter() {
+    /**
+     * @return \Dealscount\Models\Entities\PartnerNewsletter
+     */
+    public function getPartnerNewsletters() {
         return $this->partnerNewsletter;
     }
 
-    public function setPartnerNewsletter($partnerNewsletter) {
-        $this->partnerNewsletter = $partnerNewsletter;
-        return $this;
+    public function addPartnerNewsletter(PartnerNewsletter $partnerNewsletter) {
+        $this->partnerNewsletter->add($partnerNewsletter);
+        $partnerNewsletter->setUser($this);
     }
 
 

@@ -32,22 +32,27 @@ class PartnerNewsletter extends AbstractEntity {
     protected $filters;
 
     /**
-     * @Column(type="integer")
+     * @Column(type="text")
+     */
+    protected $offers;
+
+    /**
+     * @Column(type="string")
      */
     protected $status;
 
     /**
-     * @Column(type="integer")
+     * @Column(type="integer",nullable=true)
      */
     protected $sentTo;
 
     /**
-     * @Column(type="integer")
+     * @Column(type="integer",nullable=true)
      */
     protected $opened;
 
     /**
-     * @Column(type="integer")
+     * @Column(type="integer",nullable=true)
      */
     protected $clicks;
 
@@ -55,7 +60,7 @@ class PartnerNewsletter extends AbstractEntity {
      * @ManyToOne(targetEntity="User",inversedBy="partnerNewsletter")
      * @JoinColumn(name="id_user", referencedColumnName="id_user" ,onDelete="CASCADE")
      */
-    private $item;
+    private $user;
 
     public function getId_newsletter() {
         return $this->id_newsletter;
@@ -129,14 +134,24 @@ class PartnerNewsletter extends AbstractEntity {
         return $this;
     }
 
-    public function getItem() {
-        return $this->item;
+    public function getUser() {
+        return $this->user;
     }
 
-    public function setItem($item) {
-        $this->item = $item;
+    public function setUser($user) {
+        $this->user = $user;
         return $this;
     }
+
+    public function getOffers() {
+        return $this->offers;
+    }
+
+    public function setOffers($offers) {
+        $this->offers = $offers;
+        return $this;
+    }
+
 
 
 }

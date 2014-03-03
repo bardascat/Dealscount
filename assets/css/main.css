@@ -1117,6 +1117,25 @@ img{border:0px;}
     border:1px solid #dadada;
 }
 
+#content .partner .newsletters .newsletters_list {
+    
+}
+#content .partner .newsletters .newsletters_list th{
+    font-size: 16px;
+    border-top:1px solid #dadada;
+    border-bottom:1px solid #dadada;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+#content .partner .newsletters .newsletters_list td{
+    border:0px;
+    border-bottom:1px solid #dadada;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    font-size: 13px;
+    text-align: center;
+    
+}
 #ui-datepicker-div{
     font-size: 10px;
 }

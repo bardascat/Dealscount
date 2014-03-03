@@ -19,11 +19,16 @@
                 <div class="left_side">
                     <table cellpadding="0" width="100%"  cellspacing="0" border="0">
                         <tr>
-                            <td  width="120">
+                            <td colspan="2">
+                                <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  width="130">
                                 <label>Titlu newsletter</label>
                             </td>
                             <td>
-                                <input class="nameInput" type="text" name="name"/>
+                                <input class="nameInput" value="<?php echo set_value('name') ?>" type="text" name="name"/>
                             </td>
                         </tr>
                         <tr>
@@ -32,7 +37,7 @@
                             </td>
                             <td>
                                 <div class="programeaza">
-                                    <input class="datepicker" type="text" name="scheduled"/>
+                                    <input class="datepicker" type="text" value="<?php echo set_value('scheduled') ?>"  name="scheduled"/>
                                 </div>
                             </td>
                         </tr>
@@ -47,7 +52,7 @@
                                             <table class="genderTable" cellpadding="0" cellspacing="0" border="0">
                                                 <tr>
                                                     <td>
-                                                        <input id="masculin" type="checkbox" value="m" name="sex[]"/>
+                                                        <input <?php echo (isset($_POST['sex']) && in_array('m', $_POST['sex']) ? "checked='checked'" : false) ?> id="masculin" type="checkbox" value="m" name="sex[]"/>
                                                     </td>
                                                     <td>
                                                         <label for="masculin">Masculin</label>
@@ -55,7 +60,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input id="feminin" type="checkbox" value="f" name="sex[]"/>
+                                                        <input <?php echo (isset($_POST['sex']) && in_array('f', $_POST['sex']) ? "checked='checked'" : false) ?>  id="feminin" type="checkbox" value="f" name="sex[]"/>
                                                     </td>
                                                     <td>
                                                         <label for="feminin">Feminin</label>
@@ -67,7 +72,7 @@
                                             <table class="ageTable" cellpadding="0" cellspacing="0" border="0">
                                                 <tr>
                                                     <td>
-                                                        <input id="18_25" value="18-25" type="checkbox" name="age[]"/>
+                                                        <input id="18_25" <?php echo (isset($_POST['age']) && in_array('18-25', $_POST['age']) ? "checked='checked'" : false) ?>  value="18-25" type="checkbox" name="age[]"/>
                                                     </td>
                                                     <td>
                                                         <label for="18_25">18-25 ani</label>
@@ -75,7 +80,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input id="25_30" value="25-30" type="checkbox" name="age[]"/>
+                                                        <input <?php echo (isset($_POST['age']) && in_array('25-30', $_POST['age']) ? "checked='checked'" : false) ?> id="25_30" value="25-30" type="checkbox" name="age[]"/>
                                                     </td>
                                                     <td>
                                                         <label for="25_30">25-30 ani</label>
@@ -83,7 +88,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input id="30_40" value="30-40" type="checkbox" name="age[]"/>
+                                                        <input id="30_40" value="30-40" type="checkbox" <?php echo (isset($_POST['age']) && in_array('30-40', $_POST['age']) ? "checked='checked'" : false) ?> name="age[]"/>
                                                     </td>
                                                     <td>
                                                         <label for="30_40">30-40 ani</label>
@@ -91,7 +96,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input id="40_ani" value=">40" type="checkbox" name="age[]"/>
+                                                        <input id="40_ani" value=">40" <?php echo (isset($_POST['age']) && in_array('>40', $_POST['age']) ? "checked='checked'" : false) ?> type="checkbox" name="age[]"/>
                                                     </td>
                                                     <td>
                                                         <label for="40_ani">>40 ani</label>
@@ -99,15 +104,11 @@
                                                 </tr>
                                             </table>
                                         </td>
+
                                         <td class="cities">
-                                            <select multiple="true" name="cities">
-                                                <option value="Bucuresti">Bucuresti</option>
-                                                <option value="Bucuresti">Bucuresti</option>
-                                                <option value="Bucuresti">Bucuresti</option>
-                                                <option value="Bucuresti">Bucuresti</option>
-                                                <option value="Bucuresti">Bucuresti</option>
-                                                <option value="Bucuresti">Bucuresti</option>
-                                                <option value="Bucuresti">Bucuresti</option>
+                                            <select multiple="true" name="cities[]">
+                                                <option <?php echo (isset($_POST['cities']) && in_array('Bucuresti', $_POST['cities']) ? "selected='selected'" : false) ?>value="Bucuresti">Bucuresti</option>
+                                                <option <?php echo (isset($_POST['cities']) && in_array('Galati', $_POST['cities']) ? "selected='selected'" : false) ?>value="Galati">Galati</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -118,59 +119,87 @@
                 </div> <!-- left side end -->
                 <div class="rightSide">
                     <input type="button" onclick="$('#scheduleNewsletterForm').submit()" class="programeaza"/>
-                    <a href="<?php base_url("partnener/newsletter/vizualizare") ?>" class="vizualizeaza"></a>
+                    <a style="display: none;" href="" class="vizualizeaza"></a>
                 </div>
             </form>
 
+
             <div class="newsletters_list">
-                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <th>
-                            Titlu
-                        </th>
-                        <th>
-                            Data
-                        </th>
-                        <th>
-                            Trimis la
-                        </th>
-                        <th>
-                            Au deschis
-                        </th>
-                        <th>
-                            Accesari
-                        </th>
-                        <th>
-                            Vezi
-                        </th>
-                        <th>
-                            Anuleaza
-                        </th>
-                    </tr>
-                    <tr>
-                        <td>
-                            Oferte la infrumusetare cu doar 2 lei etc
-                        </td>
-                        <td>
-                            22.0.2014
-                        </td>
-                        <td>
-                            30 persoane
-                        </td>
-                        <td>
-                            30 persoane
-                        </td>
-                        <td>
-                            30 persoane
-                        </td>
-                        <td>
-                            vezi
-                        </td>
-                        <td>
-                            Anuleaza
-                        </td>
-                    </tr>
-                </table>
+                <?php
+                $newsletters = $user->getPartnerNewsletters();
+
+                if (count($newsletters) < 1) {
+                    // echo "Nu ati trimis niciun newsletter";
+                } else {
+                    ?>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <th width="300" style="text-align: left;">
+                                Titlu
+                            </th>
+                            <th>
+                                Data
+                            </th>
+                            <th>
+                                Trimis la
+                            </th>
+                            <th>
+                                Au deschis
+                            </th>
+                            <th>
+                                Accesari
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+                        <?php foreach ($newsletters as $newsletter) { ?>
+                            <tr>
+                                <td style="text-align: left;"> 
+                                    <?php echo $newsletter->getName() ?>
+                                </td>
+                                <td>
+                                    <?php echo $newsletter->getScheduled()->format("d-m-Y H:i"); ?>
+                                </td>
+                                <td>
+                                    <?php echo ($newsletter->getSentTo() ? $newsletter->getSentTo() . ' persoane' : ' N/A' ) ?> 
+                                </td>
+                                <td>
+                                    <?php echo ($newsletter->getOpened() ? $newsletter->getOpened() . ' persoane' : ' N/A' ) ?> 
+                                </td>
+                                <td>
+                                    <?php echo ($newsletter->getOpened() ? $newsletter->getClicks() . ' persoane' : ' N/A' ) ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    switch ($newsletter->getStatus()) {
+                                        case DLConstants::$NEWSLETTER_PENDING: echo "In asteptare";
+                                            break;
+                                        case DLConstants::$NEWSLETTER_SENT: echo "<span style='color:green'>Trimis</span>";
+                                            break;
+                                        case DLConstants::$NEWSLETTER_SUSPENDED: echo "<span style='color:red'>Anulat</span>";
+                                            break;
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+                                    <a href="<?php echo base_url('partener/view_newsletter/' . $newsletter->getId_newsletter()) ?>">Vezi</a>
+                                </td>
+                                <td>
+                                    <?php if ($newsletter->getStatus() == DLConstants::$NEWSLETTER_PENDING) { ?>
+                                        <a href="<?php echo base_url('partener/cancel_newsletter/' . $newsletter->getId_newsletter()) ?>" style="color: #f00">Anuleaza</a>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                <?php } ?>
             </div>
 
         </div>
@@ -180,7 +209,7 @@
     <div id="clear"></div>
 </div>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
-    })
+                        $(document).ready(function() {
+                            $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
+                        })
 </script>

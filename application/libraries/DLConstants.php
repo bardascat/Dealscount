@@ -38,7 +38,6 @@ class DLConstants {
     public static $PARTNER_ROLE = "partener";
     public static $ADMIN_ROLE = "admin";
     public static $USER_ROLE = "user";
-    
     public static $WEBSITE = "dev.getadeal.ro";
     public static $WEBSITE_COMMERCIAL_NAME = "getadeal.ro";
     public static $OFFICE_EMAIl = "office@getadeal.ro";
@@ -55,15 +54,17 @@ class DLConstants {
     public static $ORDER_STATUS_CONFIRMED = "F";
     public static $ORDER_STATUS_PENDING = "W";
     public static $ORDER_STATUS_CANCELED = "C";
-    
     //PARTNER STATUS
     public static $PARTNER_ACTIVE = "A";
     public static $PARTNER_PENDING = "W";
     public static $PARTNER_SUSPENDED = "C";
-    
+    //NEWSLETTER STATUS
+    public static $NEWSLETTER_SENT = "F";
+    public static $NEWSLETTER_PENDING = "W";
+    public static $NEWSLETTER_SUSPENDED = "C";
     //prefix
-    public static $CODE_PREFIX="GAD";
-    
+    public static $CODE_PREFIX = "GAD";
+
     public static function pushCSS($css) {
         array_push(self::$CSS_FILES, $css);
     }

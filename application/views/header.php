@@ -32,11 +32,15 @@
                                 </div>
                                 <ul class="header_menu">
                                     <li class="my_account">
-                                        <a href="">Contul Meu</a>
+                                        <a href="<?php echo (!$this->view->getUser() ? "javascript:toggleLoginHeader()" : base_url("account"))?>">Contul Meu</a>
+                                        <?php
+                                        if (!$this->view->getUser())
+                                            $this->load->view('components/header_login.php');
+                                        ?>
                                     </li>
                                     <li  class="shopping_cart">
                                         <a href="<?php echo base_url('cart') ?>">Cosul meu (<?php echo $this->view->getCartModel()->getNrItems(); ?>)</a>
-                                         <?php $this->load->view('components/cart_summary.php'); ?>
+                                        <?php $this->load->view('components/cart_summary.php'); ?>
                                     </li>
                                 </ul>
 
