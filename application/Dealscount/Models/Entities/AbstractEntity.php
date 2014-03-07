@@ -14,7 +14,8 @@ abstract class AbstractEntity {
 
                 if (!$prop->isPrivate()) {
 
-                    if (validateDate($value, 'd-m-Y') || validateDate($value, 'd-m-Y H:i:s')) {
+                    if (validateDate($value, 'd-m-Y') || validateDate($value, 'd-m-Y H:i:s')
+                            || validateDate($value, 'd-m-Y H:i')) {
                         $value = new \DateTime($value);
                     }
 

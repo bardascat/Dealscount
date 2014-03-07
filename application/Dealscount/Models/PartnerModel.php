@@ -1,4 +1,5 @@
 <?php
+
 namespace Dealscount\Models;
 
 /**
@@ -78,6 +79,78 @@ class PartnerModel extends AbstractModel {
         $this->em->persist($user);
         $this->em->flush();
         return true;
+    }
+
+    public function createNewsletter($params, $partner) {
+        $newsletter = new Entities\PartnerNewsletter();
+        $newsletter->setStatus(\DLConstants::$NEWSLETTER_PENDING);
+        $newsletter->postHydrate($params);
+        $filters = array(
+            "age" => $params['age'],
+            "sex" => $params['sex'],
+            "cities" => $params['cities']
+        );
+        $newsletter->setFilters(json_encode($filters));
+
+        //adaugam ofertele active ale utilizatorului
+        try {
+            $offersArray = $this->em->createQuery("select items.id_item from Entities:Item items 
+                where items.id_user=:id_user
+                and items.active=1
+                and items.end_date>CURRENT_TIMESTAMP()
+                and items.start_date<=CURRENT_TIMESTAMP()
+                ")
+                    ->setParameter(":id_user", $partner->getId_user())
+                    ->getArrayResult();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+
+        $offers = array();
+        foreach ($offersArray as $key => $offer) {
+            $offers[] = $offer['id_item'];
+        }
+        $newsletter->setOffers(json_encode($offers));
+        $partner->addPartnerNewsletter($newsletter);
+        $this->em->persist($partner);
+        $this->em->flush();
+
+        return true;
+    }
+
+    public function suspendNewsletter($id_newsletter, $partner) {
+        $newsletter = $this->em->find("Entities:PartnerNewsletter", $id_newsletter);
+        if (!$newsletter)
+            throw new \Exception("Eroare: Id newsletter incorect");
+        if ($newsletter->getUser()->getId_user() != $partner->getId_user()) {
+            throw new \Exception("Eroare: Newsletterul " . $id_newsletter . " nu apartine partenerului");
+        }
+        if ($newsletter->getScheduled() <= date("Y-m-d") || $newsletter->getStatus() == \DLConstants::$NEWSLETTER_SENT) {
+            throw new \Exception("Eroare: Newsletterul nu mai poate fi anulat!");
+        }
+
+        $newsletter->setStatus(\DLConstants::$NEWSLETTER_SUSPENDED);
+        $this->em->persist($newsletter);
+        $this->em->flush();
+        return true;
+    }
+
+    /**
+     * 
+     * @param type $id_newsletter
+     * @param type $partner
+     * @return \Dealscount\Models\Entities\PartnerNewsletter
+     * @throws \Exception
+     */
+    public function getNewsletter($id_newsletter, $partner) {
+        $newsletter = $this->em->find("Entities:PartnerNewsletter", $id_newsletter);
+        if (!$newsletter)
+            throw new \Exception("Eroare: Id newsletter incorect");
+        if ($newsletter->getUser()->getId_user() != $partner->getId_user()) {
+            throw new \Exception("Eroare: Newsletterul " . $id_newsletter . " nu apartine partenerului");
+        }
+        
+        return $newsletter;
     }
 
 }

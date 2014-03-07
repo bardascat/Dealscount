@@ -115,7 +115,7 @@ class CI_Controller {
             $cookie_id = unserialize(get_cookie('cart_id'));
             return $cookie_id;
         } else {
-            $cookie_id = $self::generateHash();
+            $cookie_id = self::generateHash();
             $cookie = array(
                 'name' => 'cart_id',
                 'value' => serialize($cookie_id),
