@@ -152,5 +152,68 @@ class PartnerModel extends AbstractModel {
         
         return $newsletter;
     }
+    
+    /**
+     * @author Corneliu Iancu <corneliu.iancu@opti.ro>
+     */
+    public function getVouchers($id_partner) {
+        try {
+
+            $dql = $this->em->createQuery("SELECT ov,oi
+                FROM Entities:OrderVoucher ov 
+                JOIN ov.orderItem oi
+                JOIN oi.item i
+                WHERE i.id_user = :id_partener
+                ");
+            $dql->setParameter(":id_partener", $id_partner);
+            $result = $dql->getResult();
+
+            if (count($result) < 0)
+                return false;
+            else
+                return $result;
+        } catch (\Doctrine\ORM\Query\QueryException $e) {
+            echo $e->getMessage();
+        }
+
+        return $id_partner;
+    }
+
+    /**
+     * 
+     * @param type $voucher_code
+     * @return \NeoMvc\Models\Entity\OrderVoucher
+     */
+    public function getVoucher($voucher_code,$id_partener) {
+         $dql = $this->em->createQuery("SELECT ov,oi
+                FROM Entities:OrderVoucher ov 
+                JOIN ov.orderItem oi
+                JOIN oi.item i
+                WHERE i.id_user = :id_partener AND ov.code = :voucher_code
+                ");
+            $dql->setParameter(":id_partener", $id_partener);
+            $dql->setParameter(":voucher_code", $voucher_code);
+            $voucher = $dql->getResult();
+           
+        if (isset($voucher[0])) {
+            return $voucher[0];
+        } else {
+            return false;
+        }
+    }
+
+    public function changeVoucherStatus($voucher_code) {
+        $voucher = $this->em->getRepository("Entities:OrderVoucher")->findBy(array("code" => $voucher_code));
+        if (isset($voucher[0])) {
+            $voucher[0]->setUsed(1);
+            $voucher[0]->setUsed_At(new \DateTime);
+            $this->em->persist($voucher[0]);
+            $this->em->flush();
+
+            return $voucher_code;
+        } else {
+            return false;
+        }
+    }
 
 }

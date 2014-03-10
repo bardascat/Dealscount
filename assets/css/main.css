@@ -649,6 +649,7 @@ img{border:0px;}
     background-image: url('../images_fdd/fab_green_button.png');
     width: 147px;
     height: 44px;
+    line-height: 44px;
     text-align: center;
     border:0px;
     cursor: pointer;
@@ -922,7 +923,9 @@ img{border:0px;}
     list-style-type: none;
     float: right;
 }
-
+.minimenu ul .selected{
+    font-weight: bold;
+}
 #content .partner_menu .selected{
     background-color: #b4b4b4;
     color: #FFF;
@@ -1007,6 +1010,59 @@ img{border:0px;}
     padding-top: 10px;
 }
 
+/* offer details */
+#content .partner .offers_list .summary_table .actions,
+#content .partner .offers_list .summary_table .inner_table,
+#content .partner .offers_list .summary_table .offer_image,
+#content .partner .offers_list .summary_table .brief{
+    border:0px;
+}
+#content .partner .offers_list .editeaza{
+    background-image: url('../images_fdd/fab_editeaza_informatii.png');
+}
+
+.partner .offers_list .options{
+    width: 100%;
+    margin-top:30px;
+}
+.partner .offers_list .options .option{
+    width: 100%;
+    font-size: 14px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-top: 1px solid #CCC;
+}
+.partner .offers_list .options .option .option_details td{
+    padding-bottom: 5px;
+}
+.partner .offers_list .options .option .header{
+    color: #232323;
+    font-size: 14px;
+    font-weight: bold;
+}
+.partner .offers_list .options .option .credit{
+    color: #6fa300;
+}
+
+#content .offer_details_stats{
+    width: 950px;
+    min-height: 100px;
+    float: left;
+    padding-bottom: 20px;
+    color: #1d1d1d;
+    background-color: #FFF;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 25px;
+    margin-top:20px;
+}
+#content .offer_details_stats h1{
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0px;
+    margin-bottom: 15px;
+}
+/* end offer details */
 #content .red_button{
     display: block;
     background-image: url('../images_fdd/fab_red_button.png');
@@ -1049,16 +1105,17 @@ img{border:0px;}
     height: 22px;
     border:1px solid #dadada;
 }
-#content .partner .newsletters .programeaza{
+#content .partner  .programeaza{
     background-image: url('../images_fdd/fab_calendar.png');
     padding-left: 33px;
     height: 25px;
     background-repeat: no-repeat;
 }
-#content .partner .newsletters .programeaza input{
+#content .partner .programeaza input{
     width: 150px;
-    height: 22px;
+    height: 26px;
     border:1px solid #dadada;
+    padding-left: 5px;
 }
 #content .partner .newsletters td{
     padding-bottom: 15px;
@@ -1104,8 +1161,8 @@ img{border:0px;}
     border:0px;
     margin-bottom: 10px;
     cursor: pointer;
-    
-    
+
+
 }
 #content .partner .newsletters .newsletters_list{
     float: left;
@@ -1118,7 +1175,7 @@ img{border:0px;}
 }
 
 #content .partner .newsletters .newsletters_list {
-    
+
 }
 #content .partner .newsletters .newsletters_list th{
     font-size: 16px;
@@ -1134,11 +1191,138 @@ img{border:0px;}
     padding-top: 10px;
     font-size: 13px;
     text-align: center;
-    
+
 }
 #ui-datepicker-div{
     font-size: 10px;
 }
 /* partner newsletter page */
 
-/* partener  */
+.partner .vouchers h2{margin-top: 118px;font-size: 18pt;}
+.partner .vouchers .search_bar{
+    width: 345px;
+
+    height: 26px;
+    border: 1px solid #a6a695;
+    border-radius: 3px;
+    background-color: lightgrey;
+    margin-top: 20px;
+    background: url('../images_fdd/fab_search_bar.png');
+    background-size: 101% 121%;
+    background-position: 0px -3px;
+    padding: 3px;
+    padding-left: 5px;
+}
+.partner .vouchers .search_bar form{padding: 0;margin: 0;height: 26px;}
+.partner .vouchers .search_bar input[type=text]{width: 310px;height: 100%;padding: 0;margin: 0;border: 0;float: left;}
+.partner .vouchers .search_bar input[type=submit]{
+    background-color: rgba(0, 0, 0, 0);
+    border: 0 none;
+    cursor: pointer;
+    height: 32px;
+    width: 28px;
+    float: right;
+}
+
+.partner .vouchers .search_result{
+    margin-top: 40px;
+    height: 47px;
+    width: 100%;
+    border-top: 1px solid lightgrey;
+    border-bottom: 1px solid lightgrey;
+    line-height: 45px;
+}
+.partner .vouchers .search_result .recipient_name{float: left;height: 100%;font-size: 14px;color: #232323;margin-left: 10px;;}
+.partner .vouchers .search_result .voucher_code{float: left;height: 100%;padding-left: 80px;}
+.partner .vouchers .search_result .not_found{
+    color:red;
+    margin-left: 15px;
+}
+.partner .vouchers .search_result .voucher_btn {
+    margin-top: 4px;
+    float: right;
+    box-shadow:inset 0px -2px 0px 0px #0483b2;
+    /*background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #4197ee) );*/
+    /*background:-moz-linear-gradient( center top, #79bbff 5%, #4197ee 100% );*/
+    /*filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#4197ee');*/
+    background-color:#00a5e2;
+    border-top-left-radius:8px;
+    border-top-right-radius:8px;
+    border-bottom-right-radius:8px;
+    border-bottom-left-radius:8px;
+    text-indent:0;
+    display:inline-block;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:15px;
+    font-weight:bold;
+    font-style:normal;
+    height:40px;
+    line-height:40px;
+    width:152px;
+    text-decoration:none;
+    text-align:center;
+    /*text-shadow:1px 1px 0px #165696;*/
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    -o-user-select: none;
+    user-select: none;
+    cursor: default;
+    margin-right: 15px;
+}
+.partner .vouchers .search_result .voucher_btn:hover {
+    /*	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #4197ee), color-stop(1, #79bbff) );
+        background:-moz-linear-gradient( center top, #4197ee 5%, #79bbff 100% );
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#4197ee', endColorstr='#79bbff');
+        background-color:#4197ee;*/
+}
+.partner .vouchers .search_result .voucher_btn:active {position:relative;top:1px;}
+
+.partner .vouchers .search_result .used_voucher{float: right;
+                                                color:red;margin-right: 30px;}
+
+
+
+.partner .vouchers .voucher_listing_table{
+    margin-top: 70px;
+    width: 100%;
+    text-align: left;
+    border-spacing: 0px;
+    border-collapse: separate;
+}
+.partner .vouchers .voucher_listing_table .nume{
+    /*margin-left: 30px;*/
+    width: 240px;
+}
+.partner .vouchers .voucher_listing_table .nume label{
+    margin-left: 10px;
+}
+.partner .vouchers .voucher_listing_table .email{
+    width: 200px;
+}
+.partner .vouchers .voucher_listing_table .serie{
+
+    width: 180px;
+    text-align: center;
+}
+.partner .vouchers .voucher_listing_table .used{
+    width: 180px;
+    text-align: center;
+}
+
+.partner .vouchers .voucher_listing_table tr td{
+    border-bottom: 1px solid #dadada;
+    padding: 5px;
+}
+
+.partner .vouchers .voucher_listing_table tr th{
+    border-bottom: 1px solid #dadada;
+    padding: 5px;
+}
+.partner .vouchers .voucher_listing_table tr th label{
+    font-weight: bold;
+}
+.partner .vouchers .voucher_listing_table label{}
+
+/* end partener */
