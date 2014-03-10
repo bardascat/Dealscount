@@ -12,12 +12,14 @@ class offer extends CI_Controller {
      * @var OffersModel $OffersModel
      */
     private $OffersModel;
+    private $CompaniesModel;
 
     function __construct() {
         parent::__construct();
         $this->load->library('user_agent');
         $this->load->library('form_validation');
         $this->OffersModel = new Dealscount\Models\OffersModel();
+        $this->CompaniesModel=new Dealscount\Models\PartnerModel();
     }
 
     /**
@@ -95,7 +97,7 @@ class offer extends CI_Controller {
         $id_item = $this->uri->segment(4);
 
         /* @var $product Entity\Item  */
-        $companies = $this->UserModel->getCompaniesList();
+        $companies = $this->CompaniesModel->getCompaniesList();
         $tree = $this->CategoriesModel->createCheckboxList("offer", $id_item);
 
         $item = $this->OffersModel->getOffer($id_item);

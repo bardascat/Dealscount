@@ -215,5 +215,24 @@ class PartnerModel extends AbstractModel {
             return false;
         }
     }
+    
+    public function updateCompanyDetails($post, Entities\User $user) {
+        $company = $user->getCompanyDetails();
+        $company->setCompany_name($post['company_name']);
+        $company->setCif($post['cif']);
+        $company->setRegCom($post['regCom']);
+        $company->setBank($post['bank']);
+        $company->setIban($post['iban']);
+        $user->setAddress($post['address']);
+        $user->setPhone($post['phone']);
+        $user->setEmail($post['email']);
+        $user->setLastname($post['lastname']);
+        $user->setFirstname($post['firstname']);
+        $this->em->persist($user);
+        $this->em->persist($company);
+        $this->em->flush();
+        return true;
+    }
+
 
 }

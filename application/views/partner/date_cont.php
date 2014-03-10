@@ -10,7 +10,7 @@
         <div class="newsletters">
             <form method="POST" action="<?php echo base_url('partener/change_date_cont') ?>" enctype="multipart/form-data">
                 <input type="hidden" name="role" value="<?php echo DLConstants::$USER_ROLE ?>"/>
-                <input type="hidden" name="id_user"/>
+                <input type="hidden" name="id_user" value="<?php echo $user->getId_user(); ?>"/>
                 <table>
                     <tr>
                         <td colspan="2">
@@ -19,18 +19,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <label>Logo Companie</label>
-                        </td>
-                        <td class='input' >
-                            <input type='file' name='image[]'/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
                             <label>Nume firma/PFA:</label>
                         </td>
                         <td>
-                            <input type="text" name="company_name" value="<?php echo set_value('company_name') ?>"/>
+                            <input type="text" name="company_name" value="<?php echo $user->getCompanyDetails()->getCompany_name() ?>"/>
                         </td>
                     </tr>
                     <tr>
@@ -38,7 +30,7 @@
                             <label>Cod fiscal:</label>
                         </td>
                         <td>
-                            <input type="text" name="cif" value="<?php echo set_value('cif') ?>"/>
+                            <input type="text" name="cif" value="<?php echo $user->getCompanyDetails()->getCif(); ?>"/>
                         </td>
                     </tr>
                     <tr>
@@ -46,7 +38,7 @@
                             <label>Registrul comertului:</label>
                         </td>
                         <td>
-                            <input type="text" name="regCom" value="<?php echo set_value('regCom') ?>"/>
+                            <input type="text" name="regCom" value="<?php echo $user->getCompanyDetails()->getRegCom(); ?>"/>
                         </td>
                     </tr>
                     <tr>
@@ -54,7 +46,7 @@
                             <label>Adresa:</label>
                         </td>
                         <td>
-                            <input type="text" name="address" value="<?php echo set_value('address') ?>"/>
+                            <input type="text" name="address" value="<?php echo $user->getAddress(); ?>"/>
                         </td>
                     </tr>
                     <tr>
@@ -62,7 +54,7 @@
                             <label>Telefon:</label>
                         </td>
                         <td>
-                            <input type="text" name="phone" value="<?php echo set_value('phone') ?>"/>
+                            <input type="text" name="phone" value="<?php echo $user->getPhone(); ?>"/>
                         </td>
                     </tr>
                     <tr>
@@ -70,7 +62,7 @@
                             <label>Mail:</label>
                         </td>
                         <td>
-                            <input type="text" name="email" value="<?php echo set_value('email') ?>"/>
+                            <input type="text" name="email" value="<?php echo $user->getEmail() ?>"/>
                         </td>
                     </tr>
                     <tr>
@@ -78,7 +70,7 @@
                             <label>Banca:</label>
                         </td>
                         <td>
-                            <input type="text" name="bank" value="<?php echo set_value('bank') ?>"/>
+                            <input type="text" name="bank" value="<?php echo $user->getCompanyDetails()->getBank(); ?>"/>
                         </td>
                     </tr>
                     <tr>
@@ -86,7 +78,7 @@
                             <label>IBAN:</label>
                         </td>
                         <td>
-                            <input type="text" name="iban" value="<?php echo set_value('iban') ?>"/>
+                            <input type="text" name="iban" value="<?php echo $user->getCompanyDetails()->getIban() ?>"/>
                         </td>
                     </tr>
                     <tr>
@@ -94,7 +86,7 @@
                             <label>Nume pers. contact</label>
                         </td>
                         <td class='input' >
-                            <input type='text' value="<?php echo set_value('nume') ?>" name='lastname'/>
+                            <input type='text' value="<?php echo $user->getLastname() ?>" name='lastname'/>
                         </td>
                     </tr>
                     <tr>
@@ -102,16 +94,86 @@
                             <label>Prenume pers. contact</label>
                         </td>
                         <td class='input' >
-                            <input type='text' value="<?php echo set_value('prenume') ?>" name='firstname'/>
+                            <input type='text' value="<?php echo $user->getFirstname(); ?>" name='firstname'/>
                         </td>
                     </tr>
-                    <td style="padding-top: 20px;" colspan="2">
-                        <input id="greenButton" type="submit" value="Salveaza"/>
-                    </td>
+                    <tr>
+                        <td style="padding-top: 20px;" colspan="2">
+                            <input id="greenButton" type="submit" value="Salveaza"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <script>
+                $(function() {
+                    load_partner_editor();
+                });
+            </script>
+            <h3>Date contact prentru pagina ofertei</h3>
+            <form method="POST" action="<?php echo base_url('partener/change_date_cont_company') ?>" enctype="multipart/form-data">
+                <input type="hidden" name="id_user" value="<?= $user->getId_user() ?>">
+                <table  border='0' width='100%' id='add_table' style="margin-top: 15px;">
+                    <tr>
+                        <td class='label'>
+                            <label>Logo Companie</label>
+                        </td>
+                        <td class='input' >
+                            <input type='file' name='image[]'/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class='label'>
+                            <label>Nume Comercial(*)</label>
+                        </td>
+                        <td class='input' >
+                            <input type='text' value="<?php echo $user->getCompanyDetails()->getCommercial_name(); ?>" name='commercial_name'/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class='label'>
+                            <label>Descriere</label>
+                        </td>
+                        <td class='input' >
+                            <textarea id="description" name="description"><?php echo $user->getCompanyDetails()->getDescription(); ?></textarea>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class='label'>
+                            <label>Telefon</label>
+                        </td>
+                        <td class='input' >
+                            <input type='text' value="<?php echo $user->getCompanyDetails()->getPhone() ?>" name='phone'/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class='label'>
+                            <label>Site</label>
+                        </td>
+                        <td class='input' >
+                            <input type='text' value="<?php echo $user->getCompanyDetails()->getWebsite(); ?>" name='website'/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class='label'>
+                            <label>Adresa</label>
+                        </td>
+                        <td class='input' >
+                            <input type='text' value="<?php echo $user->getCompanyDetails()->getAddress(); ?>" name='address'/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top: 20px;" colspan="2">
+                            <input id="greenButton" type="submit" value="Salveaza"/>
+                        </td>
                     </tr>
                 </table>
             </form>
 
+            <div class="separator"></div>
             <div id="change_password" class="change_settings" style="margin-top:30px;">
                 <form method="post" action="<?php echo base_url('partener/partener_change_password') ?>">
                     <input type="hidden" name="role" value="<?php echo DLConstants::$USER_ROLE ?>"/>

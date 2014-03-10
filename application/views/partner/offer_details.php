@@ -243,10 +243,9 @@
 
     <div class="offer_details_stats">
         <h1>Statistici descarcati</h1>
-        
         <table>
             <tr>
-                <td>
+                <td style="padding-right: 60px;">
                     <table>
                         <tr>
                             <td>
@@ -274,7 +273,7 @@
                         </tr>
                     </table>
                 </td>
-                <td>
+                <td style="padding-right: 60px;">
                     <table>
                         <tr>
                             <td>
@@ -302,11 +301,11 @@
                         </tr>
                     </table>
                 </td>
-                <td>
+                <td style="padding-right: 60px;">
                     <table>
                         <tr>
                             <td>
-                                18-25 ani
+                                Masculin
                             </td>
                             <td>
                                 50%
@@ -314,20 +313,13 @@
                         </tr>
                         <tr>
                             <td>
-                                25-30 ani
-                            </td>
-                            <td>
-                                10%
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                 25-30 ani
+                                Feminin
                             </td>
                             <td>
                                 50%
                             </td>
                         </tr>
+
                     </table>
                 </td>
             </tr>

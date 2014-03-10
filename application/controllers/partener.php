@@ -14,6 +14,7 @@ class partener extends \CI_Controller {
         $this->PartnerModel = new \Dealscount\Models\PartnerModel();
         DLConstants::pushJS('assets/js/jquery_ui/ui-1-10.js');
         DLConstants::pushJS('assets/js/timepicker/timepicker.js');
+        DLConstants::pushJS('assets/js/ckeditorScripts/ckeditor.js');
         DLConstants::pushCSS('assets/js/jquery_ui/ui-1-10.css');
         $this->load->library('user_agent');
         $this->User = $this->getLoggedUser(true);
@@ -85,6 +86,22 @@ class partener extends \CI_Controller {
         }
         $data = array("offer" => $offer, "user" => $this->User);
         $this->load_view('partner/offer_details', $data);
+    }
+
+    /**
+     * @AclResource "Partener: Editeaza Oferta"
+     */
+    public function edit_offer() {
+        $id_offer = $this->uri->segment('3');
+        $offer = $this->OffersModel->getOffer($id_offer);
+        if (!$offer || $offer->getCompany()->getId_user() != $this->getLoggedUser()['id_user']) {
+            $this->session->set_flashdata('notification', array("type" => "error", "html" => "Cererea nu a pututut fi finalizata !"));
+            redirect(base_url('partener/oferte'));
+            exit();
+        }
+        $data = array("offer" => $offer, "user" => $this->User);
+        $this->populate_form($offer);
+        $this->load_view('partner/edit_offer', $data);
     }
 
     /**
@@ -189,20 +206,21 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: Date Cont"
      */
     public function date_cont() {
-        $this->populate_form($this->User);
+
         $this->load_view('partner/date_cont', array("user" => $this->User));
     }
 
     public function change_date_cont() {
         if (!$_POST)
             redirect(base_url('partener'));
-        $this->populate_form($this->User);
-
         $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
         $this->form_validation->set_rules('company_name', 'Company name', 'required|xss_clean');
+        $this->form_validation->set_rules('cif', 'Cod fiscal', 'required|xss_clean');
+        $this->form_validation->set_rules('regCom', 'Registrul comertului', 'required|xss_clean');
         $this->form_validation->set_rules('address', 'Adresa', 'required|xss_clean');
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
         $this->form_validation->set_rules('bank', 'Banca', 'required|xss_clean');
+        $this->form_validation->set_rules('iban', 'IBAN', 'required|xss_clean');
         $this->form_validation->set_rules('lastname', 'Numele de contact', 'required|xss_clean');
         $this->form_validation->set_rules('firstname', 'Prenumele de contact', 'required|xss_clean');
         $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
@@ -217,11 +235,43 @@ class partener extends \CI_Controller {
         } else {
 
             try {
+                $this->PartnerModel->updateCompanyDetails($_POST, $this->User);
+            } catch (\Exception $e) {
+                $this->load_view('partner/date_cont', array("notification" => array(
+                        "type" => "form_notification",
+                        "message" => $e->getMessage(),
+                        "cssClass" => "error"
+                    ), "user" => $this->User));
+            }
+        }
+
+        $this->session->set_flashdata('notification', array("type" => "success", "html" => "Modificarile au fost salvate cu success"));
+        redirect(base_url('partener/date_cont'));
+    }
+
+    public function change_date_cont_company() {
+
+        if (!$_POST)
+            redirect(base_url('partener'));
+
+        $this->form_validation->set_rules('commercial_name', 'Comercial name', 'required|xss_clean');
+        $this->form_validation->set_rules('description', 'Descriere', 'required|xss_clean');
+        $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
+        $this->form_validation->set_rules('website', 'Site', 'required|xss_clean');
+        $this->form_validation->set_rules('address', 'Adresa', 'required|xss_clean');
+        $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
+
+        if ($this->form_validation->run() == FALSE) {
+            $this->load_view('partner/date_cont', array("notification" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "error"
+                ), "user" => $this->User));
+        } else {
+            try {
                 $images = $this->upload_images($_FILES['image'], "application_uploads/company/" . $this->User->getId_user(), false);
                 $_POST['image'] = $images;
-
-                $status = $this->UserModel->updateCompanyDetails($_POST);
-                $status = $this->UserModel->updateUser($_POST);
+                $this->UserModel->updateCompanyDetails($_POST);
             } catch (\Exception $e) {
                 $this->load_view('partner/date_cont', array("notification" => array(
                         "type" => "form_notification",
@@ -314,6 +364,108 @@ class partener extends \CI_Controller {
             return false;
         } else
             return true;
+    }
+
+    private function setOfferRules() {
+        $config = array(
+            array(
+                "field" => "name",
+                "label" => "Nume",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "brief",
+                "label" => "Scurta descriere",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "benefits",
+                "label" => "Beneficii",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "terms",
+                "label" => "Termeni",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "price",
+                "label" => "Pret",
+                "rules" => "required|callback_numeric_check|xss_clean"
+            ),
+            array(
+                "field" => "sale_price",
+                "label" => "Pret vanzare",
+                "rules" => "required|callback_numeric_check|xss_clean"
+            ),
+            array(
+                "field" => "id_company",
+                "label" => "Partener",
+                "rules" => "required"
+            ),
+            array(
+                "field" => "start_date",
+                "label" => "Data inceput oferta",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "end_date",
+                "label" => "Data sfarsit oferta",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "voucher_start_date",
+                "label" => "Data start voucher",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "voucher_end_date",
+                "label" => "Data sfarsit voucher",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "location",
+                "label" => "Locatie",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "city",
+                "label" => "Oras",
+                "rules" => "required|xss_clean"
+            )
+        );
+        return $config;
+    }
+
+    /**
+     * Validate custom oferta
+     */
+    public function numeric_check($str) {
+        if (!preg_match('/^[0-9,]+$/', $str)) {
+            $this->form_validation->set_message('numeric_check', '%s must be a number');
+            return FALSE;
+        } else
+            return true;
+    }
+
+    public function images_check($data) {
+
+        if (!$_FILES['image']['name'][0]) {
+            $this->form_validation->set_message('images_check', 'Este obligatoriu sa alegi cel putin o poza');
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function categories_check($data) {
+        //daca a ales o categorie
+        if (isset($data[0]) and is_numeric($data[0]))
+            return true;
+        else {
+            $this->form_validation->set_message('categories_check', 'Este obligatoriu sa alegi o categorie');
+            return false;
+        }
     }
 
 }
