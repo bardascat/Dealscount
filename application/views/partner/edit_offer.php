@@ -221,7 +221,7 @@
                                 foreach ($photos as $photo) {
                                     ?>
                                     <div class="image">
-                                        <img height="130" src="<?php echo base_url($photo->getImage()) ?>"/>
+                                        <img id="image_<?php echo $photo->getId_image()?>" onclick="triggerImageHandler(<?php echo $photo->getId_image() ?>)" height="130" src="<?php echo base_url($photo->getImage()) ?>"/>
                                     </div>
                                 <?php } ?>
                             </div>
@@ -284,23 +284,52 @@
     </div>
     <div id="clear"></div>
 </div>
+<style>
+    .ui-dialog{font-size: 10px;}
+</style>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('input').tooltip({
-            position: {
-                my: "center bottom-20",
-                at: "left+20 top",
-                using: function(position, feedback) {
-                    $(this).css(position);
-                    $("<div style>")
-                            .addClass("arrow")
-                            .appendTo(this);
-                }
-            }
-        });
+                                            var current_picture = null;
+                                            function triggerImageHandler(id_image) {
+                                                current_picture = id_image;
+                                                $("#dialog-form").dialog("open");
+                                            }
 
+                                            $(document).ready(function() {
+                                                $('input').tooltip({
+                                                    position: {
+                                                        my: "center bottom-20",
+                                                        at: "left+20 top",
+                                                        using: function(position, feedback) {
+                                                            $(this).css(position);
+                                                            $("<div style>")
+                                                                    .addClass("arrow")
+                                                                    .appendTo(this);
+                                                        }
+                                                    }
+                                                });
+                                                load_offer_editor();
+                                                $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
 
-        load_offer_editor();
-        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
-    })
+                                                $("#dialog-form").dialog({
+                                                    autoOpen: false,
+                                                    height: 100,
+                                                    width: 250,
+                                                    modal: false,
+                                                    buttons: {
+                                                        "Seteaza principala": function() {
+                                                           set_primary_image(current_picture);
+                                                        },
+                                                        "Sterge": function() {
+                                                            delete_image(current_picture);
+                                                        },
+                                                    },
+                                                    Cancel: function() {
+                                                        $(this).dialog("close");
+                                                    }
+                                                }).css("font-size", "10px");
+                                                ;
+                                            })
 </script>
+
+<div id="dialog-form" title="Setari imagine" style="font-size: 12px;">
+</div>

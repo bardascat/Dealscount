@@ -104,6 +104,19 @@ class partener extends \CI_Controller {
         $this->load_view('partner/edit_offer', $data);
     }
 
+    public function delete_image() {
+        $id_image = $_POST['id_image'];
+        $this->OffersModel->delete_image($id_image);
+        echo json_encode(array("type" => "success"));
+        exit();
+    }
+
+    public function set_primary_image() {
+        $id_image = $_POST['id_image'];
+        $this->OffersModel->delete_image($id_image);
+        echo json_encode(array("result" => "success"));
+    }
+
     /**
      * @AclResource "Partener: Newsletters"
      */
@@ -362,7 +375,8 @@ class partener extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        } else
+        }
+        else
             return true;
     }
 
@@ -444,7 +458,8 @@ class partener extends \CI_Controller {
         if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s must be a number');
             return FALSE;
-        } else
+        }
+        else
             return true;
     }
 
