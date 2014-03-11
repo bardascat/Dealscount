@@ -13,13 +13,21 @@
             <h1><?php echo $offer->getName() ?></h1>
 
             <div class="offer_form">
-                <form id="addProductForm" method="post" action="<?= base_url() ?>admin/offer/editOfferDo" enctype="multipart/form-data">
+                <form id="saveForm" method="post" action="<?= base_url() ?>partener/editOfferDo" enctype="multipart/form-data">
                     <input type="hidden" name="id_item" value="<?= $offer->getId_item() ?>"/>
                     <div id="tabs">
 
                         <div id="tabs-1">
 
                             <table  border='0' width='100%'>
+                                <tr>
+                                    <td colspan="2">
+                                        <div>
+                                            <?php echo $this->session->flashdata('form_message'); ?>
+                                            <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
+                                        </div>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td class='label'>
                                         <label>Titlu homepage</label>
@@ -41,13 +49,26 @@
                                         <label>Categorie</label>
                                     </td>
                                     <td class='input'>
-                                        <a class="fancybox" href="#alege_categorie">Modifica Categorie Produs (  
+                                        <select onchange="selectSubcategory(this)" name="category">
+                                            <?php foreach ($categories as $category) { ?>
+                                                <option  value="<?php echo $category['id_category'] ?>"><?php echo $category['name'] ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
+                                        <label>Subcategorie</label>
+                                    </td>
+                                    <td class='input'>
+                                        <select name="subcategory">
                                             <?php
-                                            if ($offer->getCategory())
-                                                echo "Categorie Curenta: " . $offer->getCategory()->getName();
-                                            else
-                                                echo "Nicio categorie aleasa";
-                                            ?> )</a>
+                                            $childs = $offer->getCategory()->getParent()->getChildren();
+                                            foreach ($childs as $child) {
+                                                echo "<option " . ($offer->getCategory()->getId_category() == $child->getId_category() ? "selected" : false) . " name='" . $child->getId_category() . "'>" . $child->getName() . "</option>";
+                                            }
+                                            ?>
+                                        </select>
                                     </td>
                                 </tr>
 
@@ -210,18 +231,21 @@
 
                         </div>
                         <div id="tabs-4">
-                            <div class='add_images'>
+                            <h2>Imagini </h2>
+                            <div style="margin-top: 25px;" class='add_images'>
                                 <div class='image_group'>
-                                    <input type='file' name='image[]'/>
+                                    <input type='file'  name='image[]'/>
                                 </div>
+
                             </div>
+                            <div class="plusButton" onclick="new_image()"></div>
                             <div class="pictures">
                                 <?php
                                 $photos = $offer->getImages();
                                 foreach ($photos as $photo) {
                                     ?>
                                     <div class="image">
-                                        <img id="image_<?php echo $photo->getId_image()?>" onclick="triggerImageHandler(<?php echo $photo->getId_image() ?>)" height="130" src="<?php echo base_url($photo->getImage()) ?>"/>
+                                        <img id="image_<?php echo $photo->getId_image() ?>" onclick="triggerImageHandler(<?php echo $photo->getId_image() ?>)" height="130" src="<?php echo base_url($photo->getImage()) ?>"/>
                                     </div>
                                 <?php } ?>
                             </div>
@@ -230,6 +254,7 @@
                         </div>
 
                         <div id="tabs-5">
+                            <h2>SEO</h2>
                             <table  border='0' width='100%' id='add_table'>
                                 <tr>
                                     <td class='label'>
@@ -244,7 +269,7 @@
                                         <label>META Description</label>
                                     </td>
                                     <td class="big_input">
-                                        <input type="text" name="meta_desc"/>
+                                        <input title="Recomandam sa fie sub 150 de caractere" type="text" name="meta_desc"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -252,7 +277,7 @@
                                         <label>Keywords</label>
                                     </td>
                                     <td class="big_input">
-                                        <input type="text" 
+                                        <input title="Separati cuvintele cheie prin virgula ex: reducere tenis, oferta pizza" type="text" 
                                                value="<?php
                                                if ($offer->getTags()) {
                                                    $tags = '';
@@ -267,7 +292,7 @@
                                 </tr>
                                 <tr>
                                     <td class='label'>
-                                        <label>URL</label>
+                                        <label>Link Oferta</label>
                                     </td>
                                     <td class="big_input">
                                         <input title="Atentie ! Daca modificati url-ul ofertei, vechiul url va fi inexistent." type="text" name="slug"/>
@@ -275,7 +300,16 @@
                                 </tr>
                             </table>
                         </div>
+                        <div id="tabs-6">
+                            <table>
+                                <tr>
+                                    <td style="padding-top: 45px;">
+                                        <div onclick="$('#saveForm').submit()" id="greenButton">Salveaza Oferta</div>
+                                    </td>
+                                </tr>    
+                            </table>
 
+                        </div>
                     </div>
                 </form>
             </div>
@@ -288,47 +322,49 @@
     .ui-dialog{font-size: 10px;}
 </style>
 <script type="text/javascript">
-                                            var current_picture = null;
-                                            function triggerImageHandler(id_image) {
-                                                current_picture = id_image;
-                                                $("#dialog-form").dialog("open");
-                                            }
+    var current_picture = null;
+    function triggerImageHandler(id_image) {
+        current_picture = id_image;
+        $("#dialog-form").dialog("open");
+    }
 
-                                            $(document).ready(function() {
-                                                $('input').tooltip({
-                                                    position: {
-                                                        my: "center bottom-20",
-                                                        at: "left+20 top",
-                                                        using: function(position, feedback) {
-                                                            $(this).css(position);
-                                                            $("<div style>")
-                                                                    .addClass("arrow")
-                                                                    .appendTo(this);
-                                                        }
-                                                    }
-                                                });
-                                                load_offer_editor();
-                                                $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
+    $(document).ready(function() {
+        //selectSubcategory($('select[name="category"]',<?php echo $offer->getCategory()->getId_category() ?>));
 
-                                                $("#dialog-form").dialog({
-                                                    autoOpen: false,
-                                                    height: 100,
-                                                    width: 250,
-                                                    modal: false,
-                                                    buttons: {
-                                                        "Seteaza principala": function() {
-                                                           set_primary_image(current_picture);
-                                                        },
-                                                        "Sterge": function() {
-                                                            delete_image(current_picture);
-                                                        },
-                                                    },
-                                                    Cancel: function() {
-                                                        $(this).dialog("close");
-                                                    }
-                                                }).css("font-size", "10px");
-                                                ;
-                                            })
+        $('input').tooltip({
+            position: {
+                my: "center bottom-20",
+                at: "left+20 top",
+                using: function(position, feedback) {
+                    $(this).css(position);
+                    $("<div style>")
+                            .addClass("arrow")
+                            .appendTo(this);
+                }
+            }
+        });
+        load_offer_editor();
+        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
+
+        $("#dialog-form").dialog({
+            autoOpen: false,
+            height: 100,
+            width: 250,
+            modal: false,
+            buttons: {
+                "Seteaza principala": function() {
+                    set_primary_image(current_picture);
+                },
+                "Sterge": function() {
+                    delete_image(current_picture);
+                },
+            },
+            Cancel: function() {
+                $(this).dialog("close");
+            }
+        }).css("font-size", "10px");
+        ;
+    })
 </script>
 
 <div id="dialog-form" title="Setari imagine" style="font-size: 12px;">

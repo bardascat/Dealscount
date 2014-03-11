@@ -99,9 +99,40 @@ class partener extends \CI_Controller {
             redirect(base_url('partener/oferte'));
             exit();
         }
-        $data = array("offer" => $offer, "user" => $this->User);
+        $data = array("offer" => $offer, "user" => $this->User, "categories" => $this->CategoriesModel->getRootCategories());
         $this->populate_form($offer);
         $this->load_view('partner/edit_offer', $data);
+    }
+
+    public function editOfferDo() {
+
+        $this->form_validation->set_rules($this->setOfferRules());
+        $this->form_validation->set_rules('categories', 'Categorie', 'callback_categories_check');
+         $this->form_validation->set_message('required', '<b>%s</b> este obligatoriu');
+        if ($this->form_validation->run() == FALSE) {
+            $offer = $this->OffersModel->getOffer($this->input->post("id_item"));
+            $this->populate_form($offer);
+
+            $data = array(
+                'offer' => $offer,
+                'user' => $this->User,
+                "categories" => $this->CategoriesModel->getRootCategories(),
+                "notification" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "ui-state-error ui-corner-all"
+                )
+            );
+            $this->load_view('partner/edit_offer', $data);
+        } else {
+            $id = $this->input->post('id_item');
+            $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
+            $_POST['images'] = $images;
+            $this->OffersModel->updateOffer($_POST, $this->getLoggedUser()['id_user']);
+            $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Oferta a fost salvata</div>');
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Oferta a fost salvata"));
+            redirect(base_url('admin/offer/editOffer/' . $id));
+        }
     }
 
     public function delete_image() {
@@ -375,8 +406,7 @@ class partener extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        }
-        else
+        } else
             return true;
     }
 
@@ -458,8 +488,7 @@ class partener extends \CI_Controller {
         if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s must be a number');
             return FALSE;
-        }
-        else
+        } else
             return true;
     }
 

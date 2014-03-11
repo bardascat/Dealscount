@@ -65,7 +65,12 @@ class Doctrine {
 
         $em = EntityManager::create($dbParams, $config);
 
-        //$this->updateSchema($em);
+        try{
+         // $this->updateSchema($em);
+        }
+        catch(\Exception $e){
+            echo $e->getMessage();
+        }
 
         return $em;
     }

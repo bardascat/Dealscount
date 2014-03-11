@@ -337,6 +337,8 @@ img{border:0px;}
 /* header login */
 #form_notification{
     font-size: 12px;
+    padding: 5px;
+    margin-bottom: 10px;
 }
 
 #content{
@@ -624,7 +626,7 @@ img{border:0px;}
     padding-right: 30px;
 }
 #content form table select{
-    width: 207px;
+    width: 270px;
 
     height: 22px;
     border:1px solid #dadada;
@@ -1120,6 +1122,19 @@ margin-right: 10px;
     padding-bottom: 10px;
     padding-top: 20px;
     border-bottom: 1px solid #ccc;
+}
+#content .plusButton{
+    background-image: url('../images_fdd/plus.png');
+    width: 59px;
+    height: 30px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+#content .partner .edit_offer h2{
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0px;
+    margin-bottom: 10px;
 }
 #content .partner .edit_offer h1{
     font-size: 18px;

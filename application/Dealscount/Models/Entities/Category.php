@@ -51,32 +51,42 @@ class Category {
      * @Column(type="string",nullable=true) @var string 
      */
     protected $layout;
-    
-    
+
     /**
      * @Column(type="string",nullable=false) @var string 
      */
-    protected $item_type="offer";
-    
+    protected $item_type = "offer";
+
     /**
      * @Column(type="integer",nullable=true) @var string 
      */
     protected $position = 0;
-    
+
     /**
      * @Column(type="integer",nullable=true) @var string 
      */
-    private $nr_items=0;
+    private $nr_items = 0;
+
+    /**
+     * @OneToMany(targetEntity="Category", mappedBy="parent")
+     */
+    private $children;
+
+    /**
+     * @ManyToOne(targetEntity="Category", inversedBy="children")
+     * @JoinColumn(name="id_parent", referencedColumnName="id_category")
+     */
+    private $parent;
 
     function __construct() {
         $this->ItemCategories = new ArrayCollection();
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function addItemCategory(ItemCategories $itemCategories) {
         $itemCategories->setCategory($this);
         $this->ItemCategories->add($itemCategories);
     }
-
 
     public function getId_category() {
         return $this->id_category;
@@ -127,7 +137,6 @@ class Category {
         $this->cover = $cover;
     }
 
-
     public function getNr_items() {
         return $this->nr_items;
     }
@@ -136,7 +145,6 @@ class Category {
         $this->nr_items = $nr_items;
     }
 
-
     public function getPosition() {
         return $this->position;
     }
@@ -144,7 +152,7 @@ class Category {
     public function setPosition($position) {
         $this->position = $position;
     }
-    
+
     public function getItem_type() {
         return $this->item_type;
     }
@@ -154,9 +162,35 @@ class Category {
         return $this;
     }
 
+    /**
+     * 
+     * @param type $parent
+     * @return \Dealscount\Models\Entities\Category
+     */
+    public function getParent() {
+        return $this->parent;
+    }
 
+    /**
+     * @param type $parent
+     * @return \Dealscount\Models\Entities\Category
+     */
+    public function setParent($parent) {
+        $this->parent = $parent;
+        return $this;
+    }
 
+    /**
+     * @return \Dealscount\Models\Entities\Category
+     */
+    public function getChildren() {
+        return $this->children;
+    }
 
+    public function setChildren($children) {
+        $this->children = $children;
+        return $this;
+    }
 
 }
 

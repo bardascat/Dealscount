@@ -40,7 +40,10 @@
 
 $route['default_controller'] = "landing";
 $route['admin'] = "admin/dashboard";
+
+//categorii
 $route['categorii/(:any)'] = "categorii/load_categories";
+$route['categorii/getSubcategory'] = "categorii/getSubcategory";
 
 //oferte
 $route['oferte/increment_offer_view'] = "oferte/increment_offer_view";

@@ -292,7 +292,7 @@ class Item extends AbstractEntity {
 
     /**
      * 
-     * @return \NeoMvc\Models\Entity\Category
+     * @return \Dealscount\Models\Entities\Category
      */
     public function getCategory() {
         if (count($this->ItemCategories) < 1)
@@ -317,7 +317,7 @@ class Item extends AbstractEntity {
      */
     public function getMainImage($type = "thumb") {
         $itemImages = $this->getImages();
-        if (!file_exists($itemImages[0]->getThumb()))
+        if (!isset($itemImages[0]) || !file_exists($itemImages[0]->getThumb()))
             return 'application_uploads/items/image_not_found.png';
 
         if ($type == "thumb")
@@ -380,6 +380,11 @@ class Item extends AbstractEntity {
             $iteration['id_company'] = null;
         else
             $iteration['id_company'] = $company->getId_user();
+
+        $parent = $this->getCategory()->getParent();
+        if ($parent)
+            $iteration['category'] = $parent->getId_category();
+        $iteration['subcategory'] = $this->getCategory()->getId_category();
 
         return $iteration;
     }
