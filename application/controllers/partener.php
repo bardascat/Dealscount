@@ -105,10 +105,12 @@ class partener extends \CI_Controller {
     }
 
     public function editOfferDo() {
+        if (count($_POST) < 1)
+            redirect($this->agent->referrer());
 
         $this->form_validation->set_rules($this->setOfferRules());
-        $this->form_validation->set_rules('categories', 'Categorie', 'callback_categories_check');
-         $this->form_validation->set_message('required', '<b>%s</b> este obligatoriu');
+        $this->form_validation->set_rules('category', 'Categorie', 'callback_categories_check');
+        $this->form_validation->set_message('required', '<b>%s</b> este obligatoriu');
         if ($this->form_validation->run() == FALSE) {
             $offer = $this->OffersModel->getOffer($this->input->post("id_item"));
             $this->populate_form($offer);
@@ -123,15 +125,55 @@ class partener extends \CI_Controller {
                     "cssClass" => "ui-state-error ui-corner-all"
                 )
             );
+            $this->session->set_flashdata('notification', array("type" => "error", "html" => "Va rugam completati toate campurile."));
             $this->load_view('partner/edit_offer', $data);
         } else {
             $id = $this->input->post('id_item');
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
-            $this->OffersModel->updateOffer($_POST, $this->getLoggedUser()['id_user']);
+            $this->OffersModel->updateOffer($_POST, $this->User->getId_user());
             $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Oferta a fost salvata</div>');
             $this->session->set_flashdata('notification', array("type" => "success", "html" => "Oferta a fost salvata"));
-            redirect(base_url('admin/offer/editOffer/' . $id));
+            redirect(base_url('partener/editeaza-oferta/' . $id));
+        }
+    }
+
+    /**
+     * @AclResource "Partener: Creeaza Oferta"
+     */
+    public function add_offer() {
+        $data = array("user" => $this->User, "categories" => $this->CategoriesModel->getRootCategories());
+        $this->load_view('partner/add_offer', $data);
+    }
+
+    public function addOfferDo() {
+        if (count($_POST) < 1)
+            redirect($this->agent->referrer());
+
+        $this->form_validation->set_rules($this->setOfferRules());
+        $this->form_validation->set_rules('category', 'Categorie', 'callback_categories_check');
+        $this->form_validation->set_message('required', '<b>%s</b> este obligatoriu');
+        if ($this->form_validation->run() == FALSE) {
+           
+            $data = array(
+               
+                'user' => $this->User,
+                "categories" => $this->CategoriesModel->getRootCategories(),
+                "notification" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "ui-state-error ui-corner-all"
+                )
+            );
+            $this->session->set_flashdata('notification', array("type" => "error", "html" => "Va rugam completati toate campurile."));
+            $this->load_view('partner/add_offer', $data);
+        } else {
+            $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
+            $_POST['images'] = $images;
+            $offer=$this->OffersModel->addOffer($_POST, $this->User->getId_user());
+            $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Felicitari, oferta a fost creata cu succes</div>');
+            $this->session->set_flashdata('notification', array("type" => "success", "html" => "Felicitari, oferta a fost creata. "));
+            redirect(base_url('partener/editeaza-oferta/' . $offer->getIdItem()));
         }
     }
 
@@ -144,7 +186,7 @@ class partener extends \CI_Controller {
 
     public function set_primary_image() {
         $id_image = $_POST['id_image'];
-        $this->OffersModel->delete_image($id_image);
+        $this->OffersModel->setPrimaryImage($id_image);
         echo json_encode(array("result" => "success"));
     }
 
@@ -486,14 +528,13 @@ class partener extends \CI_Controller {
      */
     public function numeric_check($str) {
         if (!preg_match('/^[0-9,]+$/', $str)) {
-            $this->form_validation->set_message('numeric_check', '%s must be a number');
+            $this->form_validation->set_message('numeric_check', '%s trebuie sa fie numar intreg');
             return FALSE;
         } else
             return true;
     }
 
     public function images_check($data) {
-
         if (!$_FILES['image']['name'][0]) {
             $this->form_validation->set_message('images_check', 'Este obligatoriu sa alegi cel putin o poza');
             return false;
@@ -504,12 +545,28 @@ class partener extends \CI_Controller {
 
     public function categories_check($data) {
         //daca a ales o categorie
-        if (isset($data[0]) and is_numeric($data[0]))
-            return true;
-        else {
-            $this->form_validation->set_message('categories_check', 'Este obligatoriu sa alegi o categorie');
-            return false;
+        if ($_POST['category']) {
+            $category = $this->CategoriesModel->getCategoryByPk($_POST['category']);
+            if (is_object($category)) {
+                //a ales categoria, verificam daca a ales subcategoria
+                $subcategory = $this->CategoriesModel->getCategoryByPk($_POST['subcategory']);
+                if (!is_object($subcategory)) {
+                    /**
+                     * Subcategoria nu a fost aleasa.
+                     * Daca categoria principala nu are subcategorii atunci e ok, else eroare
+                     */
+                    if (count($category->getChildren()) == 0) {
+                        $_POST['categories'][0] = $category->getId_category();
+                        return true;
+                    }
+                } else {
+                    $_POST['categories'][0] = $subcategory->getId_category();
+                    return true;
+                }
+            }
         }
+        $this->form_validation->set_message('categories_check', 'Este obligatoriu sa alegi categoria ofertei');
+        return false;
     }
 
 }

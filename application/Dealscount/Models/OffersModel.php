@@ -8,6 +8,12 @@ namespace Dealscount\Models;
  */
 class OffersModel extends \Dealscount\Models\AbstractModel {
 
+    /**
+     * 
+     * @param type $post
+     * @param type $id_operator
+     * @return \Dealscount\Models\Entities\Item
+     */
     public function addOffer($post, $id_operator) {
         $next_id = $this->getNextId("items");
         $item = new Entities\Item();
@@ -54,7 +60,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         $this->em->persist($item);
         $this->em->flush();
-        return true;
+        return $item;
     }
 
     public function simpleUpdate($offer) {
@@ -68,6 +74,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $item = $this->getOffer($post['id_item']);
         $current_slug = $item->getSlug();
 
+        echo $current_slug;
+
         $item->postHydrate($post);
 
         //daca operatorul doreste modificarea slugului
@@ -77,26 +85,19 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         } else
             $item->setSlug($current_slug);
 
-
         if (isset($post['images']))
             foreach ($post['images'] as $image)
                 $item->addImage($image);
 
-//setam imaginea principala
+        //setam imaginea principala
         if (isset($_POST['primary_image'])) {
-//scoatem imaginile care erau principale in trecut
-            $this->em->createQuery("update Entities:ItemImage p set p.primary_image=null where p.primary_image is not null and p.id_item=:id_item")
-                    ->setParameter(":id_item", $post['id_item'])
-                    ->execute();
-//setam imaginea principala
-            $this->em->createQuery("update Entities:ItemImage p set p.primary_image=1 where p.id_image=:id_image")
-                    ->setParameter(":id_image", $post['primary_image'])
-                    ->execute();
+            $this->setPrimaryImage($_POST['primary_image']);
         }
+
 
 //daca se modifica categoria
         if ((!$item->getCategory()) || $item->getCategory()->getId_category() != $post['categories'][0]) {
-//stergem ascorierele de categorii
+//stergem asocierile de categorii
             $this->em->createQuery("delete  Entities:ItemCategories c where c.id_item=:id_item")
                     ->setParameter(":id_item", $post['id_item'])
                     ->execute();
@@ -113,7 +114,6 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $item->setCompany($company);
 
         $item->setUpdated_by($id_operator);
-
 
         //adaugam tagurile daca exista
         if ($post['tags']) {
@@ -293,6 +293,23 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $image = $this->em->find("Entities:ItemImage", $id_image);
         $this->em->remove($image);
         $this->em->flush();
+    }
+
+    public function setPrimaryImage($id_image) {
+
+        $image = $this->em->find("Entities:ItemImage", $id_image);
+
+        //setam imaginea principala
+//scoatem imaginile care erau principale in trecut
+        $this->em->createQuery("update Entities:ItemImage p set p.primary_image=null where p.primary_image is not null and p.id_item=:id_item")
+                ->setParameter(":id_item", $image->getItem()->getId_item())
+                ->execute();
+//setam imaginea principala
+        $this->em->createQuery("update Entities:ItemImage p set p.primary_image=1 where p.id_image=:id_image")
+                ->setParameter(":id_image", $image->getId_image())
+                ->execute();
+
+        return true;
     }
 
     public function searchOffers($searchQuery) {

@@ -11,11 +11,10 @@
 
         <div class="edit_offer">
 
-            <h1><?php echo $offer->getName() ?></h1>
+            <h1></h1>
 
             <div class="offer_form">
-                <form id="saveForm" method="post" action="<?= base_url() ?>partener/editOfferDo" enctype="multipart/form-data">
-                    <input type="hidden" name="id_item" value="<?= $offer->getId_item() ?>"/>
+                <form id="saveForm" method="post" action="<?= base_url() ?>partener/addOfferDo" enctype="multipart/form-data">
                     <div id="tabs">
 
                         <div id="tabs-1">
@@ -64,11 +63,11 @@
                                     <td class='input'>
                                         <select name="subcategory">
                                             <?php
-                                            $parent = $offer->getCategory()->getParent();
+                                            
                                             if ($parent) {
                                                 $childs = $parent->getChildren();
                                                 foreach ($childs as $child) {
-                                                    echo "<option " . ($offer->getCategory()->getId_category() == $child->getId_category() ? "selected" : false) . " value='" . $child->getId_category() . "'>" . $child->getName() . "</option>";
+                                                    echo "<option value='" . $child->getId_category() . "'>" . $child->getName() . "</option>";
                                                 }
                                             } else
                                                 echo "<option value='0'>Fara subcategorii</option>"
@@ -99,7 +98,7 @@
                                         <label>Latitudine</label>
                                     </td>
                                     <td class='' >
-                                        <input class="lat" type='text' value="<?php echo set_value('latitude') ?>" name='latitude'/>
+                                        <input title="Dati click pe harta google si alegeti locatia" class="lat" type='text' value="<?php echo set_value('latitude') ?>" name='latitude'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -140,7 +139,7 @@
                                             <tr>
                                                 <td class="" style="padding-bottom: 0px;">
                                                     <div class="programeaza">
-                                                        <input style="width: 80px;"  class="datepicker" type="text" value="<?php echo set_value('voucher_start_date') ?>"  name="voucher_start_date"/>
+                                                        <input style="width: 80px;"  class="datepickersimple" type="text" value="<?php echo set_value('voucher_start_date') ?>"  name="voucher_start_date"/>
                                                     </div>
                                                 </td>
                                                 <td style="padding-bottom: 0px; padding-left: 10px;">
@@ -148,7 +147,7 @@
                                                 </td>
                                                 <td style="padding-left: 10px; padding-bottom: 0px;" class="">
                                                     <div class="programeaza" style="">
-                                                        <input style="width: 80px;"  class="datepicker" type="text" value="<?php echo set_value('voucher_end_date') ?>" name="voucher_end_date"/>    
+                                                        <input style="width: 80px;"  class="datepickersimple" type="text" value="<?php echo set_value('voucher_end_date') ?>" name="voucher_end_date"/>    
                                                     </div>
                                                 </td>
                                             </tr>
@@ -196,7 +195,7 @@
                                     </td>
                                 </tr>
                                 <input type="hidden" value="<?php echo set_value('company_name') ?>"  name="company_name"/>
-                                <input type="hidden" name="id_company"/>
+                                <input type="hidden" name="id_company" value="<?php echo $user->getId_user()?>"/>
 
                             </table>
 
@@ -246,15 +245,7 @@
                             </div>
                             <div class="plusButton" onclick="new_image()"></div>
                             <div class="pictures">
-                                <?php
-                                $photos = $offer->getImages();
-                                foreach ($photos as $photo) {
-                                    ?>
-                                    <div class="image">
-
-                                        <img <?php echo ($photo->getPrimary() == 1 ? "style='border:1px solid blue'" : false) ?> id="image_<?php echo $photo->getId_image() ?>" onclick="triggerImageHandler(<?php echo $photo->getId_image() ?>)" height="130" src="<?php echo base_url($photo->getImage()) ?>"/>
-                                    </div>
-                                <?php } ?>
+                                
                             </div>
                             <div id="clear"></div>
 
@@ -268,7 +259,7 @@
                                         <label>META Title</label>
                                     </td>
                                     <td class="big_input">
-                                        <input type="text" name="meta_title"/>
+                                        <input type="text" value="<?php echo set_value('meta_title') ?>" name="meta_title"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -276,7 +267,7 @@
                                         <label>META Description</label>
                                     </td>
                                     <td class="big_input">
-                                        <input title="Recomandam sa fie sub 150 de caractere" type="text" name="meta_desc"/>
+                                        <input value="<?php echo set_value('meta_desc') ?>" title="Recomandam sa fie sub 150 de caractere" type="text" name="meta_desc"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -284,16 +275,7 @@
                                         <label>Keywords</label>
                                     </td>
                                     <td class="big_input">
-                                        <input title="Separati cuvintele cheie prin virgula ex: reducere tenis, oferta pizza" type="text" 
-                                               value="<?php
-                                               if ($offer->getTags()) {
-                                                   $tags = '';
-                                                   foreach ($offer->getTags() as $tag)
-                                                       $tags.=$tag->getValue() . ',';
-                                                   $tags = substr($tags, 0, -1);
-                                                   echo $tags;
-                                               }
-                                               ?>"
+                                        <input value="<?php echo set_value('tags') ?>" title="Separati cuvintele cheie prin virgula ex: reducere tenis, oferta pizza" type="text" 
                                                name="tags"/>
                                     </td>
                                 </tr>
@@ -302,7 +284,7 @@
                                         <label>Link Oferta</label>
                                     </td>
                                     <td class="big_input">
-                                        <input title="Atentie ! Daca modificati url-ul ofertei, vechiul url va fi inexistent." type="text" name="slug"/>
+                                        <input value="<?php echo set_value('slug') ?>" title="Atentie ! Daca modificati url-ul ofertei, vechiul url va fi inexistent." type="text" name="slug"/>
                                     </td>
                                 </tr>
                             </table>
@@ -311,7 +293,7 @@
                             <table>
                                 <tr>
                                     <td style="padding-top: 45px;">
-                                        <div onclick="$('#saveForm').submit()" id="greenButton">Salveaza Oferta</div>
+                                        <div onclick="$('#saveForm').submit()" id="greenButton">Creeaza Oferta</div>
                                     </td>
                                 </tr>    
                             </table>
@@ -329,14 +311,8 @@
     .ui-dialog{font-size: 10px;}
 </style>
 <script type="text/javascript">
-    var current_picture = null;
-    function triggerImageHandler(id_image) {
-        current_picture = id_image;
-        $("#dialog-form").dialog("open");
-    }
-
     $(document).ready(function() {
-        //selectSubcategory($('select[name="category"]',<?php echo $offer->getCategory()->getId_category() ?>));
+        selectSubcategory($('select[name="category"]'));
 
         $('input').tooltip({
             position: {
@@ -352,25 +328,8 @@
         });
         load_offer_editor();
         $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
+        $(".datepickersimple").datepicker({dateFormat: "dd-mm-yy"});
 
-        $("#dialog-form").dialog({
-            autoOpen: false,
-            height: 100,
-            width: 250,
-            modal: false,
-            buttons: {
-                "Seteaza principala": function() {
-                    set_primary_image(current_picture);
-                },
-                "Sterge": function() {
-                    delete_image(current_picture);
-                },
-            },
-            Cancel: function() {
-                $(this).dialog("close");
-            }
-        }).css("font-size", "10px");
-        ;
     })
     $(document).ready(function() {
         $('#inline').fancybox({
@@ -378,16 +337,11 @@
             closeEffect: 'none',
             beforeShow: function() {
                 google.maps.event.trigger(map, "resize");
-                
-                map.setCenter(new google.maps.LatLng(<?php echo ($offer->getLatitude() && $offer->getLongitude() ? "'".$offer->getLatitude()."','".$offer->getLongitude()."'" : "'44.435511213939165', '26.1025071144104'")?>));
+                map.setCenter(new google.maps.LatLng('44.435511213939165','26.1025071144104')); 
             }
         });
-        globalZoom = 12;
-<?php if ($offer->getLatitude() && $offer->getLongitude()) { ?>
-            displayPartnerMap('<?php echo $offer->getLatitude() ?>', '<?php echo $offer->getLongitude() ?>');
-<?php } else { ?>
-            displayPartnerMap('44.435511213939165', '26.1025071144104');
-<?php } ?>
+        globalZoom=12;
+        displayPartnerMap('44.435511213939165','26.1025071144104');
     });
 
 </script>
@@ -397,6 +351,4 @@
             <div style="width: 530px; height: 400px" id="map_canvas"></div>
         </div>
     </div>
-</div>
-<div id="dialog-form" title="Setari imagine" style="font-size: 12px;">
 </div>

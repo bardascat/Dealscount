@@ -29,15 +29,15 @@
                                         Platit pe site
                                     </td>
                                     <td>
-                                        <b><?php echo $offer->getSale_price() ?></b>
+                                        <b><?php echo $offer->getSale_price() ?></b> lei
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        Platit la furnizor
+                                        Platit la furnizor 
                                     </td>
                                     <td>
-                                        <b> <?php echo $offer->getVoucher_price() ?></b>
+                                        <b> <?php echo $offer->getVoucher_price() ?></b> lei
                                     </td>
                                 </tr>
                                 <tr>
@@ -53,7 +53,7 @@
                                         Vizualizari
                                     </td>
                                     <td>
-                                        <b><?php echo $offer->getStats()->getViews() ?></b>
+                                        <b><?php echo ($offer->getStats() ? $offer->getStats()->getViews() : 0); ?></b>
                                     </td>
                                 </tr>
                                 <tr>
@@ -61,7 +61,7 @@
                                         Descarcate
                                     </td>
                                     <td>
-                                        <b><?php echo $offer->getStats()->getSales() ?></b>
+                                        <b><?php echo ($offer->getStats() ? $offer->getStats()->getSales() : 0); ?></b>
                                     </td>
                                 </tr>
                             </table>

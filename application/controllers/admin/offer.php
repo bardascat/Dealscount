@@ -101,7 +101,6 @@ class offer extends CI_Controller {
         $tree = $this->CategoriesModel->createCheckboxList("offer", $id_item);
 
         $item = $this->OffersModel->getOffer($id_item);
-        $item->setSlug(substr($item->getSlug(), 0, strripos($item->getSlug(), '-')));
         $this->populate_form($item);
         $data = array(
             "companies" => $companies,

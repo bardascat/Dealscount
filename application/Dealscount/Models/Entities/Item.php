@@ -140,7 +140,7 @@ class Item extends AbstractEntity {
 
     /**
      *
-     * @Column(type="integer")
+     * @Column(type="integer",nullable=true)
      */
     protected $startWith;
 
@@ -368,6 +368,7 @@ class Item extends AbstractEntity {
      * Metoda folosita pentru a repopula inputurile din forms
      */
     public function getIterationArray() {
+        $this->setSlug(substr($this->getSlug(), 0, strripos($this->getSlug(), '-')));
 
         $iteration = array();
         foreach ($this as $key => $value) {
@@ -382,9 +383,13 @@ class Item extends AbstractEntity {
             $iteration['id_company'] = $company->getId_user();
 
         $parent = $this->getCategory()->getParent();
-        if ($parent)
+
+        if (!$parent)
+            $iteration['category'] = $this->getCategory()->getId_category();
+        else {
             $iteration['category'] = $parent->getId_category();
-        $iteration['subcategory'] = $this->getCategory()->getId_category();
+            $iteration['subcategory'] = $this->getCategory()->getId_category();
+        }
 
         return $iteration;
     }
@@ -627,6 +632,7 @@ class Item extends AbstractEntity {
     }
 
     public function setUpdated_by($updated_by) {
+        $this->setUpdated_date(new \DateTime("now"));
         $this->updated_by = $updated_by;
         return $this;
     }

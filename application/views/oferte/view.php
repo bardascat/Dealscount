@@ -58,8 +58,7 @@ $images = $offer->getImages();
                                         <td>
                                             <b>
                                                 <?php
-                                                $stats = $offer->getStats();
-                                                echo $stats->getSales();
+                                               echo ($offer->getStats() ? $offer->getStats()->getSales() : 0);
                                                 ?>
                                             </b>
                                         </td>
@@ -190,7 +189,6 @@ $images = $offer->getImages();
                                 <?php if ($offer->getLongitude() && $offer->getLatitude()) { ?>
                                     <div class="googlemap" style="float: right;">
                                         <div style="width: 430px; height: 200px" id="map_canvas"></div>
-                                        <span  style=" font-size:11px;">Vezi <a class="harta_popup" href="" style="color:#0000FF;text-align:left" target="_blank">harta mai mare</a> </span>
                                     </div>
                                 <?php } ?>
                             </td>
