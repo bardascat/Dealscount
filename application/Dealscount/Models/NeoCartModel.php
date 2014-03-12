@@ -244,6 +244,7 @@ class NeoCartModel extends AbstractModel {
         $orderCode = \DLConstants::$CODE_PREFIX . $nextOrderId . 'O' . $last_four;
         $order->setOrderNumber($orderCode);
 
+        
         //daca comanda contine doar cupoane gratuite este confirmata automat
         $order->setPayment_status(\DLConstants::$PAYMENT_STATUS_CONFIRMED); // 
         $order->setOrderStatus(\DLConstants::$ORDER_STATUS_CONFIRMED);
@@ -251,8 +252,16 @@ class NeoCartModel extends AbstractModel {
 
         $this->em->persist($order);
         $this->em->persist($user);
+      
+       try{
         $this->em->flush();
-        // $this->emptyCart();
+       }
+       catch(\Exception $e){
+           echo $e->getMessage();
+           exit();
+       }
+      
+        $this->emptyCart();
         return $order;
     }
 

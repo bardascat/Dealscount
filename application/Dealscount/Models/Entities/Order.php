@@ -106,6 +106,7 @@ class Order extends AbstractEntity {
 
     public function __construct() {
         $this->orderedOn = new \DateTime("now");
+        
         $this->orderItems = new ArrayCollection();
     }
 

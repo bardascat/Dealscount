@@ -56,11 +56,15 @@ class OrderVoucher extends AbstractEntity {
      * @Column (type="integer",nullable=true)
      */
     protected $used = 0;
+
     /**
-     *
      * @Column (type="datetime",nullable=true)
      */
-    protected $used_at = 0;
+    protected $used_at;
+
+    function __construct() {
+        
+    }
 
     public function getId_voucher() {
         return $this->id_voucher;
@@ -130,6 +134,7 @@ class OrderVoucher extends AbstractEntity {
         $this->used_at = $used_at;
         return $this;
     }
+
     public function getUsed() {
         return $this->used;
     }
@@ -138,9 +143,6 @@ class OrderVoucher extends AbstractEntity {
         $this->used = $used;
         return $this;
     }
-
-
-
 
 }
 
