@@ -36,7 +36,8 @@ class UserModel extends AbstractModel {
             $new_password = $this->randString(10);
             $user->setPassword(sha1($new_password));
             $user->setRealPassword($new_password);
-        } else
+        }
+        else
             $user->setPassword(sha1($params['password']));
 
         try {
@@ -66,7 +67,8 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
             return true;
-        } else
+        }
+        else
             return false;
     }
 
@@ -219,6 +221,11 @@ class UserModel extends AbstractModel {
 
         $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
         return $paginator;
+    }
+
+    public function getCities() {
+        $rep = $this->em->getRepository("Entities:City");
+        return $rep->findAll();
     }
 
 }

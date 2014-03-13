@@ -1,12 +1,15 @@
 <?php
 /* @var $offer \Dealscount\Models\Entities\Item */
+/* @var $voucher \Dealscount\Models\Entities\OrderVoucher */
+/* @var $companyDetails \Dealscount\Models\Entities\Company */
+/* @var $company \Dealscount\Models\Entities\User */
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Oringo Voucher</title>
+        <title><?php DLConstants::$WEBSITE_COMMERCIAL_NAME?> Voucher</title>
         <style type="text/css">
             *{font-family: Arial;}
             #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
@@ -104,117 +107,92 @@
         </style>
     </head>
     <body>
-        <div style="width:100% !important; margin:0; padding:0; background-color: #fff;" id="voucher">
-            <table width="700"  cellspacing="0">
+        <div style="width:100% !important; margin:0; padding:0; background-color: #fff; padding-left: 15px;" id="voucher">
+            <table width="1000" border="0" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td style=" background-color: #f2f2f2; width: 100%; height: 56px;text-align: center;" valign="middle">					
-                        <img src="<?= base_url() ?>images/blue-oringo-logo.jpg" alt="Oringo"  />
-                    </td>
-                </tr>
-                <tr>
-                    <td valign="top" style="font-size: 20px; color: #4f5153; line-height: 21px; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-                        <b><?php echo $offer->getName() ?></b><br />
-                        <span style="font-size: 17px;"><?php echo $offer->getBrief(); ?></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding-bottom: 20px;">
-                        <table border="0">
+                    <td colspan="2" style="padding-top: 30px;">
+                        <table cellpadding="0" cellspacing="0" width="100%">
                             <tr>
-                                <td width="243" valign="top" style="padding-left: 20px; padding-right: 0px;">
-                                    <img src="<?php echo base_url($offer->getMainImage()) ?>" style="width: 243px; height: 184px;">
+                                <td style="padding-left: 20px;" width="500">
+                                    <img width="200" src="<?php echo base_url('assets/images_fdd/logo.png') ?>"/>
                                 </td>
-                                <td style="width: 350px;">
-
-                                    <table style="text-align: center; width: 350px; height: 200px; " cellpadding="0" cellspacing="0" border="0">
-                                        <?php if ($offer->getSale_price()): ?>
-                                            <tr>
-                                                <td style="padding-bottom: 15px;"><span style="font-size: 16px;">Valoarea voucherului</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td width="350" style="width: 350px;">
-                                                    <table width='100%'>
-                                                        <tr>
-                                                            <td> <div  style="font-size: 80px;"><?php echo round($offer->getSale_price(), 2); ?> </div></td>
-                                                            <td style="padding-top: 30px;">
-                                                                <div  style="font-size: 30px; width: 30px; text-align: left; padding-top: 20px;">lei</div>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td style="padding-bottom: 15px;"><span style="font-size: 60px;">Gratuit</span></td>
-                                            </tr>
-                                        <?php endif; ?>
-                                        <tr>
-                                            <td style="padding-top: 10px;">
-                                                <span style="font-weight: bold; font-size: 18px;">Beneficiar: <?php echo $voucher->getRecipientName() ?></span>
-                                            </td>
-                                        </tr>
-
-                                    </table>
+                                <td style="font-size:18px; ">
+                                    <div><?php echo strtoupper($voucher->getRecipientName()) ?></div>
+                                    <div>Serie: <?php echo $voucher->getCode() ?></div>
                                 </td>
                             </tr>
-
                         </table>
                     </td>
                 </tr>
                 <tr>
-
-                    <td class="valabilitate" align="center" style="padding-top: 15px; padding-bottom: 15px; border-bottom: 1px solid #ECECEC; border-top: 1px solid #ECECEC; ">
-                        VALABILITATE | DE LA: <?php echo $offer->getVoucher_start_date() ?> | PANA LA <?php echo $offer->getVoucher_end_date() ?>
+                    <td style="padding-top: 30px; vertical-align: top">
+                        <img width="313" src="<?php echo base_url($offer->getMainImage()) ?>"/>
                     </td>
+                    <td width="400" style="padding-top: 30px; font-size: 17px; padding-left: 20px; vertical-align: top;">
+                        <?php echo $offer->getBrief() ?>
 
-                </tr>
-                <tr>
-                    <td class="valabilitate" align="center" style="padding-top: 15px; padding-bottom: 15px; border-bottom: 1px solid #ECECEC; ">
-                        <span style="font-weight: bold; font-size: 18px;">Serie Voucher: <?php echo $voucher->getCode() ?></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding-top: 30px; padding-left: 20px;">
                         <table>
                             <tr>
-                                <?php if ($companyDetails->getImage()) { ?>
-                                    <td  valign="top" style="padding-left: 0px; width: 120px;">
-                                        <img height="110" src="<?php echo base_url($companyDetails->getImage()) ?>">
-                                    </td>
-                                <?php } ?>
-                                <td style="padding-left: 20px;">
-                                    <table style="font-size: 15px;" border="0" celpadding="5" cellspacing="0">
-                                        <tr><td><b><?php echo $companyDetails->getCompany_name() ?></b></td></tr>
-                                        <tr><td height="5"></td></tr>
-                                        <?php if ($companyDetails->getWebsite()) { ?><tr><td><b>site:</b> <?php echo str_replace('http://', '', $companyDetails->getWebsite()); ?></td></tr><?php } ?>
-                                        <tr><td><b>email:</b> <?php echo $company->getEmail() ?></td></tr>
-                                        <?php if ($companyDetails->getPhone()) { ?><tr><td><b>telefon:</b> <?php echo $companyDetails->getPhone() ?></td></tr><?php } ?>
-                                        <?php if ($companyDetails->getAddress()) { ?><tr><td><b>adresa:</b> <?php echo $companyDetails->getAddress() ?></td></tr><?php } ?>
-                                    </table>
+                                <td  style="padding-top: 20px;padding-bottom: 8px; border-bottom: 1px solid #d3d3d3; width:250px;">
+                                    <span style="font-size: 42px;"><?php echo $offer->getVoucher_price() ?></span><span style="font-size: 18px;">lei</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td  style="padding-top: 7px; padding-bottom: 7px; border-bottom: 1px solid #d3d3d3; width:250px;">
+                                    <span style="font-size: 14px;">Reducere: </span> <span style="font-size: 18px; font-weight: bold;"><?php echo $offer->getPercentageDiscount() ?>%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td  style="padding-top: 7px; padding-bottom: 7px; border-bottom: 1px solid #d3d3d3; width:250px;">
+                                    <span style="font-size: 14px;">Pret intreg: </span> <span style="font-size: 18px; font-weight: bold;"><?php echo $offer->getPrice() ?></span><span style="font-size: 16px;"> lei</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
                 <tr>
+                    <td style="padding-top: 20px; vertical-align: top; padding-right: 10px;">
+                        <h1 style="font-size: 20px;  font-weight: normal;">Despre Oferta</h1>
+                        <br/>
+                        <?php echo $offer->getBenefits() ?>
+                    </td>
+                    <td style="padding-left: 20px;padding-right: 10px; padding-top: 20px;  vertical-align: top; ">
+                        <h1 style="font-size: 20px; font-weight: normal;">Termeni Oferta</h1>
+                        <br/>
+                        <?php echo $offer->getTerms() ?>
 
-                    <td style="padding-top: 30px; padding-left: 20px;">
-                        <h1 style="font-size: 20px; margin-bottom: 15px; margin-top: 15px;">Beneficii</h1><br />
-                        <span class="text_voucher" style="font-size: 13px;">
-                            <?php echo $offer->getName() ?>: <?php echo $offer->getBrief() ?><br />
-                            <?php echo $offer->getBenefits() ?>
-                        </span><br/><br/>
-
-                        <h1 style="font-size: 20px; margin-bottom: 15px; margin-top: 15px;">Termeni</h1><br />
-                        <span class="text_voucher" style="font-size: 13px;">
-                            <?php echo $offer->getName() ?>: <?php echo $offer->getBrief() ?><br />
-                            <?php echo $offer->getTerms() ?>
-                        </span><br/><br/>
-
+                        <br/>
+                        <h1 style="font-size: 18px;  font-weight: normal;"><?php echo ($companyDetails->getCommercial_name() ? $companyDetails->getCommercial_name() : $companyDetails->getCompany_name()) ?></h1>
+                        <br/>
+                        <?php if ($companyDetails->getAddress()) { ?>
+                            <div>
+                                <b>Adresa</b>
+                                <?php echo $companyDetails->getAddress(); ?>
+                            </div>
+                        <?php } ?>
+                        <?php if ($companyDetails->getAddress()) { ?>
+                            <div>
+                                <b>Site</b>
+                                <?php echo $companyDetails->getWebsite(); ?>
+                            </div>
+                        <?php } ?>
+                        <?php if ($company->getEmail()) { ?>
+                            <div>
+                                <b>Email</b>
+                                <?php echo $company->getEmail(); ?>
+                            </div>
+                        <?php } ?>
+                        <?php if ($companyDetails->getPhone()) { ?>
+                            <div>
+                                <b>Adresa</b>
+                                <?php echo $companyDetails->getPhone(); ?>
+                            </div>
+                        <?php } ?>
 
                     </td>
-
                 </tr>
+
+
             </table>
         </div>
     </body>

@@ -59,7 +59,24 @@
                             <label>Oras:</label>
                         </td>
                         <td>
-                            <input type="text" name="city" value="<?php echo set_value('city') ?>"/>
+                            <select style="width:208px;" name="city">
+                                <?php foreach ($cities as $city) { ?>
+                                    <option value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
+                                <?php } ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Varsta:</label>
+                        </td>
+                        <td>
+                            <select style="width: 207px;" name="age">
+                                <option value="18-25">18-25</option>
+                                <option value="25-30">25-30</option>
+                                <option value="30-40">30-40</option>
+                                <option value=">40">>40</option>
+                            </select>
                         </td>
                     </tr>
                     <tr>
@@ -67,7 +84,7 @@
                             <label>Sex:</label>
                         </td>
                         <td>
-                            <select name="gender">
+                            <select style="width:208px;" name="gender">
                                 <option value="M">Masculin</option>
                                 <option value="F">Feminin</option>
                             </select>

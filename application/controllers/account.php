@@ -20,7 +20,7 @@ class account extends \CI_Controller {
         $user = $this->getLoggedUser(true);
         $this->populate_form($user);
 
-        $this->load_view('user/settings', array("user" => $user));
+        $this->load_view('user/settings', array("user" => $user,'cities'=>$this->UserModel->getCities()));
     }
 
     /**
@@ -147,7 +147,7 @@ class account extends \CI_Controller {
             $this->session->set_flashdata('notification', array("type" => "error", "html" => "Sunteti deja logat !"));
             redirect(base_url());
         }
-        $this->load_view('user/register');
+        $this->load_view('user/register',array("cities"=>$this->UserModel->getCities()));
     }
 
     public function register_submit() {
@@ -161,7 +161,7 @@ class account extends \CI_Controller {
         //procesam requestul
         $this->form_validation->set_rules('password', 'Parola', 'required|xss_clean|min_length[6]');
         $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
-        $this->form_validation->set_rules('name', 'Nume', 'required|xss_clean');
+        $this->form_validation->set_rules('lastname', 'Nume', 'required|xss_clean');
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
         $this->form_validation->set_rules('agreement', 'Termeni si conditii', 'callback_accept_terms');
         $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
@@ -172,7 +172,7 @@ class account extends \CI_Controller {
                     "type" => "form_notification",
                     "message" => validation_errors(),
                     "cssClass" => "error"
-            )));
+            ),"cities"=>$this->UserModel->getCities()));
         } else {
             try {
                 $status = $this->UserModel->createUser($_POST);
@@ -187,7 +187,7 @@ class account extends \CI_Controller {
                         "type" => "form_notification",
                         "message" => $e->getMessage(),
                         "cssClass" => "error"
-                )));
+                ),"cities"=>$this->UserModel->getCities()));
             }
         }
     }
@@ -283,11 +283,12 @@ class account extends \CI_Controller {
         }
 
         $file = "application_uploads/vouchers/" . $order->getId_order() . '/' . $id_voucher . '.pdf';
-        if (file_exists($file) && !$refreshVoucher) {
+        if (file_exists($file) && !$refreshVoucher && 1==2) {
             header('Content-disposition: attachment; filename=voucher_' . $id_voucher . '.pdf');
             header('Content-type: application/pdf');
             readfile($file);
         } else {
+            
             // daca se fac modificari la voucher, trebuie sa il regeneram
             $voucher = $this->OrderModel->getVoucherByPk($id_voucher);
             $orderItem = $voucher->getOrderItem();
@@ -301,7 +302,7 @@ class account extends \CI_Controller {
             require_once("application/libraries/mpdf54/mpdf.php");
             $mpdf = new \mPDF('utf-8', array(190, 536), '', 'Arial', 2, 2, 2, 2, 2, 2);
             $mpdf->WriteHTML(utf8_encode($voucherHtml));
-
+  
             if (!is_dir("application_uploads/vouchers/" . $order->getId_order()))
                 mkdir("application_uploads/vouchers/" . $order->getId_order(), 0777);
             $mpdf->Output($file);

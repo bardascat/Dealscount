@@ -49,7 +49,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $item->postHydrate($post);
         if ($post['slug']) {
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['slug'] . '-' . $next_id));
-        } else
+        }
+        else
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['name'] . '-' . $next_id));
 
         $item->setOperator($this->em->find("Entities:User", $id_operator));
@@ -82,7 +83,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         if ($post['slug'] != substr($current_slug, 0, strripos($current_slug, '-'))) {
             $slug = $post['slug'];
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($slug . '-' . $post['id_item']));
-        } else
+        }
+        else
             $item->setSlug($current_slug);
 
         if (isset($post['images']))
@@ -106,7 +108,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             $categoryReference = new Entities\ItemCategories();
             $categoryReference->setCategory($category);
             $item->addCategory($categoryReference);
-        } else
+        }
+        else
             $category = $item->getCategory();
 
 //asociem partenerul
@@ -179,6 +182,23 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             echo $e->getMessage();
         };
 
+        return $offers;
+    }
+
+    public function getNewsletterOffers() {
+        try {
+            $offers = $this->em->createQueryBuilder()
+                    ->select("i")
+                    ->from("Entities:Item", "i")
+                    ->where("i.active=1")
+                    ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
+                    ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
+                    ->orderBy("i.end_date", "asc")
+                    ->getQuery();
+            return $offers->getResult();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        };
         return $offers;
     }
 

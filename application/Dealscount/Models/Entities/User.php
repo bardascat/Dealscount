@@ -53,12 +53,12 @@ class User extends AbstractEntity {
     protected $age;
 
     /**
-     * @Column(type="string") @var string 
+     * @Column(type="string",nullable=true) @var string 
      */
     protected $address;
 
     /**
-     * @Column(type="string") @var string 
+     * @Column(type="string",nullable=false) @var string 
      */
     protected $city;
 
@@ -115,11 +115,6 @@ class User extends AbstractEntity {
      */
     protected $orders;
 
-    /**
-     * @OneToMany(targetEntity="Invoice",mappedBy="user",cascade={"persist"})
-     * @OrderBy({"id_invoice" = "desc"})
-     */
-    protected $invoices;
     private $realPassword;
 
     function __construct() {

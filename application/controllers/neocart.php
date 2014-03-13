@@ -76,7 +76,6 @@ class neocart extends CI_Controller {
 
     private function processFreePayment() {
 
-        
         /* @var $order Entity\Order */
         $order = $this->NeoCartModel->insertOrder($this->getLoggedUser(true), $_POST);
      
@@ -88,10 +87,14 @@ class neocart extends CI_Controller {
         $body = ob_get_clean();
         $subject = "Comanda " . $order->getOrderNumber() . DLConstants::$WEBSITE_COMMERCIAL_NAME;
 
+        /**
+         * Nu mai generam nimic, serverul e prea praf si dureaza mult finalizarea comenzii.
+         * Poate un request ajax in pagina de thankyou
+         * 
         $vouchers = $this->NeoCartModel->generateVouchers($order);
-       // NeoMail::genericMailAttach($body, $subject, $email, $vouchers);
+        NeoMail::genericMailAttach($body, $subject, $email, $vouchers);
         //$this->informOwner($order);
-
+        */
         redirect(base_url('account/finalizare?type=free&code=' . $order->getOrderNumber()));
         exit();
     }

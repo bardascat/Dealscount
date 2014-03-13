@@ -154,9 +154,8 @@ class partener extends \CI_Controller {
         $this->form_validation->set_rules('category', 'Categorie', 'callback_categories_check');
         $this->form_validation->set_message('required', '<b>%s</b> este obligatoriu');
         if ($this->form_validation->run() == FALSE) {
-           
+
             $data = array(
-               
                 'user' => $this->User,
                 "categories" => $this->CategoriesModel->getRootCategories(),
                 "notification" => array(
@@ -170,7 +169,7 @@ class partener extends \CI_Controller {
         } else {
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
-            $offer=$this->OffersModel->addOffer($_POST, $this->User->getId_user());
+            $offer = $this->OffersModel->addOffer($_POST, $this->User->getId_user());
             $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Felicitari, oferta a fost creata cu succes</div>');
             $this->session->set_flashdata('notification', array("type" => "success", "html" => "Felicitari, oferta a fost creata. "));
             redirect(base_url('partener/editeaza-oferta/' . $offer->getIdItem()));
@@ -293,7 +292,7 @@ class partener extends \CI_Controller {
      */
     public function date_cont() {
 
-        $this->load_view('partner/date_cont', array("user" => $this->User));
+        $this->load_view('partner/date_cont', array("user" => $this->User,  "cities" => $this->UserModel->getCities()));
     }
 
     public function change_date_cont() {
@@ -303,23 +302,19 @@ class partener extends \CI_Controller {
         $this->form_validation->set_rules('company_name', 'Company name', 'required|xss_clean');
         $this->form_validation->set_rules('cif', 'Cod fiscal', 'required|xss_clean');
         $this->form_validation->set_rules('regCom', 'Registrul comertului', 'required|xss_clean');
-        $this->form_validation->set_rules('address', 'Adresa', 'required|xss_clean');
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('bank', 'Banca', 'required|xss_clean');
-        $this->form_validation->set_rules('iban', 'IBAN', 'required|xss_clean');
         $this->form_validation->set_rules('lastname', 'Numele de contact', 'required|xss_clean');
         $this->form_validation->set_rules('firstname', 'Prenumele de contact', 'required|xss_clean');
         $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
 
         if ($this->form_validation->run() == FALSE) {
-
             $this->load_view('partner/date_cont', array("notification" => array(
                     "type" => "form_notification",
                     "message" => validation_errors(),
-                    "cssClass" => "error"
+                    "cssClass" => "error",
+                    "cities" => $this->UserModel->getCities(),
                 ), "user" => $this->User));
         } else {
-
             try {
                 $this->PartnerModel->updateCompanyDetails($_POST, $this->User);
             } catch (\Exception $e) {
@@ -342,9 +337,6 @@ class partener extends \CI_Controller {
 
         $this->form_validation->set_rules('commercial_name', 'Comercial name', 'required|xss_clean');
         $this->form_validation->set_rules('description', 'Descriere', 'required|xss_clean');
-        $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
-        $this->form_validation->set_rules('website', 'Site', 'required|xss_clean');
-        $this->form_validation->set_rules('address', 'Adresa', 'required|xss_clean');
         $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
 
         if ($this->form_validation->run() == FALSE) {
@@ -448,7 +440,8 @@ class partener extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        } else
+        }
+        else
             return true;
     }
 
@@ -530,7 +523,8 @@ class partener extends \CI_Controller {
         if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s trebuie sa fie numar intreg');
             return FALSE;
-        } else
+        }
+        else
             return true;
     }
 

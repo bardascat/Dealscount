@@ -189,6 +189,7 @@ img{border:0px;}
     position: absolute;
     left: 0px;
     margin-left:-370px;
+    z-index: 999;
 }
 #header #cart_header .pointing_arrow{
     background-image: url('../images_fdd/fab_smoc_arrow.png');
@@ -269,6 +270,7 @@ img{border:0px;}
     left: 0px;
     margin-left:-70px;
     display: none;
+    z-index:999;
 
 }
 #header_login .pointing_arrow{

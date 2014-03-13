@@ -10,7 +10,7 @@ class Doctrine {
      * @var EntityManager $em
      */
     protected $em = null;
-    
+
     /**
      *
      * @var Doctrine
@@ -22,7 +22,7 @@ class Doctrine {
      * @return EntityManger
      */
     public static function getInstance() {
-       
+
         if (!self::$instance) {
             self::$instance = new Doctrine();
         }
@@ -39,7 +39,7 @@ class Doctrine {
 
     private function initDB() {
         require_once APPPATH . 'config/database.php';
-     
+
         // Database connection information
         $dbParams = array(
             'driver' => 'pdo_mysql',
@@ -65,10 +65,9 @@ class Doctrine {
 
         $em = EntityManager::create($dbParams, $config);
 
-        try{
-         // $this->updateSchema($em);
-        }
-        catch(\Exception $e){
+        try {
+       // $this->updateSchema($em);
+        } catch (\Exception $e) {
             echo $e->getMessage();
         }
 
@@ -76,11 +75,11 @@ class Doctrine {
     }
 
     public function getEm() {
-        if(!$this->em)
-            $this->em=$this->initDB();
+        if (!$this->em)
+            $this->em = $this->initDB();
         return $this->em;
     }
-    
+
     public function updateSchema($em) {
 
         $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
@@ -104,7 +103,9 @@ class Doctrine {
             $em->getClassMetadata("Entities:Acl"),
             $em->getClassMetadata("Entities:AclResource"),
             $em->getClassMetadata("Entities:CartItem"),
-            $em->getClassMetadata("Entities:PartnerNewsletter")
+            $em->getClassMetadata("Entities:PartnerNewsletter"),
+            $em->getClassMetadata("Entities:City")
+            
         );
         $tool->updateSchema($classes);
         exit("done");

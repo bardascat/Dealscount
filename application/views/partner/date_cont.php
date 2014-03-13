@@ -51,6 +51,18 @@
                     </tr>
                     <tr>
                         <td>
+                            <label>Oras: <?php echo $user->getCity();?></label>
+                        </td>
+                        <td>
+                            <select style="width: 207px;" name="city">
+                                <?php foreach ($cities as $city) { ?>
+                                <option <?php echo ($user->getCity()==$city->getDistrict() ? "selected" : false)?> value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
+                                <?php } ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
                             <label>Telefon:</label>
                         </td>
                         <td>

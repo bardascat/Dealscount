@@ -133,7 +133,9 @@ class CI_Controller {
     }
 
     private static function generateHash() {
+        if(isset($_SERVER['HTTP_USER_AGENT']))
         return md5(uniqid(microtime()) . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
+        else return false;
     }
 
     public function setAccessLevel($level) {
@@ -278,6 +280,7 @@ class CI_Controller {
     }
 
     private function devMode() {
+        return false;
         if (isset($_POST['access']) && $_POST['access'] == "calorifer") {
             $cookie = array(
                 'name' => 'secret_access',

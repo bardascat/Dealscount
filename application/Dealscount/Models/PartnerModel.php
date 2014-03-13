@@ -228,6 +228,7 @@ class PartnerModel extends AbstractModel {
         $user->setEmail($post['email']);
         $user->setLastname($post['lastname']);
         $user->setFirstname($post['firstname']);
+        $user->setCity($post['city']);
         $this->em->persist($user);
         $this->em->persist($company);
         $this->em->flush();
