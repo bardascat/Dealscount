@@ -21,7 +21,7 @@ class NeoMail {
         $mailer = \Swift_Mailer::newInstance($transport);
         $message = \Swift_Message::newInstance($subject)
                 ->setContentType("text/html")
-                ->setFrom(array('comenzi@oringo.ro' => 'Oringo'))
+                ->setFrom(array('comenzi@oringo.ro' => DLConstants::$WEBSITE_COMMERCIAL_NAME))
                 ->setTo(array($email))
                 ->setBody($body);
         $result = $mailer->send($message);
