@@ -11,7 +11,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Company extends AbstractEntity {
 
     /**
-     *
      * @Id  @Column(type="integer")
      * @GeneratedValue
      */
@@ -19,7 +18,7 @@ class Company extends AbstractEntity {
 
     /**
      *
-     * @Column(type="string",nullable=false)
+     * @Column(type="string",nullable=true)
      */
     protected $description;
 
@@ -31,7 +30,7 @@ class Company extends AbstractEntity {
 
     /**
      *
-     * @Column(type="string",nullable=false)
+     * @Column(type="string",nullable=true)
      */
     protected $commercial_name;
 

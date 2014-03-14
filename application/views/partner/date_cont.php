@@ -51,7 +51,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <label>Oras: <?php echo $user->getCity();?></label>
+                            <label>Oras:</label>
                         </td>
                         <td>
                             <select style="width: 207px;" name="city">

@@ -1,24 +1,1 @@
-<? /* @var $user \NeoMvc\Models\Entity\User */ ?>
-<style>
-    *{font-size: 13px; color: #001e63; font-family: Arial;}
-    html{font-size: 13px; color: #001e63; font-family: Arial;}
-</style>
-<p style="font-size: 13px; color: #001e63; font-family: Arial;">
-    Bună <? if ($user->getNume()) echo $user->getNume() . ' ' . $user->getPrenume() ?>,<br/><br/>
-   
-    Contul dumneavoastra de partener a fost creat. <br/>
-    Datele de login:<br/>
-    Email: <?=$user->getEmail()?><br/>
-    Parola: <?=$user->getRealPassword()?><br/><br/>
-    
-</p>
-
-
-<p style="font-size: 13px; color: #001e63; font-family: Arial;">
-    <br/>
-
-    Va dorim toate cele bune,<br/>
-    <b>Echipa Oringo</b><br/><br/>
-    Web: <a href="<?= URL ?>">www.oringo.ro</a><br/>
-    E-mail: office@oringo.ro<br/>
-</p>
+<? /* @var $user \Dealscount\Models\Entities\User */ ?><style>    *{font-size: 13px; color: #001e63; font-family: Arial;}    html{font-size: 13px; color: #001e63; font-family: Arial;}</style><p style="font-size: 13px; color: #001e63; font-family: Arial;">    Bună <?php if ($user->getNume()) echo $user->getNume() . ' ' . $user->getPrenume() ?>,<br/><br/>    Contul dumneavoastra de partener a fost creat. <br/>    Datele de login:<br/>    Email: <?php echo $user->getEmail() ?><br/>    Parola: <?php echo $user->getRealPassword() ?><br/><br/></p><p style="font-size: 13px; color: #001e63; font-family: Arial;">    <br/>    Va dorim toate cele bune,<br/>    <b><?php echo DLConstants::$WEBSITE_COMMERCIAL_NAME ?></b>    E-mail: <?php echo DLConstants::$OFFICE_EMAIl ?><br/></p>

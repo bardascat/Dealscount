@@ -55,7 +55,7 @@ class DLConstants {
     public static $ORDER_STATUS_PENDING = "W";
     public static $ORDER_STATUS_CANCELED = "C";
     //PARTNER STATUS
-    public static $PARTNER_ACTIVE = "A";
+    public static $PARTNER_ACTIVE = "F";
     public static $PARTNER_PENDING = "W";
     public static $PARTNER_SUSPENDED = "C";
     //NEWSLETTER STATUS

@@ -18,7 +18,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <a class="fb_login" href=""></a>
+                        <a class="fb_login" href="<?php echo base_url('account/fblogin')?>"></a>
                         <a class="login_btn" href="javascript:login_header()"></a>
                     </td>
                 </tr>

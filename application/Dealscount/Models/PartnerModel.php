@@ -16,7 +16,9 @@ class PartnerModel extends AbstractModel {
         $user = new Entities\User();
         $user->postHydrate($params);
         $company = new Entities\Company();
-        if ($params['image'][0]['image']) {
+        $company->setStatus(\DLConstants::$PARTNER_PENDING);
+
+        if (isset($params['image'][0]['image']) && $params['image'][0]['image']) {
             $company->setImage($params['image'][0]['image']);
         }
         $company->postHydrate($params);
@@ -36,9 +38,36 @@ class PartnerModel extends AbstractModel {
         } catch (Doctrine\DBAL\DBALException $e) {
             
         }
-        // $this->sendNotification($user, $type);
+        $this->sendNotification($user);
         //  $this->subscribeUser($user);
         return $user;
+    }
+
+    public function checkEmail($email) {
+
+
+        $userRep = $this->em->getRepository("Entities:User");
+        $user = $userRep->findBy(array("email" => $email));
+        if (isset($user[0]))
+            return $user[0];
+        else
+            return false;
+    }
+
+    public function sendNotification(Entities\User $user) {
+        $email = $user->getEmail();
+        ob_start();
+        switch ($user->getAclRole()->getName()) {
+            case \DLConstants::$PARTNER_ROLE: {
+                    require_once("application/views/mailMessages/contnou_partener.php");
+                }break;
+            default: {
+                    require_once("application/views/mailMessages/contnou.php");
+                }break;
+        }
+        $body = ob_get_clean();
+        $subject = "Confirmare creare cont " . \DLConstants::$WEBSITE_COMMERCIAL_NAME;
+        \NeoMail::genericMail($body, $subject, $email);
     }
 
     public function getCompaniesList() {
@@ -49,7 +78,6 @@ class PartnerModel extends AbstractModel {
     }
 
     /**
-     * 
      * @param type $id_company
      * @return \NeoMvc\Models\Entity\User
      */
@@ -118,6 +146,15 @@ class PartnerModel extends AbstractModel {
         return true;
     }
 
+    /**
+     * Intoarce orasele utilizatorilor pe baza carora se poate programa newsletterul
+     */
+    public function getActiveCities() {
+        $city = $this->em->createQuery("select distinct users.city from Entities:User users")
+                ->getArrayResult();
+        return $city;
+    }
+
     public function suspendNewsletter($id_newsletter, $partner) {
         $newsletter = $this->em->find("Entities:PartnerNewsletter", $id_newsletter);
         if (!$newsletter)
@@ -149,10 +186,10 @@ class PartnerModel extends AbstractModel {
         if ($newsletter->getUser()->getId_user() != $partner->getId_user()) {
             throw new \Exception("Eroare: Newsletterul " . $id_newsletter . " nu apartine partenerului");
         }
-        
+
         return $newsletter;
     }
-    
+
     /**
      * @author Corneliu Iancu <corneliu.iancu@opti.ro>
      */
@@ -180,21 +217,20 @@ class PartnerModel extends AbstractModel {
     }
 
     /**
-     * 
      * @param type $voucher_code
      * @return \NeoMvc\Models\Entity\OrderVoucher
      */
-    public function getVoucher($voucher_code,$id_partener) {
-         $dql = $this->em->createQuery("SELECT ov,oi
+    public function getVoucher($voucher_code, $id_partener) {
+        $dql = $this->em->createQuery("SELECT ov,oi
                 FROM Entities:OrderVoucher ov 
                 JOIN ov.orderItem oi
                 JOIN oi.item i
                 WHERE i.id_user = :id_partener AND ov.code = :voucher_code
                 ");
-            $dql->setParameter(":id_partener", $id_partener);
-            $dql->setParameter(":voucher_code", $voucher_code);
-            $voucher = $dql->getResult();
-           
+        $dql->setParameter(":id_partener", $id_partener);
+        $dql->setParameter(":voucher_code", $voucher_code);
+        $voucher = $dql->getResult();
+
         if (isset($voucher[0])) {
             return $voucher[0];
         } else {
@@ -215,7 +251,7 @@ class PartnerModel extends AbstractModel {
             return false;
         }
     }
-    
+
     public function updateCompanyDetails($post, Entities\User $user) {
         $company = $user->getCompanyDetails();
         $company->setCompany_name($post['company_name']);
@@ -234,6 +270,5 @@ class PartnerModel extends AbstractModel {
         $this->em->flush();
         return true;
     }
-
 
 }

@@ -20,7 +20,7 @@ class account extends \CI_Controller {
         $user = $this->getLoggedUser(true);
         $this->populate_form($user);
 
-        $this->load_view('user/settings', array("user" => $user,'cities'=>$this->UserModel->getCities()));
+        $this->load_view('user/settings', array("user" => $user, 'cities' => $this->UserModel->getCities()));
     }
 
     /**
@@ -47,7 +47,7 @@ class account extends \CI_Controller {
         $user = $this->getLoggedUser(true);
         if (!$_POST)
             redirect(base_url('account'));
-       
+
         $this->populate_form($user);
 
         //procesam requestul
@@ -142,12 +142,18 @@ class account extends \CI_Controller {
     }
 
     public function register() {
+        $form_type = "client_form";
+        if ($this->uri->segment(3) == "company")
+            $form_type = "company_form";
+
+        $form_view = ($form_type == "client_form" ? "user/register/client_form.php" : "user/register/company_form.php");
+
         //userul este deja logat, ii facem redirect la homepage
         if ($this->getLoggedUser()) {
             $this->session->set_flashdata('notification', array("type" => "error", "html" => "Sunteti deja logat !"));
             redirect(base_url());
         }
-        $this->load_view('user/register',array("cities"=>$this->UserModel->getCities()));
+        $this->load_view('user/register', array("cities" => $this->UserModel->getCities(), "form" => $form_view, "form_type" => $form_type));
     }
 
     public function register_submit() {
@@ -158,6 +164,8 @@ class account extends \CI_Controller {
         if ($this->getLoggedUser()) {
             redirect(base_url());
         }
+        $form_type = "client_form";
+        $form_view = "user/register/client_form.php";
         //procesam requestul
         $this->form_validation->set_rules('password', 'Parola', 'required|xss_clean|min_length[6]');
         $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
@@ -172,7 +180,7 @@ class account extends \CI_Controller {
                     "type" => "form_notification",
                     "message" => validation_errors(),
                     "cssClass" => "error"
-            ),"cities"=>$this->UserModel->getCities()));
+                ), "cities" => $this->UserModel->getCities()));
         } else {
             try {
                 $status = $this->UserModel->createUser($_POST);
@@ -187,7 +195,54 @@ class account extends \CI_Controller {
                         "type" => "form_notification",
                         "message" => $e->getMessage(),
                         "cssClass" => "error"
-                ),"cities"=>$this->UserModel->getCities()));
+                    ), "cities" => $this->UserModel->getCities()));
+            }
+        }
+    }
+
+    public function register_company_submit() {
+        $form_type = "company_form";
+        $form_view = "user/register/company_form.php";
+
+        $partnerModel = new \Dealscount\Models\PartnerModel();
+        if (!$_POST)
+            redirect(base_url('account/register/company'));
+
+        //userul este deja logat, ii facem redirect la homepage
+        if ($this->getLoggedUser()) {
+            redirect(base_url());
+        }
+        //procesam requestul
+        $this->form_validation->set_rules('password', 'Parola', 'required|xss_clean|min_length[6]');
+        $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
+        $this->form_validation->set_rules('lastname', 'Nume', 'required|xss_clean');
+        $this->form_validation->set_rules('company_name', 'Nume Firma', 'required|xss_clean');
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+        $this->form_validation->set_rules('agreement', 'Termeni si conditii', 'callback_accept_terms');
+        $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
+        $this->form_validation->set_message('min_length', '%s prea scurta. Minim %s caractere');
+        if ($this->form_validation->run() == FALSE) {
+
+            $this->load_view('user/register', array("notification" => array(
+                    "type" => "form_notification",
+                    "message" => validation_errors(),
+                    "cssClass" => "error"
+                ), "cities" => $this->UserModel->getCities(),"form_type"=>$form_type,"form"=>$form_view));
+        } else {
+            try {
+                $status = $partnerModel->createPartner($_POST);
+                //logam utilizatorul
+                if ($status) {
+                    $this->login_user($status->getEmail());
+                    $this->session->set_flashdata('notification', array("type" => "success", "html" => "Contul dumneavoastra a fost creat. Va multumim !"));
+                    redirect(base_url('account'));
+                }
+            } catch (\Exception $e) {
+                $this->load_view('user/register', array("notification" => array(
+                        "type" => "form_notification",
+                        "message" => $e->getMessage(),
+                        "cssClass" => "error"
+                   ), "cities" => $this->UserModel->getCities(),"form_type"=>$form_type,"form"=>$form_view));
             }
         }
     }
@@ -211,6 +266,91 @@ class account extends \CI_Controller {
             return $user;
         }
         return false;
+    }
+
+    public function fblogin() {
+
+        // incarcam modelul 
+
+        $fb_data = $this->UserModel->fbLogin();
+
+        //salvam de unde a accesat fb login sa il intoarcem acolo
+
+        if ((!$fb_data['uid']) || (!$fb_data['me'])) {
+            // If this is a protected section that needs user authentication
+            // you can redirect the user somewhere else
+            // or take any other action you need
+            // redirect('cart');
+            if (isset($_GET['return_fb'])) {
+                //a venit dupa facebook dar nu a luat nimic
+                redirect(base_url('account/fberror?msg=01'));
+                exit();
+            } else {
+                header('Location:' . $fb_data['loginUrl']);
+                exit();
+            }
+        } else {
+            $userData = $fb_data['me'];
+
+            $userData['gender'] = ($userData['gender'] == "male" ? "m" : "f");
+            if (isset($userData['location']['name'])) {
+                $location = explode(',', $userData['location']['name']);
+                $city = (isset($location[0]) ? $location[0] : "Bucuresti");
+                if ($city == "Bucharest")
+                    $city = "Bucuresti";
+            }
+            if (!isset($city))
+                $city = "Bucuresti";
+            $userData['city'] = $city;
+            $date = new DateTime($userData['birthday']);
+            $now = new DateTime();
+            $interval = $now->diff($date);
+            $age = $interval->y;
+            switch ($age) {
+                case ($age >= 18 && $age <= 25): {
+                        $userData['age'] = "18-25";
+                    }break;
+                case ($age > 25 && $age <= 30): {
+                        $userData['age'] = "25-30";
+                    }break;
+                case ($age > 30 && $age <= 40): {
+                        $userData['age'] = "30-40";
+                    }break;
+                case ($age > 40): {
+                        $userData['age'] = ">40";
+                    }break;
+                default: {
+                        $userData['age'] = "18-25";
+                    }break;
+            }
+            if (!$userData['email']) {
+                redirect(base_url('account/fberror?msg=02'));
+                exit();
+            } else {
+                //procesam datele primite de pe facebook
+                $user = $this->UserModel->checkEmail($userData['email']);
+                if ($user) {
+                    //contul exista, il logam doar
+                    $this->login_user($user->getEmail());
+                    $this->session->set_flashdata('notification', array("type" => "success", "html" => "Autentificare cu succes!"));
+                } else {
+                    //facem un cont nou
+                    $userData['lastname'] = $userData['last_name'];
+                    $userData['firstname'] = $userData['first_name'];
+                    $userData['role'] = DLConstants::$USER_ROLE;
+                    $userData['fb'] = 1;
+
+                    $r = $this->UserModel->createUser($userData);
+                    $user = $this->login_user($userData['email']);
+                    $this->session->set_flashdata('notification', array("type" => "success", "html" => "Contul dumneavoastra a fost creat. Va multumim !"));
+                }
+                redirect(base_url('account'));
+            }
+        }
+    }
+
+    public function fberror() {
+        show_404();
     }
 
     /**
@@ -283,12 +423,12 @@ class account extends \CI_Controller {
         }
 
         $file = "application_uploads/vouchers/" . $order->getId_order() . '/' . $id_voucher . '.pdf';
-        if (file_exists($file) && !$refreshVoucher && 1==2) {
+        if (file_exists($file) && !$refreshVoucher && 1 == 2) {
             header('Content-disposition: attachment; filename=voucher_' . $id_voucher . '.pdf');
             header('Content-type: application/pdf');
             readfile($file);
         } else {
-            
+
             // daca se fac modificari la voucher, trebuie sa il regeneram
             $voucher = $this->OrderModel->getVoucherByPk($id_voucher);
             $orderItem = $voucher->getOrderItem();
@@ -302,7 +442,7 @@ class account extends \CI_Controller {
             require_once("application/libraries/mpdf54/mpdf.php");
             $mpdf = new \mPDF('utf-8', array(190, 536), '', 'Arial', 2, 2, 2, 2, 2, 2);
             $mpdf->WriteHTML(utf8_encode($voucherHtml));
-  
+
             if (!is_dir("application_uploads/vouchers/" . $order->getId_order()))
                 mkdir("application_uploads/vouchers/" . $order->getId_order(), 0777);
             $mpdf->Output($file);
@@ -324,7 +464,8 @@ class account extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        } else
+        }
+        else
             return true;
     }
 

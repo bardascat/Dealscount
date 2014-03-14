@@ -13,11 +13,7 @@ class newsletter extends \CI_Controller {
         $this->load->library('form_validation');
     }
 
-    /**
-     * @AclResource "Partener: dashboard"
-     */
     public function index() {
-        $this->view->offers_categories = $this->CategoriesModel->getRootCategories("offer", false);
         $offers = $this->OffersModel->getNewsletterOffers();
         $this->load->view('newsletter/general', array("offers" => $offers));
     }

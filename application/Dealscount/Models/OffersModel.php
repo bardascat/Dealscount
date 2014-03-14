@@ -9,7 +9,6 @@ namespace Dealscount\Models;
 class OffersModel extends \Dealscount\Models\AbstractModel {
 
     /**
-     * 
      * @param type $post
      * @param type $id_operator
      * @return \Dealscount\Models\Entities\Item
@@ -374,6 +373,109 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
                 ->setParameter(":id_item", $id_item)
                 ->getQuery()
                 ->execute();
+    }
+
+    public function getStatsByCity($id_item) {
+
+        $stm = $this->em->getConnection()->prepare("
+           SELECT city, sum( quantity ) as sales
+            FROM orders_items
+            JOIN orders
+            USING ( id_order )
+            JOIN users
+            USING ( id_user )
+            WHERE orders_items.id_item =:id_item
+            GROUP BY city
+            order by sales desc
+           ");
+
+        $stm->bindParam(":id_item", $id_item);
+        $stm->execute();
+        $result = $stm->fetchAll();
+
+        if (count($result) < 1)
+            return false;
+
+        $total_sales = 0;
+        foreach ($result as $city) {
+            $total_sales+=$city['sales'];
+        }
+
+        //calculate percentage y=(sales*100/)total_sales
+        foreach ($result as $key => $city) {
+            $city['percentage'] = round(($city['sales'] * 100) / $total_sales, 1);
+            $result[$key] = $city;
+        }
+        return $result;
+    }
+
+    public function getStatsByGender($id_item) {
+
+        $stm = $this->em->getConnection()->prepare("
+           SELECT gender, sum( quantity ) as sales
+            FROM orders_items
+            JOIN orders
+            USING ( id_order )
+            JOIN users
+            USING ( id_user )
+            WHERE orders_items.id_item =:id_item
+            GROUP BY gender
+            order by sales desc
+           ");
+
+        $stm->bindParam(":id_item", $id_item);
+        $stm->execute();
+        $result = $stm->fetchAll();
+
+        if (count($result) < 1)
+            return false;
+
+        $total_sales = 0;
+        foreach ($result as $gender) {
+            $total_sales+=$gender['sales'];
+        }
+
+        //calculate percentage y=(sales*100/)total_sales
+        foreach ($result as $key => $gender) {
+            $gender['percentage'] = round(($gender['sales'] * 100) / $total_sales, 1);
+            $result[$key] = $gender;
+        }
+        return $result;
+    }
+
+    public function getStatsByAge($id_item) {
+
+        $stm = $this->em->getConnection()->prepare("
+           SELECT age, sum( quantity ) as sales
+            FROM orders_items
+            JOIN orders
+            USING ( id_order )
+            JOIN users
+            USING ( id_user )
+            WHERE orders_items.id_item =:id_item
+            GROUP BY age
+            order by sales desc
+           ");
+
+        $stm->bindParam(":id_item", $id_item);
+        $stm->execute();
+        $result = $stm->fetchAll();
+
+        if (count($result) < 1)
+            return false;
+
+        $total_sales = 0;
+        foreach ($result as $age) {
+            $total_sales+=$age['sales'];
+        }
+
+        //calculate percentage y=(sales*100/)total_sales
+        foreach ($result as $key => $age) {
+            $age['percentage'] = round(($age['sales'] * 100) / $total_sales, 1);
+            $result[$key] = $age;
+        }
+
+        return $result;
     }
 
 }

@@ -107,8 +107,9 @@
 
                                         <td class="cities">
                                             <select multiple="true" name="cities[]">
-                                                <option <?php echo (isset($_POST['cities']) && in_array('Bucuresti', $_POST['cities']) ? "selected='selected'" : false) ?>value="Bucuresti">Bucuresti</option>
-                                                <option <?php echo (isset($_POST['cities']) && in_array('Galati', $_POST['cities']) ? "selected='selected'" : false) ?>value="Galati">Galati</option>
+                                                <?php foreach ($cities as $city) { ?>
+                                                    <option <?php echo (isset($_POST['cities']) && in_array($city['city'], $_POST['cities']) ? "selected='selected'" : false) ?>value="<?php echo $city['city']; ?>"><?php echo $city['city']; ?></option>
+                                                <?php } ?>
                                             </select>
                                         </td>
                                     </tr>

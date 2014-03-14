@@ -242,86 +242,57 @@
     </div>
 
     <div class="offer_details_stats">
-        <h1>Statistici descarcati</h1>
+        <h1>Statistici descarcari</h1>
         <table>
             <tr>
-                <td style="padding-right: 60px;">
-                    <table>
-                        <tr>
-                            <td>
-                                Bucuresti
-                            </td>
-                            <td>
-                                50%
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Bucuresti
-                            </td>
-                            <td>
-                                50%
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Bucuresti
-                            </td>
-                            <td>
-                                50%
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td style="padding-right: 60px;">
-                    <table>
-                        <tr>
-                            <td>
-                                18-25 ani
-                            </td>
-                            <td>
-                                50%
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                25-30 ani
-                            </td>
-                            <td>
-                                10%
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                 25-30 ani
-                            </td>
-                            <td>
-                                50%
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td style="padding-right: 60px;">
-                    <table>
-                        <tr>
-                            <td>
-                                Masculin
-                            </td>
-                            <td>
-                                50%
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Feminin
-                            </td>
-                            <td>
-                                50%
-                            </td>
-                        </tr>
-
-                    </table>
-                </td>
+                <?php if ($statsByCity) { ?>
+                    <td style="padding-right: 60px;">
+                        <table>
+                            <?php foreach ($statsByCity as $city) { ?>
+                                <tr>
+                                    <td>
+                                        <?php echo $city['city'] ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $city['percentage'] ?>%
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    </td>
+                <?php } ?>
+                <?php if ($statsByAge) { ?>
+                    <td style="padding-right: 60px;">
+                        <table>
+                            <?php foreach ($statsByAge as $age) { ?>
+                                <tr>
+                                    <td>
+                                        <?php echo $age['age'] ?> ani
+                                    </td>
+                                    <td>
+                                        <?php echo $age['percentage'] ?>%
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    </td>
+                <?php } ?>
+                <?php if ($statsByGender) { ?>
+                    <td style="padding-right: 60px;">
+                        <table>
+                            <?php foreach ($statsByGender as $gender) { ?>
+                                <tr>
+                                    <td>
+                                        <?php echo ($gender['gender']=="f" ? "Feminin" : "Masculin"); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $gender['percentage'] ?>%
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    </td>
+                <?php } ?>
             </tr>
         </table>
     </div>

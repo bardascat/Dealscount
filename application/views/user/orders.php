@@ -13,7 +13,7 @@
 
         <div class="search_vouchers">
             <form method="get" action="<?php base_url('account/orders') ?>">
-                <input type="text" name="voucher" class="query_field" value="<?php echo $this->input->get("voucher") ?>" />
+                <input type="text" placeholder="Cauta dupa nume oferta" name="voucher" class="query_field" value="<?php echo $this->input->get("voucher") ?>" />
                 <input type="submit" value=""/>
             </form>
             <div class="username">

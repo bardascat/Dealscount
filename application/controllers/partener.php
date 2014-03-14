@@ -18,7 +18,6 @@ class partener extends \CI_Controller {
         DLConstants::pushCSS('assets/js/jquery_ui/ui-1-10.css');
         $this->load->library('user_agent');
         $this->User = $this->getLoggedUser(true);
-        ;
         $this->load->library('form_validation');
     }
 
@@ -26,6 +25,11 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: dashboard"
      */
     public function index() {
+        if ($this->User->getCompanyDetails()->getStatus() != DLConstants::$PARTNER_ACTIVE) {
+            $this->load_view('partner/inactive', array("user" => $this->User));
+            exit();
+        }
+
         $this->populate_form($this->User);
         $this->load_view('partner/dashboard', array("user" => $this->User));
     }
@@ -84,7 +88,15 @@ class partener extends \CI_Controller {
             redirect(base_url('partener/oferte'));
             exit();
         }
-        $data = array("offer" => $offer, "user" => $this->User);
+        $statsByCity = $this->OffersModel->getStatsByCity($id_offer);
+        $statsByGender = $this->OffersModel->getStatsByGender($id_offer);
+        $statsByAge = $this->OffersModel->getStatsByAge($id_offer);
+        $data = array("offer" => $offer,
+            "user" => $this->User,
+            "statsByCity" => $statsByCity,
+            "statsByGender" => $statsByGender,
+            'statsByAge' => $statsByAge
+        );
         $this->load_view('partner/offer_details', $data);
     }
 
@@ -193,7 +205,7 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: Newsletters"
      */
     public function newsletter() {
-        $this->load_view('partner/newsletters', array("user" => $this->User));
+        $this->load_view('partner/newsletters', array("user" => $this->User, "cities" => $this->PartnerModel->getActiveCities()));
     }
 
     /**
@@ -215,9 +227,8 @@ class partener extends \CI_Controller {
                     "type" => "form_notification",
                     "message" => validation_errors(),
                     "cssClass" => "error"
-                ), "user" => $this->User));
+                ), "user" => $this->User, "cities" => $this->PartnerModel->getActiveCities()));
         } else {
-
             //forma este corecta, validam business logic
             $valid = $this->valid_newsletter();
             if ($valid) {
@@ -257,8 +268,18 @@ class partener extends \CI_Controller {
             redirect('partener/newsletter');
         }
 
-        echo 'Astept grafica pentru newsletter<br/>';
-        echo $newsletter->getName();
+
+        $offers = json_decode($newsletter->getOffers());
+        if (count($offers) < 1) {
+            exit("Nu ati selectat nicio oferta !");
+        }
+        foreach ($offers as $key => $id_offer) {
+
+            $offer = $this->OffersModel->getOffer($id_offer);
+            $offers[$key] = $offer;
+        }
+
+        $this->load->view('newsletter/newsletter_partener', array("offers" => $offers, 'company' => $this->User));
     }
 
     //validators
@@ -292,7 +313,7 @@ class partener extends \CI_Controller {
      */
     public function date_cont() {
 
-        $this->load_view('partner/date_cont', array("user" => $this->User,  "cities" => $this->UserModel->getCities()));
+        $this->load_view('partner/date_cont', array("user" => $this->User, "cities" => $this->UserModel->getCities()));
     }
 
     public function change_date_cont() {
@@ -304,7 +325,6 @@ class partener extends \CI_Controller {
         $this->form_validation->set_rules('regCom', 'Registrul comertului', 'required|xss_clean');
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
         $this->form_validation->set_rules('lastname', 'Numele de contact', 'required|xss_clean');
-        $this->form_validation->set_rules('firstname', 'Prenumele de contact', 'required|xss_clean');
         $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
 
         if ($this->form_validation->run() == FALSE) {
