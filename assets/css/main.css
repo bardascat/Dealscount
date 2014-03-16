@@ -1107,9 +1107,9 @@ img{border:0px;}
     cursor: pointer;
 }
 #content .partner .edit_offer .offer_form .pictures .image{
-float: left;
-height: 130px;
-margin-right: 10px;
+    float: left;
+    height: 130px;
+    margin-right: 10px;
 }
 
 #content .partner .edit_offer .offer_form #tabs-1{
@@ -1408,6 +1408,23 @@ margin-right: 10px;
 }
 .partner .vouchers .voucher_listing_table label{}
 
+#content .partner .pagina_abonamente{
+    font-size: 13px; color: #232323;
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+#content .partner .pagina_abonamente h1{
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 30px;  
+}
+#content .partner .pagina_abonamente .info{
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
 
 .ui-tooltip, .arrow:after {
     background: black;

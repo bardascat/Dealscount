@@ -39,7 +39,7 @@ class PartnerModel extends AbstractModel {
             
         }
         $this->sendNotification($user);
-        //  $this->subscribeUser($user);
+//  $this->subscribeUser($user);
         return $user;
     }
 
@@ -120,7 +120,7 @@ class PartnerModel extends AbstractModel {
         );
         $newsletter->setFilters(json_encode($filters));
 
-        //adaugam ofertele active ale utilizatorului
+//adaugam ofertele active ale utilizatorului
         try {
             $offersArray = $this->em->createQuery("select items.id_item from Entities:Item items 
                 where items.id_user=:id_user
@@ -269,6 +269,152 @@ class PartnerModel extends AbstractModel {
         $this->em->persist($company);
         $this->em->flush();
         return true;
+    }
+
+//abonamente
+    /**
+     * @return \Dealscount\Models\Entities\SubscriptionOption
+     */
+    public function getSubscriptions() {
+        $rep = $this->em->getRepository("Entities:SubscriptionOption");
+        $ab = $rep->findAll(array("type" => "valabilitate"));
+        return $ab;
+    }
+
+    /**
+     * @return \Dealscount\Models\Entities\SubscriptionOption
+     */
+    public function getSubscriptionOption($id_option) {
+        return $this->em->find("Entities:SubscriptionOption", $id_option);
+    }
+
+    /**
+     * @return \Dealscount\Models\Entities\SubscriptionOptionOrder
+     */
+    public function getSubscriptionOptionOrder($order_code) {
+        $rep = $this->em->getRepository("Entities:SubscriptionOptionOrder");
+        $ab = $rep->findOneBy(array("order_number" => $order_code));
+        return $ab;
+    }
+
+    /**
+     * @return \Dealscount\Models\Entities\SubscriptionOptionOrder
+     */
+    public function updateSubscriptionOrder(Entities\SubscriptionOptionOrder $order) {
+        $this->em->persist($order);
+        $this->em->flush();
+    }
+
+    public function confirmSubscriptionOptionOrder($order_code) {
+        $order = $this->getSubscriptionOptionOrder($order_code);
+
+        if (!$order)
+            show_404();
+
+        if ($order->getPayment_status() == \DLConstants::$PAYMENT_STATUS_CONFIRMED)
+            exit('Plata a fost deja confirmata');
+
+        $company = $order->getCompany();
+        $order->setPayment_status(\DLConstants::$PAYMENT_STATUS_CONFIRMED);
+        $this->em->persist($order);
+
+
+        $option = $order->getOption();
+        /**
+         * Acum in functie de tipul optiunii, o implementam
+         */
+        switch ($option->getType()) {
+            case \DLConstants::$OPTIUNE_VALABILITATE: {
+                    //verificam daca e lunar sau anual
+                    if ($option->getDetails() == "anual") {
+                        $add = " 1 year";
+                    } else if ($option->getDetails() == "lunar") {
+                        $add = " 1 month";
+                    }
+                    /* adaugam valabilitate in tabelul company_details
+                     * daca contul este deja expirat atunci adaugam valabilitatea incepand cu ziua curenta
+                     * - altfel incepand cu data cand expira
+                     */
+                    if (!$company->getAvailable_to()) {
+                        //este prima activare
+                        $company->setAvailable_from(new \DateTime(date("Y-m-d")));
+                        $company->setAvailable_to(new \DateTime(date("Y-m-d", strtotime(date("Y-m-d") . ' ' . $add))));
+                    } else {
+                        if ($company->getAvailable_to() < date("Y-m-d")) {
+                            $company->setAvailable_to(new \DateTime(date("Y-m-d", strtotime(date("Y-m-d") . ' ' . $add))));
+                        } else {
+                            $company->setAvailable_to(new \DateTime(date("Y-m-d", strtotime($company->getAvailable_to()->format("Y-m-d") . ' ' . $add))));
+                        }
+                    }
+                    $this->em->persist($company);
+                }break;
+        }
+
+        $this->generateInvoice($order);
+        $this->em->flush();
+    }
+
+    private function generateInvoice(Entities\SubscriptionOptionOrder &$order) {
+        if ($order->getInvoice())
+            return false;
+
+        $invoice = New Entities\Invoice();
+        //daca este livrat si nu are factura generata, o generam acum in baza de date
+        $invoice->setActive(1);
+        $invoice->setTotal($order->getTotal());
+        $invoice->setNumber($this->getInvoiceNumber());
+        $invoice->setTva(24);
+        $products = array(
+            "id" => $order->getOption()->getId_option(),
+            "nume" => $order->getOption()->getName(),
+            "details" => $order->getOption()->getDetails(),
+            "price" => $order->getOption()->getSale_price(),
+            "quantity" => $order->getQuantity(),
+            "type" => $order->getOption()->getType()
+        );
+        $invoice->setComapany_info($this->getCompanyInfo($order->getCompany()));
+        $invoice->setSupplier_info($this->getSupplier_info());
+        $invoice->setProducts(json_encode($products));
+        $invoice->setSeries(\DLConstants::$INVOICE_SERIES);
+        $order->setInvoice($invoice);
+        $order->getCompany()->addInvoice($invoice);
+        $this->em->persist($invoice);
+    }
+
+    private function getCompanyInfo(Entities\Company $company) {
+        $data = array(
+            "name" => $company->getCompany_name(),
+            "reg_com" => $company->getRegCom(),
+            "cui" => $company->getCif(),
+            "adresa" => $company->getAddress(),
+            "iban" => $company->getIban(),
+            "banca" => $company->getBank()
+        );
+        return json_encode($data);
+    }
+
+    private function getSupplier_info() {
+        $data = array(
+            "name" => \DLConstants::$SUPPLIER_NAME,
+            "reg_com" => \DLConstants::$SUPPLIER_REG_COM,
+            "cui" => \DLConstants::$SUPPLIER_CUI,
+            "adresa" => \DLConstants::$SUPPLIER_ADDRESS,
+            "iban" => \DLConstants::$SUPPLIER_IBAN,
+            "banca" => \DLConstants::$SUPPLIER_BANK,
+        );
+        return json_encode($data);
+    }
+
+    private function getInvoiceNumber() {
+        $conn = $this->em->getConnection();
+        $query = "select max(number) as max_invoice from invoices";
+        $data = $conn->executeQuery($query)->fetchAll();
+
+        if ($data[0]) {
+            return ($data[0]['max_invoice'] + 1);
+        } else {
+            return "error";
+        }
     }
 
 }

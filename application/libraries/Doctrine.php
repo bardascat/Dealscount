@@ -66,8 +66,8 @@ class Doctrine {
         $em = EntityManager::create($dbParams, $config);
 
         try {
-            
-        //$this->updateSchema($em);
+
+            //$this->updateSchema($em);
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -84,7 +84,7 @@ class Doctrine {
     public function updateSchema($em) {
 
         $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        
+
         $classes = array(
             $em->getClassMetadata("Entities:User"),
             $em->getClassMetadata("Entities:Item"),
@@ -105,10 +105,11 @@ class Doctrine {
             $em->getClassMetadata("Entities:AclResource"),
             $em->getClassMetadata("Entities:CartItem"),
             $em->getClassMetadata("Entities:PartnerNewsletter"),
-            $em->getClassMetadata("Entities:City")
-            
+            $em->getClassMetadata("Entities:City"),
+            $em->getClassMetadata("Entities:SubscriptionOption"),
+            $em->getClassMetadata("Entities:SubscriptionOptionOrder")
         );
-    
+
         $tool->updateSchema($classes);
         exit("done");
     }

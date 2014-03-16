@@ -122,7 +122,7 @@ class User extends AbstractEntity {
         $this->items = new ArrayCollection();
         $this->operator_items = new ArrayCollection();
         $this->orders = new ArrayCollection();
-        $this->invoices = new ArrayCollection();
+        
         $this->partnerNewsletter=new ArrayCollection();
     }
 
@@ -229,14 +229,7 @@ class User extends AbstractEntity {
         $this->phone = $phone;
     }
 
-    public function getInvoices() {
-        return $this->invoices;
-    }
 
-    public function addInvoice($invoice) {
-        $this->invoices->add($invoice);
-        $invoice->setUser($this);
-    }
 
     public function getFromFb() {
         return $this->fromFb;

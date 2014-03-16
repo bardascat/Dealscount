@@ -244,7 +244,7 @@ class NeoCartModel extends AbstractModel {
         $orderCode = \DLConstants::$CODE_PREFIX . $nextOrderId . 'O' . $last_four;
         $order->setOrderNumber($orderCode);
 
-        
+
         //daca comanda contine doar cupoane gratuite este confirmata automat
         $order->setPayment_status(\DLConstants::$PAYMENT_STATUS_CONFIRMED); // 
         $order->setOrderStatus(\DLConstants::$ORDER_STATUS_CONFIRMED);
@@ -252,16 +252,50 @@ class NeoCartModel extends AbstractModel {
 
         $this->em->persist($order);
         $this->em->persist($user);
-      
-       try{
-        $this->em->flush();
-       }
-       catch(\Exception $e){
-           echo $e->getMessage();
-           exit();
-       }
-      
+
+        try {
+            $this->em->flush();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            exit();
+        }
+
         $this->emptyCart();
+        return $order;
+    }
+
+    /**
+     * @param \Dealscount\Models\Entities\User $user
+     * @param \Dealscount\Models\Entities\SubscriptionOption $option
+     * @return \Dealscount\Models\Entities\SubscriptionOptionOrder
+     */
+    public function buySubscriptionOption(Entities\User $user, Entities\SubscriptionOption $option, $params) {
+        $nextOrderId = $this->getNextId("subscription_options_order", "id_option_order");
+        $order = new Entities\SubscriptionOptionOrder();
+
+        $total = $option->getSale_price() * $params['quantity'];
+        $order->setQuantity($params['quantity']);
+        $order->setOption($option);
+        //generam 4 cifre pentru orderCode
+        $date = new \DateTime();
+        $stamp = $date->getTimestamp();
+        $last_four = substr($stamp, -4);
+
+        $order->setPayment_method($params['payment_method']);
+        $order->setPayment_status(\DLConstants::$PAYMENT_STATUS_PENDING);
+        $order->setTotal($total);
+        $order->setCompany($user->getCompanyDetails());
+        $orderCode = \DLConstants::$CODE_PREFIX . $nextOrderId . 'O' . $last_four;
+        $order->setOrder_number($orderCode);
+        $this->em->persist($order);
+        $this->em->persist($user);
+
+        try {
+            $this->em->flush();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            exit();
+        }
         return $order;
     }
 

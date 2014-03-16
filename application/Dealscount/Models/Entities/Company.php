@@ -89,16 +89,25 @@ class Company extends AbstractEntity {
     protected $bank;
 
     /**
-     *
      * @Column(type="string",nullable=true)
      */
     protected $send_order = 0;
 
     /**
-     *default P = Pending
+     * @Column(type="date",nullable=true)
+     */
+    protected $available_from;
+
+    /**
+     * @Column(type="date",nullable=true)
+     */
+    protected $available_to;
+
+    /**
+     * default P = Pending
      * @Column(type="string",nullable=true)
      */
-     protected $status="P";
+    protected $status = "P";
 
     /**
      * @OneToOne(targetEntity="User",inversedBy="company")
@@ -106,8 +115,33 @@ class Company extends AbstractEntity {
      */
     protected $user;
 
+    /**
+     * @OneToMany(targetEntity="SubscriptionOptionOrder",mappedBy="company",cascade={"persist"})
+     * @OrderBy({"id_option_order" = "desc"})
+     */
+    protected $option_orders;
+
+    /**
+     * @OneToMany(targetEntity="Invoice",mappedBy="company",cascade={"persist"})
+     * @OrderBy({"id_invoice" = "desc"})
+     */
+    protected $invoices;
+
+    function __construct() {
+        $this->option_orders = new ArrayCollection();
+        $this->invoices = new ArrayCollection();
+    }
+
     public function setUser(User $user) {
         $this->user = $user;
+    }
+
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\User
+     */
+    public function getUser() {
+        return $this->user;
     }
 
     public function getId_company() {
@@ -247,6 +281,7 @@ class Company extends AbstractEntity {
         $this->description = $description;
         return $this;
     }
+
     public function getStatus() {
         return $this->status;
     }
@@ -256,7 +291,46 @@ class Company extends AbstractEntity {
         return $this;
     }
 
+    public function getAvailable_from() {
+        return $this->available_from;
+    }
 
+    public function getAvailable_to() {
+        return $this->available_to;
+    }
+
+    public function setAvailable_from($available_from) {
+        $this->available_from = $available_from;
+        return $this;
+    }
+
+    public function setAvailable_to($available_to) {
+        $this->available_to = $available_to;
+        return $this;
+    }
+
+    public function addOptionOrder(SubscriptionOptionOrder $order) {
+        $this->option_orders->add($order);
+        $order->setCompany($this);
+    }
+
+    public function isActive() {
+        $cDate = date("Y-m-d");
+        
+        if (!$this->getAvailable_from() || !$this->getAvailable_to())
+            return false;
+        
+        return ($this->getAvailable_from()->format("Y-m-d") <= $cDate && $cDate <= $this->getAvailable_to()->format("Y-m-d"));
+    }
+
+    public function getInvoices() {
+        return $this->invoices;
+    }
+
+    public function addInvoice($invoice) {
+        $this->invoices->add($invoice);
+        $invoice->setCompany($this);
+    }
 
 }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Bardas Catalin
  * date: 05 feb 2014
@@ -6,8 +7,8 @@
 
 namespace Dealscount\Models;
 
-class CategoriesModel extends AbstractModel  {
-    
+class CategoriesModel extends AbstractModel {
+
     /**
      * Cauta category dupa id.
      * @param  id int
@@ -53,7 +54,7 @@ class CategoriesModel extends AbstractModel  {
             return true;
     }
 
-    public function categoryExists($slug, $item_type="offer") {
+    public function categoryExists($slug, $item_type = "offer") {
         $dql = $this->em->createQuery("select 1 from Entities:Category c where c.slug=:slug and c.item_type=:item_type");
         $dql->setParameter(':slug', $slug);
         $dql->setParameter(':item_type', $item_type);
@@ -63,8 +64,9 @@ class CategoriesModel extends AbstractModel  {
     }
 
     public function addCategory($post) {
-       
+
         $id_parent = $post['id_parent'];
+        $parent = $this->em->find("Entities:Category", $id_parent);
         $category = new Entities\Category();
 
         $category->setName($post['category_name']);
@@ -77,9 +79,11 @@ class CategoriesModel extends AbstractModel  {
 
         if (isset($post['thumb']))
             $category->setThumb($post['thumb'][0]['thumb']);
-        
+
+        $category->setParent($parent);
         $this->em->persist($category);
         $this->em->flush($category);
+
         return true;
     }
 
@@ -106,7 +110,7 @@ class CategoriesModel extends AbstractModel  {
 
             if (isset($post['thumb']))
                 $category->setThumb($post['thumb'][0]['thumb']);
-          
+
             $this->em->persist($category);
             $this->em->flush();
         } catch (PDOException $e) {
@@ -193,7 +197,7 @@ class CategoriesModel extends AbstractModel  {
      * @param string  $item_type (product sau offer)
      * @return Array Of Entities\Category
      */
-    public function getRootCategories($item_type="offer", $child = false, $orm = false) {
+    public function getRootCategories($item_type = "offer", $child = false, $orm = false) {
         $conn = $this->em->getConnection();
 
         if (!$orm) {
@@ -328,7 +332,7 @@ class CategoriesModel extends AbstractModel  {
      * @param string $item_type Offer
      * 
      */
-    public function createAdminList($item_type="offer") {
+    public function createAdminList($item_type = "offer") {
 
         $pdoObject = $this->em->getConnection();
         $stm = $pdoObject->prepare("select * from categories where item_type=:item_type order by name ");
@@ -431,6 +435,7 @@ class CategoriesModel extends AbstractModel  {
             $total_items = 0;
         }
     }
+
 }
 
 ?>

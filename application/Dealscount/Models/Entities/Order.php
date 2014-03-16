@@ -26,11 +26,6 @@ class Order extends AbstractEntity {
     /** @OneToMany(targetEntity="OrderItem", mappedBy="order",cascade={"persist"}) */
     protected $orderItems;
 
-    /**
-     * @OneToOne(targetEntity="Invoice",cascade={"persist"})
-     * @JoinColumn(name="id_invoice", referencedColumnName="id_invoice")
-     */
-    protected $invoice;
 
     /**
      * @Column(type="integer") @var float
@@ -215,18 +210,6 @@ class Order extends AbstractEntity {
 
     public function setInstallments($installments) {
         $this->installments = $installments;
-    }
-
-    /**
-     * 
-     * @return \NeoMvc\Models\Entity\Invoice
-     */
-    public function getInvoice() {
-        return $this->invoice;
-    }
-
-    public function setInvoice(Invoice $invoice) {
-        $this->invoice = $invoice;
     }
 
     /**

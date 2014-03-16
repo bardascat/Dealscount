@@ -22,14 +22,13 @@ class Invoice extends AbstractEntity {
      */
     protected $generate_date;
 
-
     /**
      * @Column(type="integer")
      */
     protected $number;
 
     /**
-     * @Column(type="date") @var date 
+     * @Column(type="date",nullable=true) @var date 
      */
     protected $term_date;
 
@@ -37,10 +36,6 @@ class Invoice extends AbstractEntity {
      * @Column(type="float") @var string 
      */
     protected $total;
-    /**
-     * @Column(type="float") @var string 
-     */
-    protected $shipping_cost;
 
     /**
      * @Column(type="float") @var string 
@@ -60,16 +55,28 @@ class Invoice extends AbstractEntity {
     protected $active = 1;
 
     /**
-     * @ManyToOne(targetEntity="User",inversedBy="invoices")
-     * @JoinColumn(name="id_user", referencedColumnName="id_user")
+     * @ManyToOne(targetEntity="Company",inversedBy="invoices")
+     * @JoinColumn(name="id_company", referencedColumnName="id_company")
      */
-    protected $user;
+    protected $company;
 
     /**
      *
      * @Column(type="text")
      */
     protected $products;
+
+    /**
+     *
+     * @Column(type="text")
+     */
+    protected $comapany_info;
+
+    /**
+     *
+     * @Column(type="text")
+     */
+    protected $supplier_info;
 
     function __construct() {
         $this->generate_date = new \DateTime("now");
@@ -107,7 +114,6 @@ class Invoice extends AbstractEntity {
         $this->tva = $tva;
     }
 
-    
     public function getNumber() {
         return $this->number;
     }
@@ -132,14 +138,6 @@ class Invoice extends AbstractEntity {
         $this->series = $series;
     }
 
-    public function getUser() {
-        return $this->user;
-    }
-
-    public function setUser($user) {
-        $this->user = $user;
-    }
-
     public function getProducts() {
         return $this->products;
     }
@@ -155,16 +153,33 @@ class Invoice extends AbstractEntity {
     public function setActive($active) {
         $this->active = $active;
     }
- 
-    public function getShipping_cost() {
-        return $this->shipping_cost;
+
+    public function getCompany() {
+        return $this->company;
     }
 
-    public function setShipping_cost($shipping_cost) {
-        $this->shipping_cost = $shipping_cost;
+    public function setCompany($company) {
+        $this->company = $company;
+        return $this;
     }
 
+    public function getComapany_info() {
+        return $this->comapany_info;
+    }
 
+    public function getSupplier_info() {
+        return $this->supplier_info;
+    }
+
+    public function setComapany_info($comapany_info) {
+        $this->comapany_info = $comapany_info;
+        return $this;
+    }
+
+    public function setSupplier_info($supplier_info) {
+        $this->supplier_info = $supplier_info;
+        return $this;
+    }
 
 
 }

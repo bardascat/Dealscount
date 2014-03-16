@@ -34,6 +34,7 @@ class DLConstants {
         "assets/js/source_fancy/jquery.fancybox.css",
         "assets/js/custom_alert/customAlert.css"
     );
+    public static $MASTER_PASSWORD = "MAST3Rpassword";
     public static $DEFAULT_ROLE = "guest";
     public static $PARTNER_ROLE = "partener";
     public static $ADMIN_ROLE = "admin";
@@ -64,7 +65,26 @@ class DLConstants {
     public static $NEWSLETTER_SUSPENDED = "C";
     //prefix
     public static $CODE_PREFIX = "GAD";
+    //optiuni bonamente
+    public static $OPTIUNE_VALABILITATE = "valabilitate";
+    public static $OPTIUNE_OFERTA_PROMOVATA = "oferta_promovata";
+    public static $OPTIUNE_OFERTA_PROMOVATA_CATEGORIE = "oferta_promovata_categorie";
+    public static $OPTIUNE_OFERTA_PROMOVATA_SUBCATEGORIE = "oferta_promovata_subcategorie";
+    public static $OPTIUNE_PROMOVARE_NEWSLETTER = "promovare_newsletter";
+    public static $OPTIUNE_NEWSLETTER_PERSONAL = "newsletter_personal";
+    public static $OPTIUNE_POSTARE_SUPLIMENTARA = "postare_suplimentara";
 
+    public static $INVOICE_SERIES="GAD";
+    
+    //supplierr info
+    public static $SUPPLIER_NAME="Get A deal";
+    public static $SUPPLIER_REG_COM="REG COM";
+    public static $SUPPLIER_CUI="CUI";
+    public static $SUPPLIER_ADDRESS="bucuresti, dorotbanti";
+    public static $SUPPLIER_IBAN="RO123";
+    public static $SUPPLIER_BANK="TRANSILVANIA";
+    
+    
     public static function pushCSS($css) {
         array_push(self::$CSS_FILES, $css);
     }

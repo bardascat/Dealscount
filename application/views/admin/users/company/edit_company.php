@@ -19,7 +19,7 @@
                     <?php if (isset($notification)) echo $this->view->show_message($notification) ?>
                 </div>
                 <form method="post" action="<?= base_url() ?>admin/users/editCompanySubmit"  enctype="multipart/form-data">
-                    <input type="hidden" name="id_user" value="<?php echo $user->getId_user();?>"/>
+                    <input type="hidden" name="id_user" value="<?php echo $user->getId_user(); ?>"/>
                     <div id="submit_btn_right">
                         <input name="submit" type="submit" value="Salveaza" />
                     </div>
@@ -33,10 +33,22 @@
                             <table  border='0' width='100%' id='add_table'>
                                 <tr>
                                     <td class='label'>
+                                        <label>Status</label>
+                                    </td>
+                                    <td class='input' >
+                                        <select name="status">
+                                            <option value="<?php echo DLConstants::$PARTNER_ACTIVE?>">Activ</option>
+                                            <option value="<?php echo DLConstants::$PARTNER_PENDING?>">Pending</option>
+                                            <option value="<?php echo DLConstants::$PARTNER_SUSPENDED?>">Suspendat</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class='label'>
                                         <label>Nume pers. contact</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('nume')?>" name='lastname'/>
+                                        <input type='text' value="<?php echo set_value('nume') ?>" name='lastname'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -44,10 +56,10 @@
                                         <label>Prenume pers. contact</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('prenume')?>" name='firstname'/>
+                                        <input type='text' value="<?php echo set_value('prenume') ?>" name='firstname'/>
                                     </td>
                                 </tr>
-                                 <tr>
+                                <tr>
                                     <td class='label'>
                                         <label>Sex</label>
                                     </td>
@@ -63,16 +75,16 @@
                                         <label>Email(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('email')?>" name='email'/>
+                                        <input type='text' value="<?php echo set_value('email') ?>" name='email'/>
                                     </td>
                                 </tr>
-                                
-                                <tr>
+
+                                <tr style="display: none;">
                                     <td class='label'>
                                         <label>Username(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('username')?>" name='username'/>
+                                        <input type='text' value="<?php echo set_value('username') ?>" name='username'/>
                                     </td>
                                 </tr>
                             </table>
@@ -93,7 +105,7 @@
                                         <label>Nume Companie(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('company_name')?>" name='company_name'/>
+                                        <input type='text' value="<?php echo set_value('company_name') ?>" name='company_name'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -101,7 +113,7 @@
                                         <label>Nume Comercial(*)</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('commercial_name')?>" name='commercial_name'/>
+                                        <input type='text' value="<?php echo set_value('commercial_name') ?>" name='commercial_name'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -109,7 +121,7 @@
                                         <label>Website</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('website')?>" name='website'/>
+                                        <input type='text' value="<?php echo set_value('website') ?>" name='website'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -117,7 +129,7 @@
                                         <label>Telefon</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('phone')?>" name='phone'/>
+                                        <input type='text' value="<?php echo set_value('phone') ?>" name='phone'/>
                                     </td>
                                 </tr>
 
@@ -126,7 +138,7 @@
                                         <label>CIF</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('cif')?>" name='cif'/>
+                                        <input type='text' value="<?php echo set_value('cif') ?>" name='cif'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -134,7 +146,7 @@
                                         <label>Registrul Comertului</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('regcom')?>" name='regCom'/>
+                                        <input type='text' value="<?php echo set_value('regcom') ?>" name='regCom'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -142,7 +154,7 @@
                                         <label>Oras</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('city')?>" name='city'/>
+                                        <input type='text' value="<?php echo set_value('city') ?>" name='city'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -150,7 +162,7 @@
                                         <label>Adresa</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('address')?>" name='address'/>
+                                        <input type='text' value="<?php echo set_value('address') ?>" name='address'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -158,7 +170,7 @@
                                         <label>IBAN</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('iban')?>" name='iban'/>
+                                        <input type='text' value="<?php echo set_value('iban') ?>" name='iban'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -166,7 +178,7 @@
                                         <label>Bank</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' value="<?php echo set_value('bank')?>" name='bank'/>
+                                        <input type='text' value="<?php echo set_value('bank') ?>" name='bank'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -174,7 +186,7 @@
                                         <label>Descriere</label>
                                     </td>
                                     <td class='input' >
-                                        <textarea id="description" name="description"><?php echo set_value('description')?></textarea>
+                                        <textarea id="description" name="description"><?php echo set_value('description') ?></textarea>
                                     </td>
                                 </tr>
                             </table>

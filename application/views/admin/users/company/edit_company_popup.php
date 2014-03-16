@@ -66,7 +66,7 @@
                                     </td>
                                 </tr>
                                 
-                                <tr>
+                                <tr style="display: none;">
                                     <td class='label'>
                                         <label>Username(*)</label>
                                     </td>

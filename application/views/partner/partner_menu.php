@@ -16,6 +16,8 @@
                         <?php
                     }break;
             }
+            if(!$user->getCompanyDetails()->isActive())
+                echo '<span style="color: red">(Valabilitate expirata)</span>';
             ?>
         </td>
         <td class="minimenu">
@@ -25,7 +27,7 @@
                         Date cont
                     </a>
                 </li>
-                <li class="abonamente">
+                <li class="abonamente <?php if ($this->uri->segment(2) == "abonamente") echo "selected"; ?>">
                     <a href="<?php echo base_url('partener/abonamente') ?>">
                         Abonamente
                     </a>

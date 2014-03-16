@@ -53,7 +53,7 @@ class users extends CI_Controller {
         $roles = $AclModel->getRoles();
 
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('username', 'Username', 'required');
+        //$this->form_validation->set_rules('username', 'Username', 'required');
         $this->form_validation->set_rules('password', 'Password', 'required');
 
         if ($this->form_validation->run() == FALSE) {
@@ -307,11 +307,6 @@ class users extends CI_Controller {
 
     private function getPartnerValidationRules($update = false) {
         $config = array(
-            array(
-                "field" => "username",
-                "label" => "Username",
-                "rules" => "required|xss_clean|min_length[3]"
-            ),
             array(
                 "field" => "email",
                 "label" => "Email",

