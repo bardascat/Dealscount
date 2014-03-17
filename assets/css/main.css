@@ -1426,6 +1426,121 @@ img{border:0px;}
     margin-bottom: 10px;
 }
 
+
+
+#content .partner .dashboard_page{
+    font-size: 14px; color: #232323;
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+#content .partner .dashboard_page h1{
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 30px;  
+}
+#content .partner .dashboard_page .filter_table{
+    margin-top: 50px;
+}
+#content .partner #searchStats table td{
+    font-size: 14px;
+}
+#content .partner .dashboard_page .stats{
+    margin-top: 50px;
+}
+#content .partner .dashboard_page .stats td{
+    padding-bottom: 15px;
+    padding-right: 20px;
+}
+#content .partner .dashboard_page .de_la{
+    position: absolute;
+    margin-top:-20px;
+}
+#content .partner .dashboard_page .pana_la{
+    position: absolute;
+    margin-top:-20px;
+}
+#content .partner .dashboard_page .info{
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    width: 952px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 30px;
+}
+#content .partner .dashboard_page .programeaza input{
+    width: 100px;
+}
+
+
+
+#content .partner .users_page{
+    font-size: 14px; color: #232323;
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+#content .partner .users_page h1{
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 30px;  
+}
+
+#content .partner .users_page .users_list{
+    float: left;
+    clear: both;
+    width: 100%;
+}
+#content .partner .users_page .users_list th{
+    text-align: left;
+    font-size: 16px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 9px;
+    padding-left: 9px;
+}
+#content .partner .users_page .users_list td{
+    padding-bottom: 9px;
+    padding-top: 9px;
+    padding-left: 9px;
+    padding-right: 9px;
+    border-bottom: 1px solid #ccc;
+}
+
+#content .partner .invoices_page{
+    font-size: 14px; color: #232323;
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+#content .partner .invoices_page h1{
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 30px;  
+}
+#content .partner .invoices_page .invoice_list{
+    float: left;
+    clear: both;
+    margin-top:50px;
+}
+#content .partner .invoices_page .invoice_list th{
+    text-align: center;
+    font-size: 16px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 9px;
+    padding-left: 9px;
+}
+#content .partner .invoices_page .invoice_list td{
+    padding-bottom: 9px;
+    padding-top: 9px;
+    padding-left: 9px;
+    padding-right: 9px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+
 .ui-tooltip, .arrow:after {
     background: black;
     border: 2px solid white;

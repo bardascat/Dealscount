@@ -375,21 +375,25 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
                 ->execute();
     }
 
-    public function getStatsByCity($id_item) {
+    public function getStatsByCity(Entities\User $user, $id_item = false) {
 
         $stm = $this->em->getConnection()->prepare("
-           SELECT city, sum( quantity ) as sales
+           SELECT users.city, sum( quantity ) as sales
             FROM orders_items
+            join items on(orders_items.id_item=items.id_item)
             JOIN orders
             USING ( id_order )
-            JOIN users
-            USING ( id_user )
-            WHERE orders_items.id_item =:id_item
-            GROUP BY city
+            JOIN users on (orders.id_user=users.id_user)
+            where items.id_user=:id_user
+            " . ($id_item ? ' and orders_items.id_item =:id_item ' : false) . "
+            GROUP BY users.city
             order by sales desc
            ");
 
-        $stm->bindParam(":id_item", $id_item);
+        $stm->bindParam(":id_user", $user->getId_user());
+        if ($id_item)
+            $stm->bindParam(":id_item", $id_item);
+
         $stm->execute();
         $result = $stm->fetchAll();
 
@@ -407,23 +411,28 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             $result[$key] = $city;
         }
         return $result;
+        exit('done');
     }
 
-    public function getStatsByGender($id_item) {
+    public function getStatsByGender(Entities\User $user, $id_item = false) {
 
         $stm = $this->em->getConnection()->prepare("
-           SELECT gender, sum( quantity ) as sales
+           SELECT users.gender, sum( quantity ) as sales
             FROM orders_items
+            join items on(orders_items.id_item=items.id_item)
             JOIN orders
             USING ( id_order )
-            JOIN users
-            USING ( id_user )
-            WHERE orders_items.id_item =:id_item
+            JOIN users on(orders.id_user=users.id_user)
+            
+            where items.id_user=:id_user
+            " . ($id_item ? ' and orders_items.id_item =:id_item ' : false) . "
             GROUP BY gender
             order by sales desc
            ");
 
-        $stm->bindParam(":id_item", $id_item);
+        $stm->bindParam(":id_user", $user->getId_user());
+        if ($id_item)
+            $stm->bindParam(":id_item", $id_item);
         $stm->execute();
         $result = $stm->fetchAll();
 
@@ -443,21 +452,24 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         return $result;
     }
 
-    public function getStatsByAge($id_item) {
+    public function getStatsByAge(Entities\User $user, $id_item = false) {
 
         $stm = $this->em->getConnection()->prepare("
            SELECT age, sum( quantity ) as sales
             FROM orders_items
+            join items on(orders_items.id_item=items.id_item)
             JOIN orders
             USING ( id_order )
-            JOIN users
-            USING ( id_user )
-            WHERE orders_items.id_item =:id_item
+            JOIN users on(orders.id_user=users.id_user)
+            where items.id_user=:id_user
+            " . ($id_item ? ' and orders_items.id_item =:id_item ' : false) . "
             GROUP BY age
             order by sales desc
            ");
 
-        $stm->bindParam(":id_item", $id_item);
+        $stm->bindParam(":id_user", $user->getId_user());
+        if ($id_item)
+            $stm->bindParam(":id_item", $id_item);
         $stm->execute();
         $result = $stm->fetchAll();
 
@@ -476,6 +488,119 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         }
 
         return $result;
+    }
+
+    public function getPartnerDashboardStats(Entities\User $user, $from = false, $to = false) {
+
+        $stats = array("total_sales" => 0, "total_views" => 0, "confirmed" => 0);
+        //determinam numarul total de viuzlizari si de descarcari pe toate ofertele
+        $stm = $this->em->getConnection()->prepare("
+            SELECT sum(views) as total_views,sum(sales) as total_sales
+            FROM items join items_stats using(id_item)
+            where id_user=:id_user
+           ");
+
+        $stm->bindParam(":id_user", $user->getId_user());
+        $stm->execute();
+        $result = $stm->fetchAll();
+        if (isset($result[0]['total_views']))
+            $stats['total_views'] = $result[0]['total_views'];
+
+        //nr vanzari
+        $vanzari = "select count(*) as sales from 
+           orders_items
+           join orders using(id_order)
+           join items using(id_item)
+           where items.id_user=:id_user
+            ";
+        if ($from && $to) {
+            $vanzari.=' and (:from<=DATE_FORMAT(orders.orderedOn,"%Y-%m-%d") and DATE_FORMAT(orders.orderedOn,"%Y-%m-%d")<=:to)';
+        }
+        // echo $vanzari;
+
+        $stm = $this->em->getConnection()->prepare($vanzari);
+        $stm->bindParam(":id_user", $user->getId_user());
+        if ($from && $to) {
+            $stm->bindParam(":from", $from);
+            $stm->bindParam(":to", $to);
+        }
+        $stm->execute();
+        $result = $stm->fetchAll();
+        $stats['total_sales'] = $result[0]['sales'];
+
+        //adaucam si numarul de vouchere folosite
+        $confirmed = "SELECT count(*) as confirmed FROM `orders_vouchers`
+            join orders_items on(orders_vouchers.id_order_item=orders_items.id)
+            join items using(id_item)
+            where used=1
+            and id_user=:id_user ";
+        if ($from && $to) {
+
+            $confirmed.=' and (:from<=DATE_FORMAT(orders_vouchers.used_at,"%Y-%m-%d") and DATE_FORMAT(orders_vouchers.used_at,"%Y-%m-%d")<=:to)';
+        }
+
+
+        $stm = $this->em->getConnection()->prepare($confirmed);
+        $stm->bindParam(":id_user", $user->getId_user());
+        if ($from && $to) {
+            $stm->bindParam(":from", $from);
+            $stm->bindParam(":to", $to);
+        }
+
+        $stm->execute();
+        $result = $stm->fetchAll();
+        $stats['confirmed'] = $result[0]['confirmed'];
+
+        return $stats;
+    }
+
+    /**
+     * Intoarce lista de utilizatori cu 
+     * numarul de vouchere cumparate si numarul de vouchere folosite
+     * @param \Dealscount\Models\Entities\User $partener
+     */
+    public function getUsersStats(Entities\User $partener) {
+        $sql_vanzari = "SELECT users.id_user,users.lastname,users.firstname, sum( quantity ) AS sales
+            FROM orders_items
+            JOIN items ON ( orders_items.id_item = items.id_item )
+            JOIN orders
+            USING ( id_order )
+            JOIN users ON ( orders.id_user = users.id_user )
+            where items.id_user=:id_user
+            GROUP BY users.id_user order by sales desc limit 70";
+        $con = $this->em->getConnection($sql_vanzari);
+        $stm = $con->prepare($sql_vanzari);
+        $stm->bindParam(":id_user", $partener->getId_user());
+        $stm->execute();
+        $r = $stm->fetchAll();
+
+        if (count($r) < 1)
+            return false;
+        else {
+            $sql_confirmed = "
+                SELECT count(*) as confirmed
+            FROM orders_vouchers
+            join orders_items on (orders_vouchers.id_order_item=orders_items.id)
+            JOIN items ON ( orders_items.id_item = items.id_item )
+            JOIN orders
+            USING ( id_order )
+	    where used=1
+            and items.id_user=:id_partener
+            and orders.id_user=:id_user
+                ";
+            foreach ($r as $key => $row) {
+                $stm = $con->prepare($sql_confirmed);
+                $stm->bindParam(":id_partener", $partener->getId_user());
+                $stm->bindParam(":id_user", $row['id_user']);
+                $stm->execute();
+                $r2 = $stm->fetchAll();
+                if (isset($r2[0]['confirmed']))
+                    $row['confirmed'] = $r2[0]['confirmed'];
+                $r[$key] = $row;
+            }
+        }
+
+        return $r;
     }
 
 }

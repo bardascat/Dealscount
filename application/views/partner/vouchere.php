@@ -1,6 +1,6 @@
 <?php
 /* @var $user Dealscount\Models\Entities\User */
-/* @var $vouchers Dealscount\Models\Entities\OrderVoucher */ ; 
+/* @var $vouchers Dealscount\Models\Entities\OrderVoucher */;
 ?>
 <div id="content">
 
@@ -12,40 +12,40 @@
             <h2>Vouchere</h2>
             <div class="search_bar">
                 <form action="" method="GET">
-                    <input type="text" value="<?php echo isset($q)? $q :"" ?>" name="q" placeholder="Serie voucher">
+                    <input type="text" value="<?php echo isset($q) ? $q : "" ?>" name="q" placeholder="Serie voucher">
                     <input type="submit" value="">
                 </form>
             </div>
-<?php if(isset($_GET['q'])):?>
-            <div class="search_result">
-    <?php if($search_result): ?>
-                <div class="founded" style="display: block;">
-                    <div class="recipient_name"><?=$search_result->getRecipientName()?></div>
-                    <div class="voucher_code"><?=$search_result->getCode()?></div>
-                    
-                    <!--Verifica statusul voucherului-->
-            <?php if($search_result->getUsed() == 0 ) : ?>
-                    <form action="<?php echo base_url('partener/change_voucher_status') ?>" method="POST" name="voucher-form">
-                        <input type="hidden" name="voucher_code" value="<?=$search_result->getCode()?>">
-                        <div class="voucher_btn" onClick="document.forms['voucher-form'].submit();">Utlizează voucher</div>
-                    </form>
-            <?php else : ?>
-                    <div class="used_voucher">Voucherul a fost utilizat</div>
-                    <div class="clearfix"></div>
-                    
-            <?php endif;?>
-                    
-                </div>
-                
-    <?php else :  ?>
+            <?php if (isset($_GET['q'])): ?>
+                <div class="search_result">
+                    <?php if ($search_result): ?>
+                        <div class="founded" style="display: block;">
+                            <div class="recipient_name"><?=$search_result->getRecipientName()?></div>
+                            <div class="voucher_code"><?=$search_result->getCode()?></div>
 
-                <div class="not_found">
-                    Nu s-a gasit niciun rezultat.
+                            <!--Verifica statusul voucherului-->
+                            <?php if ($search_result->getUsed() == 0) : ?>
+                                <form action="<?php echo base_url('partener/change_voucher_status') ?>" method="POST" name="voucher-form">
+                                    <input type="hidden" name="voucher_code" value="<?=$search_result->getCode()?>">
+                                    <div class="voucher_btn" onClick="document.forms['voucher-form'].submit();">Utlizează voucher</div>
+                                </form>
+                            <?php else : ?>
+                                <div class="used_voucher">Voucherul a fost utilizat</div>
+                                <div class="clearfix"></div>
+
+                            <?php endif; ?>
+
+                        </div>
+
+                    <?php else : ?>
+
+                        <div class="not_found">
+                            Nu s-a gasit niciun rezultat.
+                        </div>
+
+                    <?php endif; ?>
                 </div>
-                
-    <?php endif;?>
-            </div>
-<?php endif;?>
+            <?php endif; ?>
             <table class="voucher_listing_table">
                 <tr>
                     <th class="nume">
@@ -61,26 +61,26 @@
                         <label>Folosit</label>
                     </th>
                 </tr>
-<?php foreach($vouchers as $voucher) :?>
-                <tr>
-                    <td class="nume">
-                        <label><?=$voucher->getRecipientName()?></label>
-                    </td>
-                    <td class="email">
-                        <label>
-                            <?php 
+                <?php foreach ($vouchers as $voucher) : ?>
+                    <tr>
+                        <td class="nume">
+                            <label><?=$voucher->getRecipientName()?></label>
+                        </td>
+                        <td class="email">
+                            <label>
+                                <?php
                                 echo $voucher->getRecipientEmail() != "" ? $voucher->getRecipientEmail() : $voucher->getOrderItem()->getOrder()->getUser()->getEmail();
-                            ?>
-                        </label>
-                    </td>
-                    <td class="serie">
-                        <label><?=$voucher->getCode()?></label>
-                    </td>
-                    <td class="used">
-                        <label><?php echo $voucher->getUsed() != 0 ? $voucher->getUsed_at()->format("Y-m-d") : "Nu" ?></label>
-                    </td>
-                </tr>
-<?php endforeach;?>
+                                ?>
+                            </label>
+                        </td>
+                        <td class="serie">
+                            <label><?=$voucher->getCode()?></label>
+                        </td>
+                        <td class="used">
+                            <label><?php echo $voucher->getUsed() != 0 ? $voucher->getUsed_at()->format("Y-m-d") : "Nu" ?></label>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
             </table>
 
         </div>
@@ -88,7 +88,7 @@
     <div id="clear"></div>
 </div>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
-    })
+                            $(document).ready(function() {
+                                $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
+                            })
 </script>

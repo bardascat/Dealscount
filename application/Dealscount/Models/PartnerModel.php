@@ -201,7 +201,9 @@ class PartnerModel extends AbstractModel {
                 JOIN ov.orderItem oi
                 JOIN oi.item i
                 WHERE i.id_user = :id_partener
-                ");
+                order by ov.id_voucher desc
+                ")
+                    ->setMaxResults(100);
             $dql->setParameter(":id_partener", $id_partner);
             $result = $dql->getResult();
 
@@ -415,6 +417,10 @@ class PartnerModel extends AbstractModel {
         } else {
             return "error";
         }
+    }
+
+    public function downloadInvoice($id_invoice) {
+        
     }
 
 }

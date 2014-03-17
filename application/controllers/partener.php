@@ -26,8 +26,34 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: dashboard"
      */
     public function index() {
-        $this->populate_form($this->User);
-        $this->load_view('partner/dashboard', array("user" => $this->User));
+        $dashboardStas = $this->OffersModel->getPartnerDashboardStats($this->User, $this->input->get("from"), $this->input->get("to"));
+        $this->load_view('partner/dashboard', array("user" => $this->User, "stats" => $dashboardStas));
+    }
+
+    /**
+     * @AclResource "Partener: Utilizatori"
+     */
+    public function utilizatori() {
+        $statsByCity = $this->OffersModel->getStatsByCity($this->User);
+        $statsByGender = $this->OffersModel->getStatsByGender($this->User);
+        $statsByAge = $this->OffersModel->getStatsByAge($this->User);
+
+        $userStats = $this->OffersModel->getUsersStats($this->User);
+        $this->load_view('partner/users', array("user" => $this->User,
+            "statsByCity" => $statsByCity,
+            "statsByGender" => $statsByGender,
+            'statsByAge' => $statsByAge,
+            'users_stats' => $userStats));
+    }
+
+    /**
+     * @AclResource "Partener: Facturi"
+     */
+    public function facturi() {
+
+        $this->load_view('partner/invoices', array(
+            "user" => $this->User
+        ));
     }
 
     /**
@@ -84,9 +110,9 @@ class partener extends \CI_Controller {
             redirect(base_url('partener/oferte'));
             exit();
         }
-        $statsByCity = $this->OffersModel->getStatsByCity($id_offer);
-        $statsByGender = $this->OffersModel->getStatsByGender($id_offer);
-        $statsByAge = $this->OffersModel->getStatsByAge($id_offer);
+        $statsByCity = $this->OffersModel->getStatsByCity($this->User, $id_offer);
+        $statsByGender = $this->OffersModel->getStatsByGender($this->User, $id_offer);
+        $statsByAge = $this->OffersModel->getStatsByAge($this->User, $id_offer);
         $data = array("offer" => $offer,
             "user" => $this->User,
             "statsByCity" => $statsByCity,
@@ -322,7 +348,8 @@ class partener extends \CI_Controller {
             <p><strong><?php echo $e->getMessage(); ?></strong></p>
         <?php endif; ?>
 </div>';
-        } else
+        }
+        else
             show_404();
     }
 
@@ -350,7 +377,7 @@ class partener extends \CI_Controller {
 
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'post') == 0) {
             if (isset($_POST['env_key']) && isset($_POST['data'])) {
-                $privateKeyFilePath ='application/libraries/Mobilpay/private.key';
+                $privateKeyFilePath = 'application/libraries/Mobilpay/private.key';
 
                 try {
                     $objPmReq = \Mobilpay_Payment_Request_Abstract::factoryFromEncrypted($_POST['env_key'], $_POST['data'], $privateKeyFilePath);
@@ -360,7 +387,8 @@ class partener extends \CI_Controller {
                     if ($objPmReq->objPmNotify->errorCode != 0) {
 
                         $this->OrdersModel->setOrderPaymentStatus("C", $order);
-                    } else
+                    }
+                    else
                         switch ($objPmReq->objPmNotify->action) {
                             #orice action este insotit de un cod de eroare si de un mesaj de eroare. Acestea pot fi citite folosind $cod_eroare = $objPmReq->objPmNotify->errorCode; respectiv $mesaj_eroare = $objPmReq->objPmNotify->errorMessage;
                             #pentru a identifica ID-ul comenzii pentru care primim rezultatul platii folosim $id_comanda = $objPmReq->orderId;
@@ -654,7 +682,8 @@ class partener extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        } else
+        }
+        else
             return true;
     }
 
@@ -736,7 +765,8 @@ class partener extends \CI_Controller {
         if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s trebuie sa fie numar intreg');
             return FALSE;
-        } else
+        }
+        else
             return true;
     }
 
@@ -783,7 +813,7 @@ class partener extends \CI_Controller {
             return true;
 
         //daca contul nu este activ
-        if ($this->User->getCompanyDetails()->getStatus() != DLConstants::$PARTNER_ACTIVE) {
+        if ($this->User->getCompanyDetails()->getStatus() != DLConstants::$PARTNER_ACTIVE && $this->uri->segment(2) != "logout") {
             $this->load_view('partner/inactive', array("user" => $this->User));
         }
 

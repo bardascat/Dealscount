@@ -323,6 +323,10 @@ class Company extends AbstractEntity {
         return ($this->getAvailable_from()->format("Y-m-d") <= $cDate && $cDate <= $this->getAvailable_to()->format("Y-m-d"));
     }
 
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\Invoice
+     */
     public function getInvoices() {
         return $this->invoices;
     }
