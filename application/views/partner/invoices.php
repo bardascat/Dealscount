@@ -33,7 +33,7 @@
                                 Total de plata
                             </th>
                             <th width="200">
-                                Plata
+                               
                             </th>
                         </tr>
                         <?php
@@ -51,10 +51,10 @@
                                     <?php echo $invoice->getGenerate_date()->format("d-m-Y"); ?>
                                 </td>
                                 <td style="text-align: center;">
-                                     <?php echo $invoice->getTotal(); ?>
+                                     <?php echo $invoice->getTotal(); ?> lei
                                 </td>
                                 <td style="text-align: center;">
-                                    Neplatita
+                                    <a href="<?php echo base_url('partener/descarca_factura/'.$invoice->getId_invoice())?>">Descarca</a>
                                 </td>
                             </tr>
     <?php } ?>

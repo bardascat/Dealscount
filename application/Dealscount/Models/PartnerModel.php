@@ -273,13 +273,119 @@ class PartnerModel extends AbstractModel {
         return true;
     }
 
-//abonamente
+    private function generateInvoice(Entities\SubscriptionOptionOrder &$order) {
+        if ($order->getInvoice())
+            return false;
+
+        $invoice = New Entities\Invoice();
+        //daca este livrat si nu are factura generata, o generam acum in baza de date
+        $invoice->setActive(1);
+        $invoice->setTotal($order->getTotal());
+        $invoice->setNumber($this->getInvoiceNumber());
+        $invoice->setTva(24);
+        $products = array(
+            "id" => $order->getOption()->getId_option(),
+            "nume" => $order->getOption()->getName(),
+            "details" => $order->getOption()->getDetails(),
+            "price" => $order->getOption()->getSale_price(),
+            "quantity" => $order->getQuantity(),
+            "type" => $order->getOption()->getType()
+        );
+        $invoice->setComapany_info($this->getCompanyInfo($order->getCompany()));
+        $invoice->setSupplier_info($this->getSupplier_info());
+        $invoice->setProducts(json_encode($products));
+        $invoice->setSeries(\DLConstants::$INVOICE_SERIES);
+        $order->setInvoice($invoice);
+        $order->getCompany()->addInvoice($invoice);
+        $this->em->persist($invoice);
+    }
+
+    private function getCompanyInfo(Entities\Company $company) {
+        $data = array(
+            "name" => $company->getCompany_name(),
+            "reg_com" => $company->getRegCom(),
+            "cui" => $company->getCif(),
+            "adresa" => $company->getAddress(),
+            "iban" => $company->getIban(),
+            "banca" => $company->getBank()
+        );
+        return json_encode($data);
+    }
+
+    private function getSupplier_info() {
+        $data = array(
+            "name" => \DLConstants::$SUPPLIER_NAME,
+            "reg_com" => \DLConstants::$SUPPLIER_REG_COM,
+            "cui" => \DLConstants::$SUPPLIER_CUI,
+            "adresa" => \DLConstants::$SUPPLIER_ADDRESS,
+            "iban" => \DLConstants::$SUPPLIER_IBAN,
+            "banca" => \DLConstants::$SUPPLIER_BANK,
+        );
+        return json_encode($data);
+    }
+
+    private function getInvoiceNumber() {
+        $conn = $this->em->getConnection();
+        $query = "select max(number) as max_invoice from invoices";
+        $data = $conn->executeQuery($query)->fetchAll();
+
+        if ($data[0]) {
+            return ($data[0]['max_invoice'] + 1);
+        } else {
+            return "error";
+        }
+    }
+
     /**
-     * @return \Dealscount\Models\Entities\SubscriptionOption
+     * 
+     * @param type $id_invoice
+     * @param \Dealscount\Models\Entities\User $partner
+     * @return \Dealscount\Models\Entities\Invoice
+     * @throws \Exception
      */
-    public function getSubscriptions() {
+    public function getInvoice($id_invoice, Entities\User $partner) {
+        /* @var  $invoice \Dealscount\Models\Entities\Invoice */
+
+        $invoice = $this->em->find("Entities:Invoice", $id_invoice);
+        if (!$invoice)
+            throw new \Exception('Factura nu exista');
+        if ($invoice->getCompany()->getId_company() != $partner->getCompanyDetails()->getId_company())
+            throw new \Exception('Factura apartine altui utilizator');
+
+        return $invoice;
+    }
+
+    public function generateInvoiceFile(Entities\Invoice $invoice) {
+        $filename = $invoice->getSeries();
+        $filename.=$invoice->getNumber() . '.pdf';
+        $file = "application_uploads/invoices/" . $filename;
+        ob_start();
+        require_once('application/views/pdf/invoice.php');
+        $invoiceHtml = ob_get_clean();
+        require_once("application/libraries/mpdf54/mpdf.php");
+        $mpdf = new \mPDF('c', "A4", '', '', 2, 2, 2, 2, 0, 0);
+        $stylesheet = "body { font-family:Tahoma}";
+        $mpdf->WriteHTML($stylesheet, 1); // The parameter 1 tells that this is css/style only and no body/html/text
+        $mpdf->WriteHTML($invoiceHtml);
+        $mpdf->Output($file);
+        return $file;
+    }
+
+    /**
+     * Observatie:
+     * Din punct de vedere al specificatiilor exista 2 abonamente(lunar si anual) si optiuni pe care le adaugam la aceste abonamente
+     * Pentru a simplifica schema bazei de date am considerat cele 2 abonamente tot niste optiuni de valabilitate.
+     * Practic o optiune din cele 2 ofera valabilitate 1 luna sau 12 luni exact ca un abonament.
+     * @return \Dealscount\Models\Entities\SubscriptionOption
+     * @param $type valabilitate sau option
+     */
+    public function getSubscriptionOptions($type = false) {
         $rep = $this->em->getRepository("Entities:SubscriptionOption");
-        $ab = $rep->findAll(array("type" => "valabilitate"));
+        if ($type){
+            $ab = $rep->findBy(array("type" => $type));
+        }
+        else
+            $ab = $rep->findAll();
         return $ab;
     }
 
@@ -288,6 +394,13 @@ class PartnerModel extends AbstractModel {
      */
     public function getSubscriptionOption($id_option) {
         return $this->em->find("Entities:SubscriptionOption", $id_option);
+    }
+
+    public function updateOption($params) {
+        $option = $this->getSubscriptionOption($params['id_option']);
+        $option->postHydrate($params);
+        $this->em->persist($option);
+        $this->em->flush();
     }
 
     /**
@@ -356,71 +469,5 @@ class PartnerModel extends AbstractModel {
         $this->em->flush();
     }
 
-    private function generateInvoice(Entities\SubscriptionOptionOrder &$order) {
-        if ($order->getInvoice())
-            return false;
-
-        $invoice = New Entities\Invoice();
-        //daca este livrat si nu are factura generata, o generam acum in baza de date
-        $invoice->setActive(1);
-        $invoice->setTotal($order->getTotal());
-        $invoice->setNumber($this->getInvoiceNumber());
-        $invoice->setTva(24);
-        $products = array(
-            "id" => $order->getOption()->getId_option(),
-            "nume" => $order->getOption()->getName(),
-            "details" => $order->getOption()->getDetails(),
-            "price" => $order->getOption()->getSale_price(),
-            "quantity" => $order->getQuantity(),
-            "type" => $order->getOption()->getType()
-        );
-        $invoice->setComapany_info($this->getCompanyInfo($order->getCompany()));
-        $invoice->setSupplier_info($this->getSupplier_info());
-        $invoice->setProducts(json_encode($products));
-        $invoice->setSeries(\DLConstants::$INVOICE_SERIES);
-        $order->setInvoice($invoice);
-        $order->getCompany()->addInvoice($invoice);
-        $this->em->persist($invoice);
-    }
-
-    private function getCompanyInfo(Entities\Company $company) {
-        $data = array(
-            "name" => $company->getCompany_name(),
-            "reg_com" => $company->getRegCom(),
-            "cui" => $company->getCif(),
-            "adresa" => $company->getAddress(),
-            "iban" => $company->getIban(),
-            "banca" => $company->getBank()
-        );
-        return json_encode($data);
-    }
-
-    private function getSupplier_info() {
-        $data = array(
-            "name" => \DLConstants::$SUPPLIER_NAME,
-            "reg_com" => \DLConstants::$SUPPLIER_REG_COM,
-            "cui" => \DLConstants::$SUPPLIER_CUI,
-            "adresa" => \DLConstants::$SUPPLIER_ADDRESS,
-            "iban" => \DLConstants::$SUPPLIER_IBAN,
-            "banca" => \DLConstants::$SUPPLIER_BANK,
-        );
-        return json_encode($data);
-    }
-
-    private function getInvoiceNumber() {
-        $conn = $this->em->getConnection();
-        $query = "select max(number) as max_invoice from invoices";
-        $data = $conn->executeQuery($query)->fetchAll();
-
-        if ($data[0]) {
-            return ($data[0]['max_invoice'] + 1);
-        } else {
-            return "error";
-        }
-    }
-
-    public function downloadInvoice($id_invoice) {
-        
-    }
-
+    // end abonamente
 }

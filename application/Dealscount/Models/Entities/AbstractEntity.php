@@ -14,8 +14,7 @@ abstract class AbstractEntity {
 
                 if (!$prop->isPrivate()) {
 
-                    if (validateDate($value, 'd-m-Y') || validateDate($value, 'd-m-Y H:i:s')
-                            || validateDate($value, 'd-m-Y H:i')) {
+                    if (validateDate($value, 'd-m-Y') || validateDate($value, 'd-m-Y H:i:s') || validateDate($value, 'd-m-Y H:i')) {
                         $value = new \DateTime($value);
                     }
 
@@ -27,7 +26,6 @@ abstract class AbstractEntity {
                     $this->$prop = $post_params[$key];
                 }
         }
-   
     }
 
     public function generateStdObject() {
@@ -37,6 +35,17 @@ abstract class AbstractEntity {
             $class->$key = $value;
         }
         return $class;
+    }
+
+    public function getIterationArray() {
+      
+        $iteration = array();
+        foreach ($this as $key => $value) {
+            if (!is_object($value) || ($value instanceof \DateTime))
+                $iteration[$key] = $value;
+        }
+       
+        return $iteration;
     }
 
 }

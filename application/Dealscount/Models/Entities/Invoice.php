@@ -154,6 +154,10 @@ class Invoice extends AbstractEntity {
         $this->active = $active;
     }
 
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\Company
+     */
     public function getCompany() {
         return $this->company;
     }
@@ -180,7 +184,6 @@ class Invoice extends AbstractEntity {
         $this->supplier_info = $supplier_info;
         return $this;
     }
-
 
 }
 

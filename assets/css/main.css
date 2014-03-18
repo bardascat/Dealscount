@@ -660,6 +660,17 @@ img{border:0px;}
     color: #FFF;
     font-weight: bold;
 }
+#greenButtonSmall{
+    background-image: url('../images_fdd/green_button_small.png');
+    width: 166px;
+    height: 37px;
+    line-height: 37px;
+    text-align: center;
+    border:0px;
+    cursor: pointer;
+    color: #FFF;
+    font-weight: bold;
+}
 /** register*/
 #content .register{
     width: 950px;
@@ -863,7 +874,7 @@ img{border:0px;}
 
 #content .partner{
     width: 950px;
-    min-height: 700px;
+    min-height: 100px;
     float: left;
     padding-bottom: 50px;
     color: #1d1d1d;
@@ -1025,7 +1036,7 @@ img{border:0px;}
     background-image: url('../images_fdd/fab_editeaza_informatii.png');
 }
 
-.partner .offers_list .options{
+.partner  .offers_list .options{
     width: 100%;
     margin-top:30px;
 }
@@ -1426,7 +1437,78 @@ img{border:0px;}
     margin-bottom: 10px;
 }
 
+#content .partner .pagina_abonamente .prelungeste{
+    font-size: 14px;
+}
+#content .partner .pagina_abonamente .prelungeste h1{
+    font-size: 15px;
+    font-weight: normal;
+    margin-bottom: 20px;
+    margin-top:50px;
+}
+#content .partner .pagina_abonamente .prelungeste th{
+    font-size: 13px;
+}
+#content .partner .pagina_abonamente .prelungeste td,#content .partner .pagina_abonamente .prelungeste th{
+    padding-bottom: 6px;
+    padding-top: 6px;
+    border-bottom: 1px solid #ccc;
+}
+#content .partner .pagina_abonamente .prelungeste .payment_method{
+    width: 200px;
+    background-color: #CCC;
+    margin: auto;
+}
+#content .partner .pagina_abonamente .prelungeste .payment_method select{
+    width: 200px;
+    padding: 3px;
+    border:1px solid #ccc;
+}#content .partner .pagina_abonamente .prelungeste .sale_price_discount{
+    font-size: 16px;
+    font-weight: bold;
+}
+#content .partner .pagina_abonamente .prelungeste .price{
+    text-decoration: line-through;
+    font-size: 13px;
+}
 
+.partner  .pagina_abonamente .options{
+    width: 100%;
+    margin-top:30px;
+}
+.partner  .pagina_abonamente .options th{
+    padding-bottom: 10px;
+    font-size: 15px;
+    border-bottom: 1px solid #ccc;
+}
+.partner  .pagina_abonamente .options td{
+    text-align: center;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+}
+.partner  .pagina_abonamente .options input[type="text"]{
+    width: 30px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+.partner .pagina_abonamente .options .option_details td{
+    padding-bottom: 5px;
+    text-align: left;
+    border: 0px;
+}
+.partner .pagina_abonamente .options .optionWrapper td{
+    border: 0px;
+}
+.partner .pagina_abonamente .options  .header{
+    color: #232323;
+    font-size: 14px;
+    font-weight: bold;
+}
+.partner .pagina_abonamente .options  .credit{
+    color: #6fa300;
+}
 
 #content .partner .dashboard_page{
     font-size: 14px; color: #232323;

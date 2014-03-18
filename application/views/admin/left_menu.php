@@ -25,18 +25,23 @@
 
     <table border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
-            <th>Comenzi</th>
+            <th>Comenzi Vouchere</th>
         </tr>
         <tr>
             <td>
                 <a href='<?= base_url() ?>admin/orders/orders_list'>Listă Comenzi</a>
             </td>
         </tr>  
+    </table>
+    <table border='0' width='100%' cellpadding='0' cellspacing='0'>
+        <tr>
+            <th>Abonamente</th>
+        </tr>
         <tr>
             <td>
-                <a href='<?= base_url() ?>admin/orders/orders_list'>Adauga Comanda</a>
+                <a href='<?= base_url() ?>admin/subscriptions'>Listă Optiuni</a>
             </td>
-        </tr> 
+        </tr>  
     </table>
     <table border='0' width='100%' cellpadding='0' cellspacing='0'>
         <tr>
@@ -78,7 +83,7 @@
 
         <tr>
             <td>
-                <a href='<?= base_url() ?>admin/pages/updatePage/<?php //$page->getId_page()  ?>'><?php //$page->getName()  ?></a>
+                <a href='<?= base_url() ?>admin/pages/updatePage/<?php //$page->getId_page()   ?>'><?php //$page->getName()   ?></a>
             </td>
         </tr>
 

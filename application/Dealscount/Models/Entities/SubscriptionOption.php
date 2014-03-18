@@ -6,7 +6,7 @@ namespace Dealscount\Models\Entities;
  * @Entity 
  * @Table(name="subscription_options")
  */
-class SubscriptionOption {
+class SubscriptionOption extends AbstractEntity {
 
     /**
      * @Id  @Column(type="integer")
@@ -41,11 +41,17 @@ class SubscriptionOption {
      *  - postare_suplimentara
      */
     protected $type;
+
     /**
      * //memoram informatii specifice optiunilor, ex pentru valabilitate, anual sau lunar
      *  @Column(type="string")
      */
     protected $details;
+
+    /**
+     *  @Column(type="text")
+     */
+    protected $description;
 
     /**
      * //cate zile e valabila aceasta optiune
@@ -97,6 +103,7 @@ class SubscriptionOption {
         $this->type = $type;
         return $this;
     }
+
     public function getDetails() {
         return $this->details;
     }
@@ -105,9 +112,15 @@ class SubscriptionOption {
         $this->details = $details;
         return $this;
     }
+    
+    public function getDescription() {
+        return $this->description;
+    }
 
-
-
+    public function setDescription($description) {
+        $this->description = $description;
+        return $this;
+    }
 
 
 

@@ -53,11 +53,7 @@ function load_partner_editor(width, height) {
                     '/',
                     {
                         name: 'styles',
-                        items: ['Source', 'FontSize', 'Font', 'TextColor', 'BGColor', 'Bold', 'Italic', 'Strike']
-                    },
-                    {
-                        name: 'insert',
-                        items: ['Image', 'Table', 'PageBreak', 'Link', 'Unlink']
+                        items: ['Source', 'FontSize', 'Font', 'TextColor','Image', 'Table']
                     },
                     {
                         name: 'basicstyles',

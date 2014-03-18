@@ -6,11 +6,8 @@
 <div id="content">
 
     <div class="partner">
-
         <?php $this->load->view('partner/partner_menu'); ?>
-
         <div class="offers_list offer_details">
-
             <table border="0" class="summary_table" cellpadding="0" cellspacing="0" width="100%">
                 <tbody>
                     <tr>

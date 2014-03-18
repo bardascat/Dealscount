@@ -18,69 +18,16 @@ class partener extends \CI_Controller {
         DLConstants::pushCSS('assets/js/jquery_ui/ui-1-10.css');
         $this->load->library('user_agent');
         $this->User = $this->getLoggedUser(true);
+        ;
         $this->load->library('form_validation');
-        $this->checkPermission();
     }
 
     /**
      * @AclResource "Partener: dashboard"
      */
     public function index() {
-        $dashboardStas = $this->OffersModel->getPartnerDashboardStats($this->User, $this->input->get("from"), $this->input->get("to"));
-        $this->load_view('partner/dashboard', array("user" => $this->User, "stats" => $dashboardStas));
-    }
-
-    /**
-     * @AclResource "Partener: Utilizatori"
-     */
-    public function utilizatori() {
-        $statsByCity = $this->OffersModel->getStatsByCity($this->User);
-        $statsByGender = $this->OffersModel->getStatsByGender($this->User);
-        $statsByAge = $this->OffersModel->getStatsByAge($this->User);
-
-        $userStats = $this->OffersModel->getUsersStats($this->User);
-        $this->load_view('partner/users', array("user" => $this->User,
-            "statsByCity" => $statsByCity,
-            "statsByGender" => $statsByGender,
-            'statsByAge' => $statsByAge,
-            'users_stats' => $userStats));
-    }
-
-    /**
-     * @AclResource "Partener: Descarca Factura"
-     */
-    public function descarca_factura() {
-        $id_invoice = $this->uri->segment(3);
-        try {
-            $invoice = $this->PartnerModel->getInvoice($id_invoice, $this->User);
-        } catch (\Exception $e) {
-            $this->session->set_flashdata('notification', array("type" => "error", "html" => $e->getMessage()));
-            redirect(base_url('partener/facturi'));
-        }
-
-        $filename = $invoice->getSeries();
-        $filename.=$invoice->getNumber() . '.pdf';
-        $file = "application_uploads/invoices/" . $filename;
-        if (file_exists($file) &&1==2) {
-            header('Content-disposition: attachment; filename=' . $filename);
-            header('Content-type: application/pdf');
-            readfile($file);
-        } else {
-            $file = $this->PartnerModel->generateInvoiceFile($invoice);
-            header('Content-disposition: attachment; filename=' . $filename);
-            header('Content-type: application/pdf');
-            readfile($file);
-        }
-    }
-
-    /**
-     * @AclResource "Partener: Facturi"
-     */
-    public function facturi() {
-
-        $this->load_view('partner/invoices', array(
-            "user" => $this->User
-        ));
+        $this->populate_form($this->User);
+        $this->load_view('partner/dashboard', array("user" => $this->User));
     }
 
     /**
@@ -137,15 +84,7 @@ class partener extends \CI_Controller {
             redirect(base_url('partener/oferte'));
             exit();
         }
-        $statsByCity = $this->OffersModel->getStatsByCity($this->User, $id_offer);
-        $statsByGender = $this->OffersModel->getStatsByGender($this->User, $id_offer);
-        $statsByAge = $this->OffersModel->getStatsByAge($this->User, $id_offer);
-        $data = array("offer" => $offer,
-            "user" => $this->User,
-            "statsByCity" => $statsByCity,
-            "statsByGender" => $statsByGender,
-            'statsByAge' => $statsByAge
-        );
+        $data = array("offer" => $offer, "user" => $this->User);
         $this->load_view('partner/offer_details', $data);
     }
 
@@ -254,7 +193,7 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: Newsletters"
      */
     public function newsletter() {
-        $this->load_view('partner/newsletters', array("user" => $this->User, "cities" => $this->PartnerModel->getActiveCities()));
+        $this->load_view('partner/newsletters', array("user" => $this->User));
     }
 
     /**
@@ -276,8 +215,9 @@ class partener extends \CI_Controller {
                     "type" => "form_notification",
                     "message" => validation_errors(),
                     "cssClass" => "error"
-                ), "user" => $this->User, "cities" => $this->PartnerModel->getActiveCities()));
+                ), "user" => $this->User));
         } else {
+
             //forma este corecta, validam business logic
             $valid = $this->valid_newsletter();
             if ($valid) {
@@ -288,207 +228,6 @@ class partener extends \CI_Controller {
 
                 exit('no validated');
             }
-        }
-    }
-
-    /**
-     * @AclResource "Partener: Abonamente"
-     */
-    public function abonamente() {
-        $this->load_view('partner/abonamente', array("user" => $this->User,
-            "subscriptions" => $this->PartnerModel->getSubscriptionOptions("valabilitate"),
-            "options"=>$this->PartnerModel->getSubscriptionOptions('option')
-        ));
-    }
-
-    public function buy_option() {
-        if (isset($_POST['id_option'])) {
-            $NeoCartModel = new \Dealscount\Models\NeoCartModel();
-            $option = $this->PartnerModel->getSubscriptionOption($_POST['id_option']);
-
-            $order = $NeoCartModel->buySubscriptionOption($this->User, $option, $_POST);
-
-            require_once 'application/libraries/Mobilpay/Payment/Request/Abstract.php';
-            require_once 'application/libraries/Mobilpay/Payment/Request/Card.php';
-            require_once 'application/libraries/Mobilpay/Payment/Invoice.php';
-            require_once 'application/libraries/Mobilpay/Payment/Address.php';
-
-            $paymentUrl = 'http://sandboxsecure.mobilpay.ro';
-            //$paymentUrl = 'https://secure.mobilPay.ro';
-            $x509FilePath = 'application/libraries/Mobilpay/public.cer';
-            try {
-                srand((double) microtime() * 1000000);
-                $objPmReqCard = new \Mobilpay_Payment_Request_Card();
-                $objPmReqCard->signature = 'ULSN-4A5M-3JYK-3BX5-Y75A';
-                $objPmReqCard->orderId = $order->getOrder_number();
-
-                $objPmReqCard->confirmUrl = base_url('partener/payment_confirm?mobilpay=' . sha1("mobilpay"));
-                $objPmReqCard->returnUrl = base_url('partener/payment_return/' . $order->getOrder_number());
-
-                $objPmReqCard->invoice = new \Mobilpay_Payment_Invoice();
-                $objPmReqCard->invoice->currency = 'RON';
-
-                $objPmReqCard->invoice->customer_type = 2;
-
-                $total = $order->getTotal();
-                if (!$total)
-                    exit("ERROR: 3:31, Please contact administrator !");
-
-                $objPmReqCard->invoice->amount = $total;
-                $objPmReqCard->invoice->details = $option->getName();
-
-                $billingAddress = new \Mobilpay_Payment_Address();
-                $billingAddress->type = "person";
-                $billingAddress->firstName = $order->getCompany()->getUser()->getFirstname();
-                $billingAddress->lastName = $order->getCompany()->getUser()->getLastname();
-                $billingAddress->address = $order->getCompany()->getUser()->getAddress();
-                $billingAddress->email = $order->getCompany()->getUser()->getEmail();
-                $billingAddress->mobilePhone = $order->getCompany()->getUser()->getPhone();
-
-                $objPmReqCard->invoice->setBillingAddress($billingAddress);
-
-                $objPmReqCard->encrypt($x509FilePath);
-            } catch (Exception $e) {
-                echo $e->getMessage();
-            }
-            $e = "";
-
-            echo '
-        <div class="span-15 prepend-1" style="margin:0 auto; text-align:center; margin-top:100px;">
-        <?php if (!($e instanceof Exception)): ?>
-                <p>
-                <form name="frmPaymentRedirect" method="post" action="' . $paymentUrl . '">
-                    <input type="hidden" name="env_key" value="' . $objPmReqCard->getEnvKey() . '"/>
-                    <input type="hidden" name="data" value="' . $objPmReqCard->getEncData() . '"/>
-                    <p>	
-
-                        Pentru a finaliza plata vei redirectat catre pagina de plati securizata a mobilpay.ro
-                    </p>
-                    <p>
-                        Daca nu esti redirectat in 3 secunde apasa <input type="image" value="Redirect"/>
-                    </p>
-                </form>
-            </p>
-            <script type="text/javascript" language="javascript">
-               window.setTimeout(document.frmPaymentRedirect.submit(),1000);
-            </script>
-        <?php else: ?>
-            <p><strong><?php echo $e->getMessage(); ?></strong></p>
-        <?php endif; ?>
-</div>';
-        }
-        else
-            show_404();
-    }
-
-    /**
-     * @AclResource "Partener: Confirma plata partener"
-     */
-    public function confirm_subscription_order() {
-        $code = $this->uri->segment(3);
-        $this->PartnerModel->confirmSubscriptionOptionOrder($code);
-        echo "Optiunea a fost activata";
-        ///redirect($this->agent->referrer());
-    }
-
-    public function payment_confirm() {
-
-        require_once 'application/libraries/Mobilpay/Payment/Request/Abstract.php';
-        require_once 'application/libraries/Mobilpay/Payment/Request/Card.php';
-        require_once 'application/libraries/Mobilpay/Payment/Request/Notify.php';
-        require_once 'application/libraries/Mobilpay//Payment/Invoice.php';
-        require_once 'application/libraries/Mobilpay/Payment/Address.php';
-
-        $errorCode = 0;
-        $errorType = \Mobilpay_Payment_Request_Abstract::CONFIRM_ERROR_TYPE_NONE;
-
-
-        if (strcasecmp($_SERVER['REQUEST_METHOD'], 'post') == 0) {
-            if (isset($_POST['env_key']) && isset($_POST['data'])) {
-                $privateKeyFilePath = 'application/libraries/Mobilpay/private.key';
-
-                try {
-                    $objPmReq = \Mobilpay_Payment_Request_Abstract::factoryFromEncrypted($_POST['env_key'], $_POST['data'], $privateKeyFilePath);
-
-
-                    //$order = $this->PartnerModel->getSubscriptionOptionOrder($objPmReq->orderId);
-                    if ($objPmReq->objPmNotify->errorCode != 0) {
-
-                        $this->OrdersModel->setOrderPaymentStatus("C", $order);
-                    }
-                    else
-                        switch ($objPmReq->objPmNotify->action) {
-                            #orice action este insotit de un cod de eroare si de un mesaj de eroare. Acestea pot fi citite folosind $cod_eroare = $objPmReq->objPmNotify->errorCode; respectiv $mesaj_eroare = $objPmReq->objPmNotify->errorMessage;
-                            #pentru a identifica ID-ul comenzii pentru care primim rezultatul platii folosim $id_comanda = $objPmReq->orderId;
-                            case 'confirmed': {
-                                    $this->PartnerModel->confirmSubscriptionOptionOrder($objPmReq->orderId);
-                                }
-                                break;
-                            case 'confirmed_pending': {
-                                    #cand action este confirmed_pending inseamna ca tranzactia este in curs de verificare antifrauda. Nu facem livrare/expediere. In urma trecerii de aceasta verificare se va primi o noua notificare pentru o actiune de confirmare sau anulare.
-                                    $order->setPayment_status(DLConstants::$PAYMENT_STATUS_PENDING);
-                                    $this->PartnerModel->updateSubscriptionOrder($order);
-                                }
-                                break;
-                            case 'paid_pending': {
-                                    $order->setPayment_status(DLConstants::$PAYMENT_STATUS_PENDING);
-                                    $this->PartnerModel->updateSubscriptionOrder($order);
-                                    #cand action este paid_pending inseamna ca tranzactia este in curs de verificare. Nu facem livrare/expediere. In urma trecerii de aceasta verificare se va primi o noua notificare pentru o actiune de confirmare sau anulare.
-                                    $errorMessage = $objPmReq->objPmNotify->getCrc();
-                                }
-                                break;
-                            case 'paid': {
-                                    $order->setPayment_status(DLConstants::$PAYMENT_STATUS_PENDING);
-                                    $this->PartnerModel->updateSubscriptionOrder($order);
-                                    #cand action este paid inseamna ca tranzactia este in curs de procesare. Nu facem livrare/expediere. In urma trecerii de aceasta procesare se va primi o noua notificare pentru o actiune de confirmare sau anulare.
-                                    $errorMessage = $objPmReq->objPmNotify->getCrc();
-                                }
-                                break;
-                            case 'canceled': {
-                                    $order->setPayment_status(DLConstants::$PAYMENT_STATUS_CANCELED);
-                                    $this->PartnerModel->updateSubscriptionOrder($order);
-                                    #cand action este canceled inseamna ca tranzactia este anulata. Nu facem livrare/expediere.
-                                    $errorMessage = $objPmReq->objPmNotify->getCrc();
-                                }
-                                break;
-                            case 'credit': {
-                                    #cand action este credit inseamna ca banii sunt returnati posesorului de card. Daca s-a facut deja livrare, aceasta trebuie oprita sau facut un reverse. 
-                                    $order->setPayment_status(DLConstants::$PAYMENT_METHOD_RAMBURS);
-                                    $this->PartnerModel->updateSubscriptionOrder($order);
-                                }
-                                break;
-                            default:
-                                $errorType = \Mobilpay_Payment_Request_Abstract::CONFIRM_ERROR_TYPE_PERMANENT;
-                                $errorCode = \Mobilpay_Payment_Request_Abstract::ERROR_CONFIRM_INVALID_ACTION;
-                                $errorMessage = 'mobilpay_refference_action paramaters is invalid';
-                                break;
-                        }
-                } catch (Exception $e) {
-
-
-                    $errorType = \Mobilpay_Payment_Request_Abstract::CONFIRM_ERROR_TYPE_TEMPORARY;
-                    $errorCode = $e->getCode();
-                    $errorMessage = $e->getMessage();
-                }
-            } else {
-                $errorType = \Mobilpay_Payment_Request_Abstract::CONFIRM_ERROR_TYPE_PERMANENT;
-                $errorCode = \Mobilpay_Payment_Request_Abstract::ERROR_CONFIRM_INVALID_POST_PARAMETERS;
-                $errorMessage = 'mobilpay.ro posted invalid parameters';
-            }
-        } else {
-            $errorType = \Mobilpay_Payment_Request_Abstract::CONFIRM_ERROR_TYPE_PERMANENT;
-            $errorCode = \Mobilpay_Payment_Request_Abstract::ERROR_CONFIRM_INVALID_POST_METHOD;
-            $errorMessage = 'invalid request metod for payment confirmation';
-        }
-
-        header('Content-type: application/xml');
-        echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-        if (isset($errorCode) && isset($errorMessage) && $errorCode == 0) {
-            echo "<crc>{$errorMessage}</crc>";
-        } else {
-            if (!isset($errorMessage))
-                $errorMessage = "";
-            echo "<crc error_type=\"{$errorType}\" error_code=\"{$errorCode}\">{$errorMessage}</crc>";
         }
     }
 
@@ -518,18 +257,8 @@ class partener extends \CI_Controller {
             redirect('partener/newsletter');
         }
 
-
-        $offers = json_decode($newsletter->getOffers());
-        if (count($offers) < 1) {
-            exit("Nu ati selectat nicio oferta !");
-        }
-        foreach ($offers as $key => $id_offer) {
-
-            $offer = $this->OffersModel->getOffer($id_offer);
-            $offers[$key] = $offer;
-        }
-
-        $this->load->view('newsletter/newsletter_partener', array("offers" => $offers, 'company' => $this->User));
+        echo 'Astept grafica pentru newsletter<br/>';
+        echo $newsletter->getName();
     }
 
     //validators
@@ -563,7 +292,7 @@ class partener extends \CI_Controller {
      */
     public function date_cont() {
 
-        $this->load_view('partner/date_cont', array("user" => $this->User, "cities" => $this->UserModel->getCities()));
+        $this->load_view('partner/date_cont', array("user" => $this->User,  "cities" => $this->UserModel->getCities()));
     }
 
     public function change_date_cont() {
@@ -575,6 +304,7 @@ class partener extends \CI_Controller {
         $this->form_validation->set_rules('regCom', 'Registrul comertului', 'required|xss_clean');
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
         $this->form_validation->set_rules('lastname', 'Numele de contact', 'required|xss_clean');
+        $this->form_validation->set_rules('firstname', 'Prenumele de contact', 'required|xss_clean');
         $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
 
         if ($this->form_validation->run() == FALSE) {
@@ -597,7 +327,7 @@ class partener extends \CI_Controller {
         }
 
         $this->session->set_flashdata('notification', array("type" => "success", "html" => "Modificarile au fost salvate cu success"));
-        redirect(base_url('partener/date-cont'));
+        redirect(base_url('partener/date_cont'));
     }
 
     public function change_date_cont_company() {
@@ -630,12 +360,12 @@ class partener extends \CI_Controller {
         }
 
         $this->session->set_flashdata('notification', array("type" => "success", "html" => "Modificarile au fost salvate cu success"));
-        redirect(base_url('partener/date-cont'));
+        redirect(base_url('partener/date_cont'));
     }
 
     public function partener_change_password() {
         if (!$_POST)
-            redirect(base_url('partner/date-cont'));
+            redirect(base_url('partner/date_cont'));
         $this->populate_form($this->User);
 
         //procesam requestul
@@ -831,25 +561,6 @@ class partener extends \CI_Controller {
         }
         $this->form_validation->set_message('categories_check', 'Este obligatoriu sa alegi categoria ofertei');
         return false;
-    }
-
-    //end validatoare
-
-    public function checkPermission() {
-
-        if (isset($_GET['mobilpay']) && $_GET['mobilpay'] = sha1("mobilya"))
-            return true;
-
-        //daca contul nu este activ
-        if ($this->User->getCompanyDetails()->getStatus() != DLConstants::$PARTNER_ACTIVE && $this->uri->segment(2) != "logout") {
-            $this->load_view('partner/inactive', array("user" => $this->User));
-        }
-
-        //daca contul nu are valabilitate, ii dam voie in pagina abonamente si date cont
-        $restrict_access = array("oferta-noua", "newsletter", "editeaza-oferta", "activeaza-oferta");
-        if (!$this->User->getCompanyDetails()->isActive() && in_array($this->uri->segment(2), $restrict_access)) {
-            $this->load_view('partner/inactive', array("user" => $this->User, "message" => "Contul dumneavoastra este expirat.<br/> Va rugam intrati in pagina de abonamente si prelungiti-l."));
-        }
     }
 
 }
