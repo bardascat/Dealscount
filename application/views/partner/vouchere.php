@@ -8,8 +8,8 @@
 
         <?php $this->load->view('partner/partner_menu'); ?>
 
-        <div class="vouchers">
-            <h2>Vouchere</h2>
+        <div style="clear: both; float: left;" class="vouchers">
+            <h1>Vouchere</h1>
             <div class="search_bar">
                 <form action="" method="GET">
                     <input type="text" value="<?php echo isset($q) ? $q : "" ?>" name="q" placeholder="Serie voucher">
@@ -46,42 +46,46 @@
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <table class="voucher_listing_table">
-                <tr>
-                    <th class="nume">
-                        <label>Nume</label>
-                    </th>
-                    <th class="email">
-                        <label>E-mail</label>
-                    </th>
-                    <th class="serie">
-                        <label>Serie voucher</label>
-                    </th>
-                    <th class="used">
-                        <label>Folosit</label>
-                    </th>
-                </tr>
-                <?php foreach ($vouchers as $voucher) : ?>
+            <?php if (count($vouchers) > 0) { ?>
+                <table class="voucher_listing_table">
                     <tr>
-                        <td class="nume">
-                            <label><?=$voucher->getRecipientName()?></label>
-                        </td>
-                        <td class="email">
-                            <label>
-                                <?php
-                                echo $voucher->getRecipientEmail() != "" ? $voucher->getRecipientEmail() : $voucher->getOrderItem()->getOrder()->getUser()->getEmail();
-                                ?>
-                            </label>
-                        </td>
-                        <td class="serie">
-                            <label><?=$voucher->getCode()?></label>
-                        </td>
-                        <td class="used">
-                            <label><?php echo $voucher->getUsed() != 0 ? $voucher->getUsed_at()->format("Y-m-d") : "Nu" ?></label>
-                        </td>
+                        <th class="nume">
+                            <label>Nume</label>
+                        </th>
+                        <th class="email">
+                            <label>E-mail</label>
+                        </th>
+                        <th class="serie">
+                            <label>Serie voucher</label>
+                        </th>
+                        <th class="used">
+                            <label>Folosit</label>
+                        </th>
                     </tr>
-                <?php endforeach; ?>
-            </table>
+                    <?php foreach ($vouchers as $voucher) : ?>
+                        <tr>
+                            <td class="nume">
+                                <label><?=$voucher->getRecipientName()?></label>
+                            </td>
+                            <td class="email">
+                                <label>
+                                    <?php
+                                    echo $voucher->getRecipientEmail() != "" ? $voucher->getRecipientEmail() : $voucher->getOrderItem()->getOrder()->getUser()->getEmail();
+                                    ?>
+                                </label>
+                            </td>
+                            <td class="serie">
+                                <label><?=$voucher->getCode()?></label>
+                            </td>
+                            <td class="used">
+                                <label><?php echo $voucher->getUsed() != 0 ? $voucher->getUsed_at()->format("Y-m-d") : "Nu" ?></label>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            <?php } else { ?>
+            <div style="margin-top:30px;"> Nu aveti niciun voucher generat.</div>
+            <?php } ?>
 
         </div>
     </div>

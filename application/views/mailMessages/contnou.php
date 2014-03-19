@@ -6,7 +6,7 @@
 <p style="font-size: 13px; color: #001e63; font-family: Arial;">
     Bună <?php $user->getLastname() ?>,<br/><br/>
 
-    Va multumim pentru inregistrarea pe <a href="<?php echo base_url() ?>"> <?php echo DLConstants::$WEBSITE_COMMERCIAL_NAME ?> </a> . <br/>
+    Va multumim pentru inregistrarea pe <a href="<?php echo base_url() ?>"> <?php echo DLConstants::$WEBSITE_COMMERCIAL_NAME ?> </a> . <br/><br/>
 
     <?php if ($user->getFromFb()): ?>
         Datele de login:<br/>

@@ -14,7 +14,7 @@
 
             <?php
             $invoices = $user->getCompanyDetails()->getInvoices();
-            if ($invoices) {
+            if (count($invoices) > 0) {
                 ?>
                 <div class="invoice_list">
 
@@ -33,34 +33,38 @@
                                 Total de plata
                             </th>
                             <th width="200">
-                               
+
                             </th>
                         </tr>
                         <?php
                         foreach ($invoices as $invoice) {
-                            $product=json_decode($invoice->getProducts());
+                            $product = json_decode($invoice->getProducts());
                             ?>
                             <tr>
                                 <td style="text-align: left">
                                     <?php echo $product->nume ?>
                                 </td>
                                 <td style="text-align: center;">
-                                    <?php echo $invoice->getSeries().''.$invoice->getNumber()?>
+                                    <?php echo $invoice->getSeries() . '' . $invoice->getNumber() ?>
                                 </td>
                                 <td style="text-align: center;">
                                     <?php echo $invoice->getGenerate_date()->format("d-m-Y"); ?>
                                 </td>
                                 <td style="text-align: center;">
-                                     <?php echo $invoice->getTotal(); ?> lei
+                                    <?php echo $invoice->getTotal(); ?> lei
                                 </td>
                                 <td style="text-align: center;">
-                                    <a href="<?php echo base_url('partener/descarca_factura/'.$invoice->getId_invoice())?>">Descarca</a>
+                                    <a href="<?php echo base_url('partener/descarca_factura/' . $invoice->getId_invoice()) ?>">Descarca</a>
                                 </td>
                             </tr>
-    <?php } ?>
+                        <?php } ?>
                     </table>
                 </div>
-<?php } ?>
+            <?php } else { ?>
+                <div style="margin-top:20px;">
+                    Momentan nu aveti nicio factura.
+                </div>
+            <?php } ?>
 
 
         </div>

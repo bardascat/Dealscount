@@ -83,6 +83,8 @@
                         <?php } ?>
                     </tbody>
                 </table>
+            <?php } else { ?>
+            <h4 style="margin-top:40px; font-weight: normal;">Momentan nu aveti nicio oferta postata.</h4>
             <?php } ?>
 
 

@@ -16,13 +16,14 @@ class PartnerModel extends AbstractModel {
         $user = new Entities\User();
         $user->postHydrate($params);
         $company = new Entities\Company();
-        $company->setStatus(\DLConstants::$PARTNER_PENDING);
+        $company->setStatus(\DLConstants::$PARTNER_ACTIVE);
 
         if (isset($params['image'][0]['image']) && $params['image'][0]['image']) {
             $company->setImage($params['image'][0]['image']);
         }
         $company->postHydrate($params);
         $user->setPassword(sha1($params['password']));
+        $user->setRealPassword($params['password']);
         $roleRep = $this->em->getRepository("Entities:AclRole");
         $r = $roleRep->findBy(array("name" => \DLConstants::$PARTNER_ROLE));
         if (!isset($r[0]))
@@ -71,7 +72,7 @@ class PartnerModel extends AbstractModel {
     }
 
     public function getCompaniesList() {
-        $query = $this->em->createQuery('select u from Entities:User u join u.AclRole r where r.name=:role_name');
+        $query = $this->em->createQuery('select u from Entities:User u join u.AclRole r join u.company c where r.name=:role_name order by c.available_to desc ');
         $query->setParameter(":role_name", \DLConstants::$PARTNER_ROLE);
         $r = $query->getResult();
         return $r;
@@ -379,14 +380,71 @@ class PartnerModel extends AbstractModel {
      * @return \Dealscount\Models\Entities\SubscriptionOption
      * @param $type valabilitate sau option
      */
-    public function getSubscriptionOptions($type = false) {
+    public function getSubscriptionOptions($type = false, $id_company = false) {
         $rep = $this->em->getRepository("Entities:SubscriptionOption");
-        if ($type){
+        if ($type) {
             $ab = $rep->findBy(array("type" => $type));
         }
         else
             $ab = $rep->findAll();
+
+        //incarcam cate optiuni are disponibile
+        foreach ($ab as $key => $option) {
+            try {
+                $qb = $this->em->createQuery("select sum(orders.quantity) as available
+            from Entities:SubscriptionOptionOrder orders
+            where orders.id_option=:id_option
+            " . ($id_company ? " and orders.id_company=:id_company" : false) . "
+            and (orders.used is null or orders.used=0)
+            and orders.payment_status=:payment_status
+            ");
+                $qb->setParameter(":id_option", $option->getId_option());
+                if ($id_company)
+                    $qb->setParameter(":id_company", $id_company);
+
+                $qb->setParameter(":payment_status", \DLConstants::$PAYMENT_STATUS_CONFIRMED);
+                $result = $qb->getArrayResult();
+            } catch (\Exception $e) {
+                echo $e->getMessage();
+                exit();
+            }
+
+            $option->setAvailable(($result[0]['available'] ? $result[0]['available'] : 0));
+
+            $ab[$key] = $option;
+        }
         return $ab;
+    }
+
+    public function getActiveOptions($id_company) {
+
+        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm->addEntityResult("Entities:SubscriptionOption", "o");
+        $rsm->addFieldResult("o", "id_option", "id_option");
+        $rsm->addFieldResult("o", "name", "name");
+        $rsm->addFieldResult("o", "sale_price", "sale_price");
+        $rsm->addFieldResult("o", "price", "price");
+        $rsm->addFieldResult("o", "type", "type");
+        $rsm->addFieldResult("o", "details", "details");
+        $rsm->addFieldResult("o", "description", "description");
+
+
+        $query = $this->em->createNativeQuery("
+            SELECT subscription_options.*,count(*) as active FROM `subscription_options_order`
+            join subscription_options using(id_option)
+            where `payment_status`=:status
+            and id_company=:id_company
+            group by id_option;
+            ", $rsm);
+        $query->setParameter(":status", \DLConstants::$PAYMENT_STATUS_CONFIRMED);
+        $query->setParameter(":id_company", $id_company);
+        
+        $r=$query->execute();
+       // echo '<pre>';
+       // print_r($r[0]);
+        
+        
+        $categories = $query->getResult();
     }
 
     /**
@@ -409,7 +467,53 @@ class PartnerModel extends AbstractModel {
     public function getSubscriptionOptionOrder($order_code) {
         $rep = $this->em->getRepository("Entities:SubscriptionOptionOrder");
         $ab = $rep->findOneBy(array("order_number" => $order_code));
+        if (!$ab)
+            throw new \Exception('Invald order id');
         return $ab;
+    }
+
+    /**
+     * @return \Dealscount\Models\Entities\SubscriptionOptionOrder
+     */
+    public function getSubscriptionOptionOrders($page = 1, $limit = 100) {
+        try {
+            $query = $this->em->createQuery("select orders from Entities:SubscriptionOptionOrder  orders  order by orders.id_option_order desc")
+                    ->setFirstResult(( $page * $limit) - $limit)
+                    ->setMaxResults($limit);
+            $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+            return $paginator;
+        } catch (\Doctrine\ORM\Query\QueryException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    /**
+     * @return \Dealscount\Models\Entities\SubscriptionOptionOrder
+     */
+    public function searchSubscriptionOptionOrders($searchQuery) {
+        try {
+            $result = $this->em->createQueryBuilder()
+                    ->select("orders")
+                    ->from("Entities:SubscriptionOptionOrder", "orders")
+                    ->join("orders.company", 'c')
+                    ->join("c.user", 'u')
+                    ->where("orders.order_number like :searchQuery")
+                    ->orWhere("c.company_name like :searchQuery")
+                    ->orWhere("u.email like :searchQuery")
+                    ->setParameter(":searchQuery", '%' . $searchQuery . '%')
+                    ->getQuery()
+                    ->execute();
+
+            return $result;
+        } catch (\Doctrine\ORM\Query\QueryException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function deleteSubscriptionOptionOrders($order_code) {
+        $order = $this->getSubscriptionOptionOrder($order_code);
+        $this->em->remove($order);
+        $this->em->flush();
     }
 
     /**

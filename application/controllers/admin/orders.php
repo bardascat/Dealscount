@@ -18,8 +18,6 @@ class orders extends CI_Controller {
         $this->OrdersModel = new Dealscount\Models\OrdersModel();
     }
 
-
-
     /**
      * @AclResource Admin: Comenzi: Lista Comenzi
      */
@@ -43,8 +41,10 @@ class orders extends CI_Controller {
             exit();
         }
         $orders = $this->OrdersModel->searchOrders($searchQuery);
-        $this->view->orders = $orders;
-        $this->view->render('admin/orders/orders_list', true);
+        $data = array(
+            "orders" => $orders
+        );
+        $this->load_view_admin('admin/orders/orders_list', $data);
     }
 
     /**
@@ -75,7 +75,8 @@ class orders extends CI_Controller {
 
             $this->OrdersModel->addOrderItem($_POST);
             echo "<b>Voucherul a fost adaugat cu success<b/>";
-        } else
+        }
+        else
             exit("page not found");
     }
 
@@ -245,7 +246,8 @@ class orders extends CI_Controller {
             if (!$order) {
                 exit("<h2>Comanda invalida</h2>");
             }
-        } else
+        }
+        else
             exit("eroare");
     }
 

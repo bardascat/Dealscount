@@ -38,6 +38,11 @@ class SubscriptionOptionOrder {
     protected $quantity;
 
     /**
+     * @Column(type="integer") @var string
+     */
+    protected $id_option;
+
+    /**
      * @Column(type="string") @var string
      */
     protected $payment_method;
@@ -67,6 +72,27 @@ class SubscriptionOptionOrder {
      * @Column(type="string",nullable=true)
      */
     protected $order_number;
+
+    /**
+     * @Column(type="datetime",nullable=true) @var string
+     */
+    protected $used_at;
+
+    /**
+     * @Column(type="integer",nullable=true) @var string
+     */
+    protected $used;
+
+    /**
+     * Salvam cum s a folosit aceasta optiune
+     * @Column(type="string",nullable=true) @var string
+     */
+    protected $used_on;
+
+    /**
+     * @Column(type="integer",nullable=true) @var string
+     */
+    protected $id_company;
 
     public function __construct() {
         $this->orderedOn = new \DateTime("now");
@@ -169,6 +195,7 @@ class SubscriptionOptionOrder {
         $this->order_number = $order_number;
         return $this;
     }
+
     public function getQuantity() {
         return $this->quantity;
     }
@@ -178,6 +205,50 @@ class SubscriptionOptionOrder {
         return $this;
     }
 
+    public function getUsed_at() {
+        return $this->used_at;
+    }
+
+    public function setUsed_at($used_at) {
+        $this->used_at = $used_at;
+        return $this;
+    }
+
+    public function getUsed() {
+        return $this->used;
+    }
+
+    public function setUsed($used) {
+        $this->used = $used;
+        return $this;
+    }
+
+    public function getUsed_on() {
+        return $this->used_on;
+    }
+
+    public function setUsed_on($used_on) {
+        $this->used_on = $used_on;
+        return $this;
+    }
+
+    public function getId_option() {
+        return $this->id_option;
+    }
+
+    public function setId_option($id_option) {
+        $this->id_option = $id_option;
+        return $this;
+    }
+
+    public function getId_company() {
+        return $this->id_company;
+    }
+
+    public function setId_company($id_company) {
+        $this->id_company = $id_company;
+        return $this;
+    }
 
 
 }

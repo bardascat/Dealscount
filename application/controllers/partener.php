@@ -27,7 +27,9 @@ class partener extends \CI_Controller {
      */
     public function index() {
         $dashboardStas = $this->OffersModel->getPartnerDashboardStats($this->User, $this->input->get("from"), $this->input->get("to"));
-        $this->load_view('partner/dashboard', array("user" => $this->User, "stats" => $dashboardStas));
+        $options=$this->PartnerModel->getActiveOptions($this->User->getCompanyDetails()->getId_company());
+        
+        $this->load_view('partner/dashboard', array("user" => $this->User, "stats" => $dashboardStas,'options'=>$options));
     }
 
     /**
@@ -61,7 +63,7 @@ class partener extends \CI_Controller {
         $filename = $invoice->getSeries();
         $filename.=$invoice->getNumber() . '.pdf';
         $file = "application_uploads/invoices/" . $filename;
-        if (file_exists($file) &&1==2) {
+        if (file_exists($file) && 1 == 2) {
             header('Content-disposition: attachment; filename=' . $filename);
             header('Content-type: application/pdf');
             readfile($file);
@@ -295,65 +297,93 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: Abonamente"
      */
     public function abonamente() {
+        $options = $this->PartnerModel->getSubscriptionOptions('option',$this->User->getCompanyDetails()->getId_company());
+
         $this->load_view('partner/abonamente', array("user" => $this->User,
             "subscriptions" => $this->PartnerModel->getSubscriptionOptions("valabilitate"),
-            "options"=>$this->PartnerModel->getSubscriptionOptions('option')
+            "options" => $options
         ));
     }
 
     public function buy_option() {
         if (isset($_POST['id_option'])) {
+
             $NeoCartModel = new \Dealscount\Models\NeoCartModel();
             $option = $this->PartnerModel->getSubscriptionOption($_POST['id_option']);
-
             $order = $NeoCartModel->buySubscriptionOption($this->User, $option, $_POST);
 
-            require_once 'application/libraries/Mobilpay/Payment/Request/Abstract.php';
-            require_once 'application/libraries/Mobilpay/Payment/Request/Card.php';
-            require_once 'application/libraries/Mobilpay/Payment/Invoice.php';
-            require_once 'application/libraries/Mobilpay/Payment/Address.php';
-
-            $paymentUrl = 'http://sandboxsecure.mobilpay.ro';
-            //$paymentUrl = 'https://secure.mobilPay.ro';
-            $x509FilePath = 'application/libraries/Mobilpay/public.cer';
-            try {
-                srand((double) microtime() * 1000000);
-                $objPmReqCard = new \Mobilpay_Payment_Request_Card();
-                $objPmReqCard->signature = 'ULSN-4A5M-3JYK-3BX5-Y75A';
-                $objPmReqCard->orderId = $order->getOrder_number();
-
-                $objPmReqCard->confirmUrl = base_url('partener/payment_confirm?mobilpay=' . sha1("mobilpay"));
-                $objPmReqCard->returnUrl = base_url('partener/payment_return/' . $order->getOrder_number());
-
-                $objPmReqCard->invoice = new \Mobilpay_Payment_Invoice();
-                $objPmReqCard->invoice->currency = 'RON';
-
-                $objPmReqCard->invoice->customer_type = 2;
-
-                $total = $order->getTotal();
-                if (!$total)
-                    exit("ERROR: 3:31, Please contact administrator !");
-
-                $objPmReqCard->invoice->amount = $total;
-                $objPmReqCard->invoice->details = $option->getName();
-
-                $billingAddress = new \Mobilpay_Payment_Address();
-                $billingAddress->type = "person";
-                $billingAddress->firstName = $order->getCompany()->getUser()->getFirstname();
-                $billingAddress->lastName = $order->getCompany()->getUser()->getLastname();
-                $billingAddress->address = $order->getCompany()->getUser()->getAddress();
-                $billingAddress->email = $order->getCompany()->getUser()->getEmail();
-                $billingAddress->mobilePhone = $order->getCompany()->getUser()->getPhone();
-
-                $objPmReqCard->invoice->setBillingAddress($billingAddress);
-
-                $objPmReqCard->encrypt($x509FilePath);
-            } catch (Exception $e) {
-                echo $e->getMessage();
+            switch ($_POST['payment_method']) {
+                case DLConstants::$PAYMENT_METHOD_OP: {
+                        $this->buy_option_op($order);
+                        redirect(base_url('partener/op_return/' . $order->getOrder_number()));
+                    }break;
+                default: {
+                        $this->buy_option_card($order);
+                    }break;
             }
-            $e = "";
+        }
+        else
+            show_404();
+    }
 
-            echo '
+    public function buy_option_op(\Dealscount\Models\Entities\SubscriptionOptionOrder $order) {
+        ob_start();
+        require_once("application/views/mailMessages/transferBancar.php");
+        $body = ob_get_clean();
+        $subject = "Comanda " . DLConstants::$WEBSITE_COMMERCIAL_NAME . ' a fost finalizata';
+        \NeoMail::genericMail($body, $subject, $order->getCompany()->getUser()->getEmail());
+        return true;
+    }
+
+    public function buy_option_card(\Dealscount\Models\Entities\SubscriptionOptionOrder $order) {
+        $option = $order->getOption();
+
+        require_once 'application/libraries/Mobilpay/Payment/Request/Abstract.php';
+        require_once 'application/libraries/Mobilpay/Payment/Request/Card.php';
+        require_once 'application/libraries/Mobilpay/Payment/Invoice.php';
+        require_once 'application/libraries/Mobilpay/Payment/Address.php';
+
+        $paymentUrl = 'http://sandboxsecure.mobilpay.ro';
+        //$paymentUrl = 'https://secure.mobilPay.ro';
+        $x509FilePath = 'application/libraries/Mobilpay/public.cer';
+        try {
+            srand((double) microtime() * 1000000);
+            $objPmReqCard = new \Mobilpay_Payment_Request_Card();
+            $objPmReqCard->signature = 'ULSN-4A5M-3JYK-3BX5-Y75A';
+            $objPmReqCard->orderId = $order->getOrder_number();
+
+            $objPmReqCard->confirmUrl = base_url('partener/card_payment_confirm?mobilpay=' . sha1("mobilpay"));
+            $objPmReqCard->returnUrl = base_url('partener/card_return/' . $order->getOrder_number());
+
+            $objPmReqCard->invoice = new \Mobilpay_Payment_Invoice();
+            $objPmReqCard->invoice->currency = 'RON';
+
+            $objPmReqCard->invoice->customer_type = 2;
+
+            $total = $order->getTotal();
+            if (!$total)
+                exit("ERROR: 3:31, Please contact administrator !");
+
+            $objPmReqCard->invoice->amount = $total;
+            $objPmReqCard->invoice->details = $option->getName();
+
+            $billingAddress = new \Mobilpay_Payment_Address();
+            $billingAddress->type = "person";
+            $billingAddress->firstName = $order->getCompany()->getUser()->getFirstname();
+            $billingAddress->lastName = $order->getCompany()->getUser()->getLastname();
+            $billingAddress->address = $order->getCompany()->getUser()->getAddress();
+            $billingAddress->email = $order->getCompany()->getUser()->getEmail();
+            $billingAddress->mobilePhone = $order->getCompany()->getUser()->getPhone();
+
+            $objPmReqCard->invoice->setBillingAddress($billingAddress);
+
+            $objPmReqCard->encrypt($x509FilePath);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+        $e = "";
+
+        echo '
         <div class="span-15 prepend-1" style="margin:0 auto; text-align:center; margin-top:100px;">
         <?php if (!($e instanceof Exception)): ?>
                 <p>
@@ -376,22 +406,9 @@ class partener extends \CI_Controller {
             <p><strong><?php echo $e->getMessage(); ?></strong></p>
         <?php endif; ?>
 </div>';
-        }
-        else
-            show_404();
     }
 
-    /**
-     * @AclResource "Partener: Confirma plata partener"
-     */
-    public function confirm_subscription_order() {
-        $code = $this->uri->segment(3);
-        $this->PartnerModel->confirmSubscriptionOptionOrder($code);
-        echo "Optiunea a fost activata";
-        ///redirect($this->agent->referrer());
-    }
-
-    public function payment_confirm() {
+    public function card_payment_confirm() {
 
         require_once 'application/libraries/Mobilpay/Payment/Request/Abstract.php';
         require_once 'application/libraries/Mobilpay/Payment/Request/Card.php';
@@ -411,10 +428,11 @@ class partener extends \CI_Controller {
                     $objPmReq = \Mobilpay_Payment_Request_Abstract::factoryFromEncrypted($_POST['env_key'], $_POST['data'], $privateKeyFilePath);
 
 
-                    //$order = $this->PartnerModel->getSubscriptionOptionOrder($objPmReq->orderId);
+                    $order = $this->PartnerModel->getSubscriptionOptionOrder($objPmReq->orderId);
                     if ($objPmReq->objPmNotify->errorCode != 0) {
 
-                        $this->OrdersModel->setOrderPaymentStatus("C", $order);
+                        $order->setPayment_status(DLConstants::$PAYMENT_STATUS_CANCELED);
+                        $this->PartnerModel->updateSubscriptionOrder($order);
                     }
                     else
                         switch ($objPmReq->objPmNotify->action) {
@@ -458,6 +476,8 @@ class partener extends \CI_Controller {
                                 }
                                 break;
                             default:
+                                $order->setPayment_status(DLConstants::$PAYMENT_STATUS_CANCELED);
+                                $this->PartnerModel->updateSubscriptionOrder($order);
                                 $errorType = \Mobilpay_Payment_Request_Abstract::CONFIRM_ERROR_TYPE_PERMANENT;
                                 $errorCode = \Mobilpay_Payment_Request_Abstract::ERROR_CONFIRM_INVALID_ACTION;
                                 $errorMessage = 'mobilpay_refference_action paramaters is invalid';
@@ -490,6 +510,26 @@ class partener extends \CI_Controller {
                 $errorMessage = "";
             echo "<crc error_type=\"{$errorType}\" error_code=\"{$errorCode}\">{$errorMessage}</crc>";
         }
+    }
+
+    /**
+     * @AclResource "Partener: Landing Page OP"
+     */
+    public function op_return() {
+        $order_code = $this->uri->segment(3);
+        $order = $this->PartnerModel->getSubscriptionOptionOrder($order_code);
+        $this->load_view('partner/landing_pages/op_payment', array("user" => $this->User, 'order' => $order
+        ));
+    }
+
+    /**
+     * @AclResource "Partener: Landing Page Card"
+     */
+    public function card_return() {
+        $order_code = $this->uri->segment(3);
+        $order = $this->PartnerModel->getSubscriptionOptionOrder($order_code);
+        $this->load_view('partner/landing_pages/card_payment', array("user" => $this->User, 'order' => $order
+        ));
     }
 
     /**

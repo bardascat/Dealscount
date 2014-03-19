@@ -874,7 +874,7 @@ img{border:0px;}
 
 #content .partner{
     width: 950px;
-    min-height: 100px;
+    min-height: 300px;
     float: left;
     padding-bottom: 50px;
     color: #1d1d1d;
@@ -1293,6 +1293,11 @@ img{border:0px;}
 /* partner newsletter page */
 
 .partner .vouchers h2{margin-top: 118px;font-size: 18pt;}
+.partner .vouchers h1{
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 30px;  
+}
 .partner .vouchers .search_bar{
     width: 345px;
 
@@ -1463,11 +1468,12 @@ img{border:0px;}
     width: 200px;
     padding: 3px;
     border:1px solid #ccc;
-}#content .partner .pagina_abonamente .prelungeste .sale_price_discount{
+}
+#content .partner .pagina_abonamente .sale_price_discount{
     font-size: 16px;
     font-weight: bold;
 }
-#content .partner .pagina_abonamente .prelungeste .price{
+#content .partner .pagina_abonamente  .price{
     text-decoration: line-through;
     font-size: 13px;
 }

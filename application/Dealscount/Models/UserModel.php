@@ -33,12 +33,10 @@ class UserModel extends AbstractModel {
         }
         $user->setAclRole($roleRep[0]);
         if (!$params['password']) {
-            $new_password = $this->randString(10);
-            $user->setPassword(sha1($new_password));
-            $user->setRealPassword($new_password);
+            $params['password'] = $this->randString(10);
         }
-        else
-            $user->setPassword(sha1($params['password']));
+        $user->setPassword(sha1($params['password']));
+        $user->setRealPassword($new_password);
 
         try {
             $this->em->persist($user);
@@ -60,10 +58,10 @@ class UserModel extends AbstractModel {
             $user->setPassword(sha1($new_password));
             $user->setRealPassword($new_password);
             ob_start();
-            require_once("mailMessages/resetpassword.php");
+            require_once("application/views/mailMessages/resetpassword.php");
             $body = ob_get_clean();
-            $subject = "Parola contului Oringo a fost resetată";
-            NeoMail::getInstance()->genericMail($body, $subject, $email);
+            $subject = "Parola contului a fost resetată";
+            \NeoMail::genericMail($body, $subject, $email);
             $this->em->persist($user);
             $this->em->flush();
             return true;
@@ -237,8 +235,8 @@ class UserModel extends AbstractModel {
         );
         $fbLib = APPPATH . '/libraries/Facebook.php';
         require_once($fbLib);
-        
-        $facebookLib=new \Facebook($config);
+
+        $facebookLib = new \Facebook($config);
         $user = $facebookLib->getUser();
 
         // We may or may not have this data based on whether the user is logged in.
@@ -268,7 +266,7 @@ class UserModel extends AbstractModel {
             'logoutUrl' => $facebookLib->getLogoutUrl(),
         );
 
-   
+
         return $fb_data;
     }
 

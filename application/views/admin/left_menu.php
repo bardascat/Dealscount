@@ -41,6 +41,11 @@
             <td>
                 <a href='<?= base_url() ?>admin/subscriptions'>Listă Optiuni</a>
             </td>
+        </tr>
+        <tr>
+            <td>
+                <a href='<?= base_url() ?>admin/subscriptions/orders'>Comenzi Optiuni</a>
+            </td>
         </tr>  
     </table>
     <table border='0' width='100%' cellpadding='0' cellspacing='0'>
@@ -83,7 +88,7 @@
 
         <tr>
             <td>
-                <a href='<?= base_url() ?>admin/pages/updatePage/<?php //$page->getId_page()   ?>'><?php //$page->getName()   ?></a>
+                <a href='<?= base_url() ?>admin/pages/updatePage/<?php //$page->getId_page()    ?>'><?php //$page->getName()    ?></a>
             </td>
         </tr>
 

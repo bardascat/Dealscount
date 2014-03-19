@@ -12,25 +12,35 @@
             <h1>Informatii cont</h1>
 
             <div  class="info">
-                <span>Cont valabil pana la:</span>
-                <span style="font-weight: bold; margin-left: 4px;">
-                    <?php echo $user->getCompanyDetails()->getAvailable_to()->format("d-m-Y") ?>
-                </span>
-                <table width="500">
-                    <tr>
-                        <td width="140" style="vertical-align: top; padding-top: 10px;">
-                            Extraoptiuni active:
-                        </td>
-                        <td style="padding-top: 10px;">
-                            <div style="padding-bottom: 5px;">
-                                <b>Raygun</b> <span style="color:#929292">valabil pana la 30.03.2013</span>
-                            </div>
-                            <div>
-                                <b>Raygun</b> <span style="color:#929292">valabil pana la 30.03.2013</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+                <?php if ($user->getCompanyDetails()->getAvailable_to() && $user->getCompanyDetails()->getAvailable_to()->format("Y-m-d") >= date("Y-m-d")) { ?>
+                    <span>Cont valabil pana la:</span>
+                    <span style="font-weight: bold; margin-left: 4px;">
+                        <?php echo $user->getCompanyDetails()->getAvailable_to()->format("d-m-Y") ?>
+                    </span>
+                    <table width="500">
+                        <tr>
+                            <td width="140" style="vertical-align: top; padding-top: 10px;">
+                                Extraoptiuni active:
+                            </td>
+                            <td style="padding-top: 10px;">
+                                <div style="padding-bottom: 5px;">
+                                    <b>Raygun</b> <span style="color:#929292">valabil pana la 30.03.2013</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <?php
+                } else {
+                    if (!$user->getCompanyDetails()->getAvailable_to()) {
+                        ?>
+                        Pentru a posta oferte este necesar sa <a href="<?php echo base_url('partener/abonamente') ?>">alegeti</a> un tip de abonament, anual sau lunar.
+                    <?php } else {
+                        ?>
+                        Valabilitatea contului dumneavoastra a expirat in data de <b><?php echo $user->getCompanyDetails()->getAvailable_to()->format("d-m-Y");?></b>
+                        <?php
+                    }
+                }
+                ?>
             </div>
 
             <h1>

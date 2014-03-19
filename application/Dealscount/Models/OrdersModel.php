@@ -30,7 +30,8 @@ class OrdersModel extends AbstractModel {
                     ->join("orders.user", 'u')
                     ->where("orders.order_number like :searchQuery")
                     ->orWhere("orders.id_order like :searchQuery")
-                    ->orWhere("u.nume like :searchQuery")
+                    ->orWhere("u.firstname like :searchQuery")
+                    ->orWhere("u.lastname like :searchQuery")
                     ->orWhere("u.email like :searchQuery")
                     ->setParameter(":searchQuery", '%' . $searchQuery . '%')
                     ->getQuery()
@@ -75,7 +76,6 @@ class OrdersModel extends AbstractModel {
         }
         exit();
     }
-
 
     /**
      * 
@@ -175,7 +175,7 @@ class OrdersModel extends AbstractModel {
         if (isset($order[0]))
             return $order[0];
         else
-            return false;
+            throw new \Exception("Invalid order Id");
     }
 
     public function updateOrder($post, \NeoMvc\Controllers\Admin\orders $OrdersController = null) {
@@ -431,20 +431,20 @@ class OrdersModel extends AbstractModel {
         else
             return $r;
     }
-    
-        /**
+
+    /**
      * Cauta comanda dupa id-ul voucherului
      * @param type $id_voucher
      * @return Entities\Order
      */
-    public function searchVouchers($query,$id_user) {
+    public function searchVouchers($query, $id_user) {
         try {
             $result = $this->em->createQueryBuilder()
                     ->select("orders,orderItems,items")
                     ->from("Entities:Order", "orders")
                     ->join("orders.user", 'u')
-                    ->join("orders.orderItems","orderItems")
-                    ->join("orderItems.item","items")
+                    ->join("orders.orderItems", "orderItems")
+                    ->join("orderItems.item", "items")
                     ->where("items.name like :searchQuery")
                     ->orWhere("items.brief like :searchQuery")
                     ->andWhere("orders.id_user=:id_user")
@@ -452,7 +452,7 @@ class OrdersModel extends AbstractModel {
                     ->setParameter("id_user", $id_user)
                     ->getQuery()
                     ->execute();
-                    
+
             return $result;
         } catch (\Doctrine\ORM\Query\QueryException $e) {
             echo $e->getMessage();

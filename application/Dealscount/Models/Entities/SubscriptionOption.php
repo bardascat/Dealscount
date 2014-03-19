@@ -58,6 +58,9 @@ class SubscriptionOption extends AbstractEntity {
      *  @Column(type="integer",nullable=true)
      */
     protected $availability_days;
+    
+    //aici tinem cate optiuni are userul desponibile
+    protected $available;
 
     public function getId_option() {
         return $this->id_option;
@@ -119,6 +122,16 @@ class SubscriptionOption extends AbstractEntity {
 
     public function setDescription($description) {
         $this->description = $description;
+        return $this;
+    }
+
+
+    public function getAvailable() {
+        return $this->available;
+    }
+
+    public function setAvailable($available) {
+        $this->available = $available;
         return $this;
     }
 

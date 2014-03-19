@@ -504,7 +504,7 @@ input[type="text"],input[type="password"],textarea,select{
 }
 .product_list #list_table th{font-size: 10px;}
 .orderDetails #list_table tr:hover td a{color: #19A6D9}
-#list_table tbody tr:hover td a{color: #19A6D9}
+/*#list_table tbody tr:hover td a{color: #19A6D9} */
 #updateOrderForm .itemsTable .item{
     text-align: left
 
