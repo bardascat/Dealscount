@@ -74,22 +74,6 @@ class SubscriptionOptionOrder {
     protected $order_number;
 
     /**
-     * @Column(type="datetime",nullable=true) @var string
-     */
-    protected $used_at;
-
-    /**
-     * @Column(type="integer",nullable=true) @var string
-     */
-    protected $used;
-
-    /**
-     * Salvam cum s a folosit aceasta optiune
-     * @Column(type="string",nullable=true) @var string
-     */
-    protected $used_on;
-
-    /**
      * @Column(type="integer",nullable=true) @var string
      */
     protected $id_company;
@@ -202,33 +186,6 @@ class SubscriptionOptionOrder {
 
     public function setQuantity($quantity) {
         $this->quantity = $quantity;
-        return $this;
-    }
-
-    public function getUsed_at() {
-        return $this->used_at;
-    }
-
-    public function setUsed_at($used_at) {
-        $this->used_at = $used_at;
-        return $this;
-    }
-
-    public function getUsed() {
-        return $this->used;
-    }
-
-    public function setUsed($used) {
-        $this->used = $used;
-        return $this;
-    }
-
-    public function getUsed_on() {
-        return $this->used_on;
-    }
-
-    public function setUsed_on($used_on) {
-        $this->used_on = $used_on;
         return $this;
     }
 

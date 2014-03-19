@@ -122,6 +122,12 @@ class Company extends AbstractEntity {
     protected $option_orders;
 
     /**
+     * @OneToMany(targetEntity="ActiveOption",mappedBy="company",cascade={"persist"})
+     * @OrderBy({"id" = "desc"})
+     */
+    protected $active_options;
+
+    /**
      * @OneToMany(targetEntity="Invoice",mappedBy="company",cascade={"persist"})
      * @OrderBy({"id_invoice" = "desc"})
      */
@@ -130,6 +136,7 @@ class Company extends AbstractEntity {
     function __construct() {
         $this->option_orders = new ArrayCollection();
         $this->invoices = new ArrayCollection();
+        $this->active_options = new ArrayCollection();
     }
 
     public function setUser(User $user) {
@@ -316,10 +323,10 @@ class Company extends AbstractEntity {
 
     public function isActive() {
         $cDate = date("Y-m-d");
-        
+
         if (!$this->getAvailable_from() || !$this->getAvailable_to())
             return false;
-        
+
         return ($this->getAvailable_from()->format("Y-m-d") <= $cDate && $cDate <= $this->getAvailable_to()->format("Y-m-d"));
     }
 
@@ -334,6 +341,19 @@ class Company extends AbstractEntity {
     public function addInvoice($invoice) {
         $this->invoices->add($invoice);
         $invoice->setCompany($this);
+    }
+
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\ActiveOption
+     */
+    public function getActive_options() {
+        return $this->active_options;
+    }
+
+    public function setActive_options(ActiveOption $active_option) {
+        $this->active_options->add($active_option);
+        $active_option->setCompany($this);
     }
 
 }

@@ -18,6 +18,11 @@ class SubscriptionOption extends AbstractEntity {
      *  @Column(type="string")
      */
     protected $name;
+    
+    /**
+     *  @Column(type="string")
+     */
+    protected $slug;
 
     /**
      *  @Column(type="integer")
@@ -134,6 +139,16 @@ class SubscriptionOption extends AbstractEntity {
         $this->available = $available;
         return $this;
     }
+    public function getSlug() {
+        return $this->slug;
+    }
+
+    public function setSlug($slug) {
+        $this->slug = $slug;
+        return $this;
+    }
+
+
 
 
 

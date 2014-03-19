@@ -17,26 +17,34 @@
                     <span style="font-weight: bold; margin-left: 4px;">
                         <?php echo $user->getCompanyDetails()->getAvailable_to()->format("d-m-Y") ?>
                     </span>
-                    <table width="500">
-                        <tr>
-                            <td width="140" style="vertical-align: top; padding-top: 10px;">
-                                Extraoptiuni active:
-                            </td>
-                            <td style="padding-top: 10px;">
-                                <div style="padding-bottom: 5px;">
-                                    <b>Raygun</b> <span style="color:#929292">valabil pana la 30.03.2013</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
                     <?php
+                    if (!$active_options)
+                        echo "<div>Nu aveti nicio optiune activa.</div>";
+                    else {
+                        ?>
+                        <table width="500">
+                            <tr>
+                                <td width="140" style="vertical-align: top; padding-top: 10px;">
+                                    Extraoptiuni active:
+                                </td>
+                                <td style="padding-top: 10px;">
+                                    <?php foreach ($active_options as $option) { ?>
+                                        <div style="padding-bottom: 5px;">
+                                            <b><?php echo $option[0]->getName() ?></b> <span>(Credite <?php echo $option['active_options']?>)</span>
+                                        </div>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        </table>
+                        <?php
+                    }
                 } else {
                     if (!$user->getCompanyDetails()->getAvailable_to()) {
                         ?>
                         Pentru a posta oferte este necesar sa <a href="<?php echo base_url('partener/abonamente') ?>">alegeti</a> un tip de abonament, anual sau lunar.
                     <?php } else {
                         ?>
-                        Valabilitatea contului dumneavoastra a expirat in data de <b><?php echo $user->getCompanyDetails()->getAvailable_to()->format("d-m-Y");?></b>
+                        Valabilitatea contului dumneavoastra a expirat in data de <b><?php echo $user->getCompanyDetails()->getAvailable_to()->format("d-m-Y"); ?></b>
                         <?php
                     }
                 }
@@ -114,7 +122,7 @@
 </div>
 
 <script type="text/javascript">
-                                    $(document).ready(function() {
-                                        $(".datepickersimple").datepicker({dateFormat: "yy-mm-dd"});
-                                    })
+    $(document).ready(function() {
+        $(".datepickersimple").datepicker({dateFormat: "yy-mm-dd"});
+    })
 </script>

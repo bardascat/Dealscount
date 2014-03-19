@@ -107,6 +107,7 @@ class Doctrine {
             $em->getClassMetadata("Entities:PartnerNewsletter"),
             $em->getClassMetadata("Entities:City"),
             $em->getClassMetadata("Entities:SubscriptionOption"),
+            $em->getClassMetadata("Entities:ActiveOption"),
             $em->getClassMetadata("Entities:SubscriptionOptionOrder")
         );
 

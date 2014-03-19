@@ -151,9 +151,17 @@ class PartnerModel extends AbstractModel {
      * Intoarce orasele utilizatorilor pe baza carora se poate programa newsletterul
      */
     public function getActiveCities() {
-        $city = $this->em->createQuery("select distinct users.city from Entities:User users")
+        $city = $this->em->createQuery("select distinct users.city from Entities:User users where users.city!=''")
                 ->getArrayResult();
         return $city;
+    }
+
+    public function getNewsletterRestrictedDays() {
+        $r = $this->em->getConnection()->fetchAll("select DATE_FORMAT(scheduled,'%Y-%m-%d') as scheduled from partner_newsletter where status='" . \DLConstants::$NEWSLETTER_PENDING . "' and scheduled>=NOW()");
+        if (isset($r[0]))
+            return $r;
+        else
+            return false;
     }
 
     public function suspendNewsletter($id_newsletter, $partner) {
@@ -384,67 +392,64 @@ class PartnerModel extends AbstractModel {
         $rep = $this->em->getRepository("Entities:SubscriptionOption");
         if ($type) {
             $ab = $rep->findBy(array("type" => $type));
-        }
-        else
+        } else
             $ab = $rep->findAll();
 
-        //incarcam cate optiuni are disponibile
-        foreach ($ab as $key => $option) {
-            try {
-                $qb = $this->em->createQuery("select sum(orders.quantity) as available
-            from Entities:SubscriptionOptionOrder orders
-            where orders.id_option=:id_option
-            " . ($id_company ? " and orders.id_company=:id_company" : false) . "
-            and (orders.used is null or orders.used=0)
-            and orders.payment_status=:payment_status
+        if ($id_company) {
+            //incarcam cate optiuni a cumparat partenerul pentru fiecare in parte
+            foreach ($ab as $key => $option) {
+                try {
+                    $qb = $this->em->createQuery("select count(op.id) as available
+            from Entities:ActiveOption op
+            where op.id_option=:id_option
+            and op.id_company=:id_company
+            and (op.used is null or op.used=0)
             ");
-                $qb->setParameter(":id_option", $option->getId_option());
-                if ($id_company)
+                    $qb->setParameter(":id_option", $option->getId_option());
                     $qb->setParameter(":id_company", $id_company);
+                    $result = $qb->getArrayResult();
+                } catch (\Exception $e) {
+                    echo $e->getMessage();
+                    exit();
+                }
 
-                $qb->setParameter(":payment_status", \DLConstants::$PAYMENT_STATUS_CONFIRMED);
-                $result = $qb->getArrayResult();
-            } catch (\Exception $e) {
-                echo $e->getMessage();
-                exit();
+                $option->setAvailable(($result[0]['available'] ? $result[0]['available'] : 0));
+
+                $ab[$key] = $option;
             }
-
-            $option->setAvailable(($result[0]['available'] ? $result[0]['available'] : 0));
-
-            $ab[$key] = $option;
         }
         return $ab;
     }
 
-    public function getActiveOptions($id_company) {
+    /**
+     * Intoarce pentru partenerul curent ce optiune are active si cate
+     * @param type $id_company
+     */
+    public function getActiveOptions($id_company, $slug = false) {
+        try {
+            $r = $this->em->createQueryBuilder()
+                    ->select("o")
+                    ->addSelect("count(o.id_option) as active_options")
+                    ->from("Entities:ActiveOption", "o")
+                    ->join("o.option", 'option')
+                    ->where("o.used is null")
+                    ->andWhere("o.id_company=:id_company");
+            if ($slug) {
+                $r->andWhere("option.slug=:slug")
+                        ->setParameter(":slug", $slug);
+            }
 
-        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
-        $rsm->addEntityResult("Entities:SubscriptionOption", "o");
-        $rsm->addFieldResult("o", "id_option", "id_option");
-        $rsm->addFieldResult("o", "name", "name");
-        $rsm->addFieldResult("o", "sale_price", "sale_price");
-        $rsm->addFieldResult("o", "price", "price");
-        $rsm->addFieldResult("o", "type", "type");
-        $rsm->addFieldResult("o", "details", "details");
-        $rsm->addFieldResult("o", "description", "description");
-
-
-        $query = $this->em->createNativeQuery("
-            SELECT subscription_options.*,count(*) as active FROM `subscription_options_order`
-            join subscription_options using(id_option)
-            where `payment_status`=:status
-            and id_company=:id_company
-            group by id_option;
-            ", $rsm);
-        $query->setParameter(":status", \DLConstants::$PAYMENT_STATUS_CONFIRMED);
-        $query->setParameter(":id_company", $id_company);
-        
-        $r=$query->execute();
-       // echo '<pre>';
-       // print_r($r[0]);
-        
-        
-        $categories = $query->getResult();
+            $r = $r->setParameter(":id_company", $id_company)
+                    ->groupBy("o.id_option")
+                    ->getQuery()
+                    ->getResult();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+        if (isset($r[0]))
+            return $r;
+        else
+            return false;
     }
 
     /**
@@ -564,6 +569,17 @@ class PartnerModel extends AbstractModel {
                         } else {
                             $company->setAvailable_to(new \DateTime(date("Y-m-d", strtotime($company->getAvailable_to()->format("Y-m-d") . ' ' . $add))));
                         }
+                    }
+                    $this->em->persist($company);
+                }break;
+            default: {
+                    //daca este de tipul extra optiune o vom insera in tabelul de ActiveOptions, in functie de cantitate
+                    for ($i = 1; $i <= $order->getQuantity(); $i++) {
+                        $activeOption = new Entities\ActiveOption();
+                        $activeOption->setOption($option);
+                        $activeOption->setId_option_order($order->getId_option_order());
+                        $activeOption->setName($option->getName());
+                        $company->setActive_options($activeOption);
                     }
                     $this->em->persist($company);
                 }break;

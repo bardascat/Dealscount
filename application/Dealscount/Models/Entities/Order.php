@@ -26,7 +26,6 @@ class Order extends AbstractEntity {
     /** @OneToMany(targetEntity="OrderItem", mappedBy="order",cascade={"persist"}) */
     protected $orderItems;
 
-
     /**
      * @Column(type="integer") @var float
      */
@@ -101,7 +100,7 @@ class Order extends AbstractEntity {
 
     public function __construct() {
         $this->orderedOn = new \DateTime("now");
-        
+
         $this->orderItems = new ArrayCollection();
     }
 

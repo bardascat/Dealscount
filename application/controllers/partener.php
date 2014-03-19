@@ -27,9 +27,9 @@ class partener extends \CI_Controller {
      */
     public function index() {
         $dashboardStas = $this->OffersModel->getPartnerDashboardStats($this->User, $this->input->get("from"), $this->input->get("to"));
-        $options=$this->PartnerModel->getActiveOptions($this->User->getCompanyDetails()->getId_company());
-        
-        $this->load_view('partner/dashboard', array("user" => $this->User, "stats" => $dashboardStas,'options'=>$options));
+        $active_options = $this->PartnerModel->getActiveOptions($this->User->getCompanyDetails()->getId_company());
+
+        $this->load_view('partner/dashboard', array("user" => $this->User, "stats" => $dashboardStas, 'active_options' => $active_options));
     }
 
     /**
@@ -256,7 +256,9 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: Newsletters"
      */
     public function newsletter() {
-        $this->load_view('partner/newsletters', array("user" => $this->User, "cities" => $this->PartnerModel->getActiveCities()));
+        $restricedDayes = $this->PartnerModel->getNewsletterRestrictedDays();
+        $active_newsletter_option = $this->PartnerModel->getActiveOptions($this->User->getCompanyDetails()->getId_company(), DLConstants::$OPTIUNE_NEWSLETTER_PERSONAL);
+        $this->load_view('partner/newsletters', array("user" => $this->User, 'restricted_days' => $restricedDayes, "cities" => $this->PartnerModel->getActiveCities(), 'active_newsletter_option' => $active_newsletter_option));
     }
 
     /**
@@ -297,7 +299,7 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: Abonamente"
      */
     public function abonamente() {
-        $options = $this->PartnerModel->getSubscriptionOptions('option',$this->User->getCompanyDetails()->getId_company());
+        $options = $this->PartnerModel->getSubscriptionOptions('option', $this->User->getCompanyDetails()->getId_company());
 
         $this->load_view('partner/abonamente', array("user" => $this->User,
             "subscriptions" => $this->PartnerModel->getSubscriptionOptions("valabilitate"),
@@ -321,8 +323,7 @@ class partener extends \CI_Controller {
                         $this->buy_option_card($order);
                     }break;
             }
-        }
-        else
+        } else
             show_404();
     }
 
@@ -433,8 +434,7 @@ class partener extends \CI_Controller {
 
                         $order->setPayment_status(DLConstants::$PAYMENT_STATUS_CANCELED);
                         $this->PartnerModel->updateSubscriptionOrder($order);
-                    }
-                    else
+                    } else
                         switch ($objPmReq->objPmNotify->action) {
                             #orice action este insotit de un cod de eroare si de un mesaj de eroare. Acestea pot fi citite folosind $cod_eroare = $objPmReq->objPmNotify->errorCode; respectiv $mesaj_eroare = $objPmReq->objPmNotify->errorMessage;
                             #pentru a identifica ID-ul comenzii pentru care primim rezultatul platii folosim $id_comanda = $objPmReq->orderId;
@@ -750,8 +750,7 @@ class partener extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        }
-        else
+        } else
             return true;
     }
 
@@ -833,8 +832,7 @@ class partener extends \CI_Controller {
         if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s trebuie sa fie numar intreg');
             return FALSE;
-        }
-        else
+        } else
             return true;
     }
 
