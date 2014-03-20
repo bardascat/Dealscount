@@ -68,6 +68,12 @@ class ActiveOption extends AbstractEntity {
     protected $used_on;
 
     /**
+     * Pentru optiunile de promovare a ofertelor in lista salvam pozitia ofertei
+     * @Column(type="integer",nullable=true) @var string
+     */
+    protected $position;
+
+    /**
      * Salvam detalii despre ce impact a avut optiunea asupra ofertelor
      * @Column(type="text",nullable=true) @var string
      */
@@ -89,6 +95,10 @@ class ActiveOption extends AbstractEntity {
         return $this->company;
     }
 
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\SubscriptionOption
+     */
     public function getOption() {
         return $this->option;
     }
@@ -189,6 +199,16 @@ class ActiveOption extends AbstractEntity {
         $this->available = $available;
         return $this;
     }
+
+    public function getPosition() {
+        return $this->position;
+    }
+
+    public function setPosition($position) {
+        $this->position = $position;
+        return $this;
+    }
+
 
 }
 

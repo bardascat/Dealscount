@@ -142,17 +142,18 @@ class partener extends \CI_Controller {
         $statsByCity = $this->OffersModel->getStatsByCity($this->User, $id_offer);
         $statsByGender = $this->OffersModel->getStatsByGender($this->User, $id_offer);
         $statsByAge = $this->OffersModel->getStatsByAge($this->User, $id_offer);
+
+        //luam optiunile  pentru a le afisa in cazul in care doreste sa le aplice pe oferta curenta
         $active_options = $this->PartnerModel->getSubscriptionOptions("option", $this->User->getCompanyDetails()->getId_company());
 
-        //pentru fiecare tip de optiune vedem daca partenerul a facut o programare
+        //pentru fiecare tip de optiune vedem daca partenerul a facut o programare pentru a o afisa
         foreach ($active_options as $key => $option) {
+            //nu ne intereseaza in aceasta pagina aceste 2 optiuni
             if ($option->getSlug() == DLConstants::$OPTIUNE_NEWSLETTER_PERSONAL || $option->getSlug() == DLConstants::$OPTIUNE_POSTARE_SUPLIMENTARA) {
-                //nu ne intereseaza in aceasta pagina ceste 2 optiuni
                 unset($active_options[$key]);
             }
             $option->setScheduledOptions($this->PartnerModel->getScheduledOptions($id_offer, $option->getId_option()));
         }
-
 
         $data = array("offer" => $offer,
             "user" => $this->User,
@@ -348,9 +349,17 @@ class partener extends \CI_Controller {
             redirect(base_url('partener/detalii-oferta/' . $_POST['id_offer']));
         }
 
-        $this->PartnerModel->applyOption($_POST['id_offer'], $_POST['id_option'], $_POST['scheduled'],$this->User->getCompanyDetails()->getId_company());
+        $this->PartnerModel->applyOption($_POST['id_offer'], $_POST['id_option'], $_POST['scheduled'], $this->User->getCompanyDetails()->getId_company());
         $this->session->set_flashdata('notification', array("type" => "success", "html" => "Optiunea a fost activata cu succes"));
         redirect(base_url('partener/detalii-oferta/' . $_POST['id_offer']));
+        exit();
+    }
+
+    public function getOptionAvailablePosition() {
+        $id_option = $_POST['id_option'];
+        $date = date("Y-m-d",strtotime($_POST['date']));
+        $positon = $this->PartnerModel->getOptionAvailablePosition($id_option, $date);
+        echo json_encode(array("status" => "success", "position" => $positon));
         exit();
     }
 
@@ -370,8 +379,7 @@ class partener extends \CI_Controller {
                         $this->buy_option_card($order);
                     }break;
             }
-        }
-        else
+        } else
             show_404();
     }
 
@@ -482,8 +490,7 @@ class partener extends \CI_Controller {
 
                         $order->setPayment_status(DLConstants::$PAYMENT_STATUS_CANCELED);
                         $this->PartnerModel->updateSubscriptionOrder($order);
-                    }
-                    else
+                    } else
                         switch ($objPmReq->objPmNotify->action) {
                             #orice action este insotit de un cod de eroare si de un mesaj de eroare. Acestea pot fi citite folosind $cod_eroare = $objPmReq->objPmNotify->errorCode; respectiv $mesaj_eroare = $objPmReq->objPmNotify->errorMessage;
                             #pentru a identifica ID-ul comenzii pentru care primim rezultatul platii folosim $id_comanda = $objPmReq->orderId;
@@ -786,8 +793,7 @@ class partener extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        }
-        else
+        } else
             return true;
     }
 
@@ -869,8 +875,7 @@ class partener extends \CI_Controller {
         if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s trebuie sa fie numar intreg');
             return FALSE;
-        }
-        else
+        } else
             return true;
     }
 

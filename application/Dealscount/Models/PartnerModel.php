@@ -168,7 +168,7 @@ class PartnerModel extends AbstractModel {
         //dezactivam optiunea din abonament
         $newsletterOptions = $this->getActiveOptions($partner->getCompanyDetails()->getId_company(), \DLConstants::$OPTIUNE_NEWSLETTER_PERSONAL);
         //luam prima optiune
-        $option = $newsletterOptions[0][0];
+        $option = $newsletterOptions[0];
         $option->setUsed_at(new \DateTime("now"));
         $option->setUsed(1);
         $option->setUsed_on($newsletter->getId_newsletter());
@@ -418,12 +418,11 @@ class PartnerModel extends AbstractModel {
         $rep = $this->em->getRepository("Entities:SubscriptionOption");
         if ($type) {
             $ab = $rep->findBy(array("type" => $type));
-        }
-        else
+        } else
             $ab = $rep->findAll();
 
         if ($id_company) {
-            //incarcam cate optiuni a cumparat partenerul pentru fiecare in parte
+            //incarcam cate optiuni are active utilizatorul
             foreach ($ab as $key => $option) {
                 try {
                     $qb = $this->em->createQuery("select count(op.id) as available
@@ -459,7 +458,8 @@ class PartnerModel extends AbstractModel {
                     ->select("o")
                     ->from("Entities:ActiveOption", "o")
                     ->join("o.option", 'option')
-                    ->andWhere("o.id_company=:id_company");
+                    ->andWhere("o.id_company=:id_company")
+                    ->andWhere("o.used is null");
             if ($slug) {
                 $r->andWhere("option.slug=:slug")
                         ->setParameter(":slug", $slug);
@@ -472,16 +472,14 @@ class PartnerModel extends AbstractModel {
             if (!$r)
                 return false;
 
-            
             //adaugam cate are disponibile pe fiecare optiune
             foreach ($r as $key => $option) {
-                $id_option = $option->getId();
+                $id_option = $option->getId_option();
                 $active_options = $this->em->getConnection()->fetchAll("select count(*) as active_options from active_options 
                 where id_option='$id_option'
                 and id_company='$id_company' 
                 and used is  null    
                 ");
-
                 $option->setAvailable($active_options[0]['active_options']);
                 $r[$key] = $option;
             }
@@ -494,7 +492,7 @@ class PartnerModel extends AbstractModel {
             return false;
     }
 
-    //intoarce ce optiuni sunt programate pentru oferta curenta
+    //intoarce daca pe oferta curenta s-a aplicat optiunea id_option
     public function getScheduledOptions($id_offer, $id_option) {
         $qb = $this->em->createQueryBuilder();
 
@@ -507,6 +505,26 @@ class PartnerModel extends AbstractModel {
                 ->getQuery()
                 ->getResult();
         return $result;
+    }
+
+    //intoarce un intreg ce seminifica pozitia ofertei ce urmeaza sa fie programata
+    public function getOptionAvailablePosition($id_option, $date) {
+        $option = $this->getSubscriptionOption($id_option);
+        switch ($option->getSlug()) {
+            case \DLConstants::$OPTIUNE_PROMOVARE_NEWSLETTER: {
+                    //optiunea pentru newsletter este valabila 7 zile
+                    $query = "select max(position) as position from active_options "
+                            . "where id_option=$id_option and date_add(scheduled, INTERVAL 7 DAY) >='$date'";
+                    $position = $this->em->getConnection()->fetchAll($query);
+                    return $position[0]['position'] + 1;
+                }break;
+            default: {
+                    //celelalte optiuni sunt valabile 1 zi
+                    $position = $this->em->getConnection()->fetchAll("select max(position) as position from active_options "
+                            . "where id_option=$id_option and scheduled='$date'");
+                    return $position[0]['position'] + 1;
+                }break;
+        }
     }
 
     /**
@@ -657,21 +675,22 @@ class PartnerModel extends AbstractModel {
      */
     public function applyOption($id_offer, $id_option, $scheduled, $id_company) {
         /* @var $option Dealscount\Models\Entities\ActiveOption */
-        $optionRep=$this->em->getRepository("Entities:ActiveOption");
+        $optionRep = $this->em->getRepository("Entities:ActiveOption");
         //luam o optiune cumparata de tipul id_option si o activam
-        
-        $option=$optionRep->findOneBy(array(
-            'id_option'=>$id_option,
-            'used'=>null,
-            "id_company"=>$id_company
+
+        $option = $optionRep->findOneBy(array(
+            'id_option' => $id_option,
+            'used' => null,
+            "id_company" => $id_company
         ));
         if (!$option)
             throw new \Exception('Invalid Option');
- 
+
         $option->setUsed_at(new \DateTime('now'));
         $option->setUsed_on($id_offer);
         $option->setUsed(1);
         $option->setScheduled(new \DateTime($scheduled));
+        $option->setPosition($this->getOptionAvailablePosition($id_option, $scheduled));
         $this->em->persist($option);
         $this->em->flush();
         return true;

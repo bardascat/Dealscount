@@ -73,9 +73,10 @@
             </table>
 
 
-            <?php 
+            <?php
             /* @var $active_options \Dealscount\Models\Entities\SubscriptionOption */
-            if ($active_options) { ?>
+            if ($active_options) {
+                ?>
                 <div class="options">
                     <?php foreach ($active_options as $option) { ?>
                         <div class="option">
@@ -85,7 +86,7 @@
 
                                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                     <tr>
-                                        <td width="50">
+                                        <td style="vertical-align: top;" width="50">
                                             <img src="<?php
                                             switch ($option->getSlug()) {
                                                 case DLConstants::$OPTIUNE_OFERTA_PROMOVATA:
@@ -106,7 +107,7 @@
                                             }
                                             ?>"
                                         </td>
-                                        <td width="430">
+                                        <td width="380">
                                             <table class="option_details" border="0" width="100%" cellpadding="0" cellspacing="0">
                                                 <tr>
                                                     <td class="header">
@@ -118,10 +119,12 @@
                                                         <?php
                                                         $scheduledOptions = $option->getScheduledOptions();
                                                         if ($scheduledOptions) {
-                                                            echo "Oferta este promovata in datele ";
+                                                            echo "Oferta este promovata in data:  ";
                                                             foreach ($scheduledOptions as $scheduledOption) {
                                                                 echo $scheduledOption->getScheduled()->format("d-m-Y") . ' , ';
                                                             }
+                                                        } else {
+                                                            echo $option->getDescription();
                                                         }
                                                         ?>
                                                     </td>
@@ -129,6 +132,9 @@
                                                 <tr>
                                                     <td class="credit">
                                                         Ai <?php echo $option->getAvailable() ?> Credit(e)
+                                                        <?php if (!$option->getAvailable()): ?>
+                                                            <a href="<?php echo base_url('partener/abonamente') ?>">cumpara optiune</a>
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -137,14 +143,15 @@
                                             <div style="float: right">
                                                 <?php if ($option->getAvailable()) { ?>
                                                     <div class="programeaza">
-                                                        <input readonly="" style="width: 100px;" class="datepicker" type="text" name="scheduled"/>
+                                                        <input readonly="" onchange="showAvailableDay(<?php echo $option->getId_option()?>,this)" style="width: 100px;" class="datepicker" type="text" name="scheduled"/>
                                                     </div>
+
                                                 <?php } ?>
                                             </div>
                                         </td>
                                         <td width="150" style="padding-left: 30px;">
                                             <?php if ($option->getAvailable()) { ?>
-                                            <div onclick="$('#schedule_form_<?php echo $option->getId_option() ?>').submit()" style="float: right;"  id="greenButton">Programeaza</div>
+                                                <div onclick="$('#schedule_form_<?php echo $option->getId_option() ?>').submit()" style="float: right;"  id="greenButton">Programeaza</div>
                                             <?php } ?>
                                         </td>
                                     </tr>
@@ -225,8 +232,8 @@
 </div>
 
 <script type="text/javascript">
-                                                $(document).ready(function() {
+    $(document).ready(function() {
 <?php $tomorrow = date("Y-n-d", strtotime(date("Y-n-d") . ' +1 day')); ?>
-                                                    $(".datepicker").datepicker({dateFormat: "dd-mm-yy", minDate: new Date(<?php echo '"' . date("Y", strtotime($tomorrow)) . '"' ?>,<?php echo '"' . date("n", strtotime($tomorrow)) . '"' ?>,<?php echo '"' . date("d", strtotime($tomorrow)) . '"' ?>)});
-                                                })
+        $(".datepicker").datepicker({dateFormat: "dd-mm-yy", maxDate: new Date(<?php echo '"' . date("Y", strtotime($offer->getEnd_date())) . '"' ?>,<?php echo '"' . (date("n", strtotime($offer->getEnd_date()))-1) . '"' ?>,<?php echo '"' . date("d", strtotime($offer->getEnd_date())) . '"' ?>), minDate: new Date(<?php echo '"' . date("Y", strtotime($tomorrow)) . '"' ?>,<?php echo '"' . (date("n", strtotime($tomorrow))-1) . '"' ?>,<?php echo '"' . date("d", strtotime($tomorrow)) . '"' ?>)});
+    })
 </script>

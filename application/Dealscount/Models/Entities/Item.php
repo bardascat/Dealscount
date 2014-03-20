@@ -58,6 +58,23 @@ class Item extends AbstractEntity {
      * @Column(type="integer") @var float
      */
     protected $active = 1;
+    
+    /**
+     * @Column(type="integer",nullable=true) @var float
+     */
+    protected $home_position;
+    /**
+     * @Column(type="integer",nullable=true) @var float
+     */
+    protected $category_position;
+    /**
+     * @Column(type="integer",nullable=true) @var float
+     */
+    protected $subcategory_position;
+    /**
+     * @Column(type="integer",nullable=true) @var float
+     */
+    protected $newsletter_position;
 
     /**
      *
@@ -666,6 +683,44 @@ class Item extends AbstractEntity {
         $this->voucher_price = $voucher_price;
         return $this;
     }
+    
+    public function getHome_position() {
+        return $this->home_position;
+    }
+
+    public function getCategory_position() {
+        return $this->category_position;
+    }
+
+    public function getSubcategory_position() {
+        return $this->subcategory_position;
+    }
+
+    public function getNewsletter_position() {
+        return $this->newsletter_position;
+    }
+
+    public function setHome_position($home_position) {
+        $this->home_position = $home_position;
+        return $this;
+    }
+
+    public function setCategory_position($category_position) {
+        $this->category_position = $category_position;
+        return $this;
+    }
+
+    public function setSubcategory_position($subcategory_position) {
+        $this->subcategory_position = $subcategory_position;
+        return $this;
+    }
+
+    public function setNewsletter_position($newsletter_position) {
+        $this->newsletter_position = $newsletter_position;
+        return $this;
+    }
+
+
 
 }
 

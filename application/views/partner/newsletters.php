@@ -9,7 +9,7 @@
 
         <div class="newsletters">
 
-            <h1>Newsletter <span style="font-size: 12px;">(<?php echo (!$active_newsletter_option ? "0" : $active_newsletter_option[0]['active_options']) ?> credit) </span></h1>
+            <h1>Newsletter <span style="font-size: 12px;">(<?php echo (!$active_newsletter_option ? "0" : $active_newsletter_option[0]->getAvailable()) ?> credit) </span></h1>
 
             <div  class="info">
                 Programeaza trimiterea unui newsletter cu toate ofertele active pe site:
@@ -199,7 +199,7 @@
                                     <a href="<?php echo base_url('partener/view_newsletter/' . $newsletter->getId_newsletter()) ?>">Vezi</a>
                                 </td>
                                 <td>
-                                    <?php if ($newsletter->getStatus() == DLConstants::$NEWSLETTER_PENDING) { ?>
+                                    <?php if ($newsletter->getStatus() == DLConstants::$NEWSLETTER_PENDING && $newsletter->getScheduled()->format("Y-m-d")>date("Y-m-d")) { ?>
                                         <a href="<?php echo base_url('partener/cancel_newsletter/' . $newsletter->getId_newsletter()) ?>" style="color: #f00">Anuleaza</a>
                                     <?php } ?>
                                 </td>

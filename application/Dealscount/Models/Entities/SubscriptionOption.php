@@ -65,9 +65,10 @@ class SubscriptionOption extends AbstractEntity {
     protected $availability_days;
     //aici tinem cate optiuni are userul desponibile
     protected $available;
-    
     //incarcam ce optiuni a programat partenerul
     protected $ScheduledOptions;
+    //setam ce pozitii au fost deja programate pentru optiunile de ordonare in categorie,subcategorie,newsletter si home
+    protected $disabledPosition;
 
     public function getId_option() {
         return $this->id_option;
@@ -149,12 +150,21 @@ class SubscriptionOption extends AbstractEntity {
         $this->slug = $slug;
         return $this;
     }
+
     public function getScheduledOptions() {
         return $this->ScheduledOptions;
     }
 
     public function setScheduledOptions($ScheduledOptions) {
         $this->ScheduledOptions = $ScheduledOptions;
+        return $this;
+    }
+    public function getDisabledPosition() {
+        return $this->disabledPosition;
+    }
+
+    public function setDisabledPosition($disabledPosition) {
+        $this->disabledPosition = $disabledPosition;
         return $this;
     }
 
