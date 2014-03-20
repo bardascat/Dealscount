@@ -188,6 +188,7 @@ class PartnerModel extends AbstractModel {
         return $city;
     }
 
+    //luam zilele cand au fost programate newsletterele
     public function getNewsletterRestrictedDays() {
         $r = $this->em->getConnection()->fetchAll("select DATE_FORMAT(scheduled,'%Y-%m-%d') as scheduled from partner_newsletter where status='" . \DLConstants::$NEWSLETTER_PENDING . "' and scheduled>=NOW()");
         if (isset($r[0]))

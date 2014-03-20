@@ -217,7 +217,8 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".datepicker").datetimepicker({beforeShowDay: unavailable, timeFormat: 'HH:mm', dateFormat: "dd-mm-yy", minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
+        <?php $tomorrow = date("Y-n-d", strtotime(date("Y-n-d") . ' +1 day')); ?>
+        $(".datepicker").datetimepicker({beforeShowDay: unavailable, timeFormat: 'HH:mm', dateFormat: "dd-mm-yy", minDate: new Date(<?php echo '"' . date("Y", strtotime($tomorrow)) . '"' ?>,<?php echo '"' . (date("n", strtotime($tomorrow))-1) . '"' ?>,<?php echo '"' . date("d", strtotime($tomorrow)) . '"' ?>), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo (date("n", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d")))-1) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
     })
 
     var unavailableDates = [<?php if($restricted_days) {foreach($restricted_days as $day) echo '"'.date("d-n-Y",strtotime($day['scheduled'])).'"'.',';}?>];
