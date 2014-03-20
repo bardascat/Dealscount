@@ -67,7 +67,7 @@ class Doctrine {
 
         try {
 
-           //$this->updateSchema($em);
+        //$this->updateSchema($em);
         } catch (\Exception $e) {
             echo $e->getMessage();
         }

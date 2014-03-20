@@ -41,7 +41,7 @@
                                         <label>Titlu Oferta</label>
                                     </td>
                                     <td class='big_input' >
-                                        <input id="name" title="Acest titlu va aparea in pagina ofertei. Nu trebuie sa depaseasca 6 randuri"  type='text' value="<?php echo set_value('brief') ?>" name='brief'/>
+                                        <textarea  id="name" title="Acest titlu va aparea in pagina ofertei. Nu trebuie sa depaseasca 6 randuri" name='brief'><?php echo set_value('brief') ?></textarea>
                                     </td>
                                 </tr>
                                 <tr>
@@ -116,7 +116,7 @@
                                     </td>
                                     <td class='' >
                                         <div class="programeaza">
-                                            <input style="width: 230px;" class="datepicker"  value="<?php echo set_value('start_date') ?>"  type="text" name="start_date"/>
+                                            <input style="width: 230px;" readonly="" class="datepicker"  value="<?php echo set_value('start_date') ?>"  type="text" name="start_date"/>
                                         </div>
                                     </td>
                                 </tr>
@@ -126,7 +126,7 @@
                                     </td>
                                     <td class=''>
                                         <div class="programeaza">
-                                            <input  style="width: 230px;"  class="datepicker" type="text" value="<?php echo set_value('end_date') ?>"  name="end_date"/>
+                                            <input  style="width: 230px;"  readonly="" class="datepicker" type="text" value="<?php echo set_value('end_date') ?>"  name="end_date"/>
                                         </div>
                                     </td>
                                 </tr>
@@ -139,7 +139,7 @@
                                             <tr>
                                                 <td class="" style="padding-bottom: 0px;">
                                                     <div class="programeaza">
-                                                        <input style="width: 80px;"  class="datepickersimple" type="text" value="<?php echo set_value('voucher_start_date') ?>"  name="voucher_start_date"/>
+                                                        <input style="width: 80px;" readonly=""  class="datepickersimple" type="text" value="<?php echo set_value('voucher_start_date') ?>"  name="voucher_start_date"/>
                                                     </div>
                                                 </td>
                                                 <td style="padding-bottom: 0px; padding-left: 10px;">
@@ -147,7 +147,7 @@
                                                 </td>
                                                 <td style="padding-left: 10px; padding-bottom: 0px;" class="">
                                                     <div class="programeaza" style="">
-                                                        <input style="width: 80px;"  class="datepickersimple" type="text" value="<?php echo set_value('voucher_end_date') ?>" name="voucher_end_date"/>    
+                                                        <input style="width: 80px;" readonly="" class="datepickersimple" type="text" value="<?php echo set_value('voucher_end_date') ?>" name="voucher_end_date"/>    
                                                     </div>
                                                 </td>
                                             </tr>
@@ -327,8 +327,8 @@
             }
         });
         load_offer_editor();
-        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy"});
-        $(".datepickersimple").datepicker({dateFormat: "dd-mm-yy"});
+        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy",minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
+        $(".datepickersimple").datepicker({dateFormat: "dd-mm-yy",minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
 
     })
     $(document).ready(function() {

@@ -1104,6 +1104,16 @@ img{border:0px;}
     padding-left: 4px;
     font-family: 'Noto Sans';
 }
+#content .partner .edit_offer .offer_form textarea{
+    width: 500px;
+    height: 60px;
+    border:1px solid #dadada;
+    font-size: 14px;
+    padding-left: 4px;
+    color: #484848;
+    resize: none;
+    font-family: 'Noto Sans';
+}
 #content .partner .edit_offer .offer_form .big_input input{
     width:500px;
 }
@@ -1260,7 +1270,7 @@ img{border:0px;}
 }
 #content .partner .newsletters .newsletters_list{
     float: left;
-    margin-top: 20px;
+    margin-top: 40px;
     width: 100%;
 }
 
@@ -1272,7 +1282,7 @@ img{border:0px;}
 
 }
 #content .partner .newsletters .newsletters_list th{
-    font-size: 16px;
+    font-size: 14px;
     border-top:1px solid #dadada;
     border-bottom:1px solid #dadada;
     padding-bottom: 10px;

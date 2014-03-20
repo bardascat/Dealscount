@@ -298,7 +298,8 @@ class NeoCartModel extends AbstractModel {
         }
         return $order;
     }
-
+    
+    
     public function getShippingCost($params, $total) {
         //cupoanele nu au  taxa de transport
         return 0;

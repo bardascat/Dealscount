@@ -8,7 +8,7 @@
 
         <?php $this->load->view('partner/partner_menu'); ?>
 
-        <div style="clear: both; float: left;" class="vouchers">
+        <div style="clear: both; float: left; width:100%;" class="vouchers">
             <h1>Vouchere</h1>
             <div class="search_bar">
                 <form action="" method="GET">

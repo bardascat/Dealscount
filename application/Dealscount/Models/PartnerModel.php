@@ -110,7 +110,26 @@ class PartnerModel extends AbstractModel {
         return true;
     }
 
-    public function createNewsletter($params, $partner) {
+    public function updateCompanyDetails($post, Entities\User $user) {
+        $company = $user->getCompanyDetails();
+        $company->setCompany_name($post['company_name']);
+        $company->setCif($post['cif']);
+        $company->setRegCom($post['regCom']);
+        $company->setBank($post['bank']);
+        $company->setIban($post['iban']);
+        $user->setAddress($post['address']);
+        $user->setPhone($post['phone']);
+        $user->setEmail($post['email']);
+        $user->setLastname($post['lastname']);
+        $user->setFirstname($post['firstname']);
+        $user->setCity($post['city']);
+        $this->em->persist($user);
+        $this->em->persist($company);
+        $this->em->flush();
+        return true;
+    }
+
+    public function createNewsletter($params, Entities\User $partner) {
         $newsletter = new Entities\PartnerNewsletter();
         $newsletter->setStatus(\DLConstants::$NEWSLETTER_PENDING);
         $newsletter->postHydrate($params);
@@ -139,11 +158,24 @@ class PartnerModel extends AbstractModel {
         foreach ($offersArray as $key => $offer) {
             $offers[] = $offer['id_item'];
         }
+        if (count($offers) < 1) {
+            throw new \Exception('Este obligatoriu sa aveti cel putin o oferta activa pentru a trimite newsletter.');
+        }
         $newsletter->setOffers(json_encode($offers));
         $partner->addPartnerNewsletter($newsletter);
         $this->em->persist($partner);
         $this->em->flush();
-
+        //dezactivam optiunea din abonament
+        $newsletterOptions = $this->getActiveOptions($partner->getCompanyDetails()->getId_company(), \DLConstants::$OPTIUNE_NEWSLETTER_PERSONAL);
+        //luam prima optiune
+        $option = $newsletterOptions[0][0];
+        $option->setUsed_at(new \DateTime("now"));
+        $option->setUsed(1);
+        $option->setUsed_on($newsletter->getId_newsletter());
+        $newsletter->setOption($option);
+        $this->em->persist($option);
+        $this->em->persist($newsletter);
+        $this->em->flush();
         return true;
     }
 
@@ -165,6 +197,8 @@ class PartnerModel extends AbstractModel {
     }
 
     public function suspendNewsletter($id_newsletter, $partner) {
+        /* @var $newsletter \Dealscount\Models\Entities\PartnerNewsletter */
+        /* @var $option \Dealscount\Models\Entities\ActiveOption */
         $newsletter = $this->em->find("Entities:PartnerNewsletter", $id_newsletter);
         if (!$newsletter)
             throw new \Exception("Eroare: Id newsletter incorect");
@@ -175,8 +209,19 @@ class PartnerModel extends AbstractModel {
             throw new \Exception("Eroare: Newsletterul nu mai poate fi anulat!");
         }
 
+
         $newsletter->setStatus(\DLConstants::$NEWSLETTER_SUSPENDED);
+        $option = $newsletter->getOption();
+
+        $newsletter->setId_active_option(null);
+        if ($option) {
+            $option->setUsed(null);
+            $option->setUsed_at(null);
+            $option->setUsed_on(null);
+            $this->em->persist($option);
+        }
         $this->em->persist($newsletter);
+
         $this->em->flush();
         return true;
     }
@@ -261,25 +306,6 @@ class PartnerModel extends AbstractModel {
         } else {
             return false;
         }
-    }
-
-    public function updateCompanyDetails($post, Entities\User $user) {
-        $company = $user->getCompanyDetails();
-        $company->setCompany_name($post['company_name']);
-        $company->setCif($post['cif']);
-        $company->setRegCom($post['regCom']);
-        $company->setBank($post['bank']);
-        $company->setIban($post['iban']);
-        $user->setAddress($post['address']);
-        $user->setPhone($post['phone']);
-        $user->setEmail($post['email']);
-        $user->setLastname($post['lastname']);
-        $user->setFirstname($post['firstname']);
-        $user->setCity($post['city']);
-        $this->em->persist($user);
-        $this->em->persist($company);
-        $this->em->flush();
-        return true;
     }
 
     private function generateInvoice(Entities\SubscriptionOptionOrder &$order) {
@@ -392,7 +418,8 @@ class PartnerModel extends AbstractModel {
         $rep = $this->em->getRepository("Entities:SubscriptionOption");
         if ($type) {
             $ab = $rep->findBy(array("type" => $type));
-        } else
+        }
+        else
             $ab = $rep->findAll();
 
         if ($id_company) {
@@ -422,27 +449,42 @@ class PartnerModel extends AbstractModel {
     }
 
     /**
-     * Intoarce pentru partenerul curent ce optiune are active si cate
+     * @return \Dealscount\Models\Entities\ActiveOption
+     * Intoarce pentru partenerul curent ce optiuni are active si cate
      * @param type $id_company
      */
     public function getActiveOptions($id_company, $slug = false) {
         try {
             $r = $this->em->createQueryBuilder()
                     ->select("o")
-                    ->addSelect("count(o.id_option) as active_options")
                     ->from("Entities:ActiveOption", "o")
                     ->join("o.option", 'option')
-                    ->where("o.used is null")
                     ->andWhere("o.id_company=:id_company");
             if ($slug) {
                 $r->andWhere("option.slug=:slug")
                         ->setParameter(":slug", $slug);
             }
-
             $r = $r->setParameter(":id_company", $id_company)
                     ->groupBy("o.id_option")
                     ->getQuery()
                     ->getResult();
+
+            if (!$r)
+                return false;
+
+            
+            //adaugam cate are disponibile pe fiecare optiune
+            foreach ($r as $key => $option) {
+                $id_option = $option->getId();
+                $active_options = $this->em->getConnection()->fetchAll("select count(*) as active_options from active_options 
+                where id_option='$id_option'
+                and id_company='$id_company' 
+                and used is  null    
+                ");
+
+                $option->setAvailable($active_options[0]['active_options']);
+                $r[$key] = $option;
+            }
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -450,6 +492,21 @@ class PartnerModel extends AbstractModel {
             return $r;
         else
             return false;
+    }
+
+    //intoarce ce optiuni sunt programate pentru oferta curenta
+    public function getScheduledOptions($id_offer, $id_option) {
+        $qb = $this->em->createQueryBuilder();
+
+        $result = $qb->select("o")
+                ->from("Entities:ActiveOption", "o")
+                ->where("o.used=1")
+                ->andWhere("o.scheduled>=CURRENT_DATE()")
+                ->andWhere("o.used_on=$id_offer")
+                ->andWhere("o.id_option=$id_option")
+                ->getQuery()
+                ->getResult();
+        return $result;
     }
 
     /**
@@ -587,6 +644,37 @@ class PartnerModel extends AbstractModel {
 
         $this->generateInvoice($order);
         $this->em->flush();
+    }
+
+    /**
+     * Aplica o optiune de tiputl id_option pe oferta
+     * @param type $id_offer
+     * @param type $id_option
+     * @param type $scheduled
+     * @param type $id_company
+     * @return boolean
+     * @throws \Exception
+     */
+    public function applyOption($id_offer, $id_option, $scheduled, $id_company) {
+        /* @var $option Dealscount\Models\Entities\ActiveOption */
+        $optionRep=$this->em->getRepository("Entities:ActiveOption");
+        //luam o optiune cumparata de tipul id_option si o activam
+        
+        $option=$optionRep->findOneBy(array(
+            'id_option'=>$id_option,
+            'used'=>null,
+            "id_company"=>$id_company
+        ));
+        if (!$option)
+            throw new \Exception('Invalid Option');
+ 
+        $option->setUsed_at(new \DateTime('now'));
+        $option->setUsed_on($id_offer);
+        $option->setUsed(1);
+        $option->setScheduled(new \DateTime($scheduled));
+        $this->em->persist($option);
+        $this->em->flush();
+        return true;
     }
 
     // end abonamente

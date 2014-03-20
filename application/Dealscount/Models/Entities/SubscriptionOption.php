@@ -18,7 +18,7 @@ class SubscriptionOption extends AbstractEntity {
      *  @Column(type="string")
      */
     protected $name;
-    
+
     /**
      *  @Column(type="string")
      */
@@ -63,9 +63,11 @@ class SubscriptionOption extends AbstractEntity {
      *  @Column(type="integer",nullable=true)
      */
     protected $availability_days;
-    
     //aici tinem cate optiuni are userul desponibile
     protected $available;
+    
+    //incarcam ce optiuni a programat partenerul
+    protected $ScheduledOptions;
 
     public function getId_option() {
         return $this->id_option;
@@ -120,7 +122,7 @@ class SubscriptionOption extends AbstractEntity {
         $this->details = $details;
         return $this;
     }
-    
+
     public function getDescription() {
         return $this->description;
     }
@@ -130,7 +132,6 @@ class SubscriptionOption extends AbstractEntity {
         return $this;
     }
 
-
     public function getAvailable() {
         return $this->available;
     }
@@ -139,6 +140,7 @@ class SubscriptionOption extends AbstractEntity {
         $this->available = $available;
         return $this;
     }
+
     public function getSlug() {
         return $this->slug;
     }
@@ -147,8 +149,14 @@ class SubscriptionOption extends AbstractEntity {
         $this->slug = $slug;
         return $this;
     }
+    public function getScheduledOptions() {
+        return $this->ScheduledOptions;
+    }
 
-
+    public function setScheduledOptions($ScheduledOptions) {
+        $this->ScheduledOptions = $ScheduledOptions;
+        return $this;
+    }
 
 
 

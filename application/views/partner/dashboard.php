@@ -28,11 +28,15 @@
                                     Extraoptiuni active:
                                 </td>
                                 <td style="padding-top: 10px;">
-                                    <?php foreach ($active_options as $option) { ?>
+                                    <?php foreach ($active_options as $option) {
+                                        if (!$option->getAvailable()) continue;
+                                        ?>
                                         <div style="padding-bottom: 5px;">
-                                            <b><?php echo $option[0]->getName() ?></b> <span>(Credite <?php echo $option['active_options']?>)</span>
+                                            <b><?php echo $option->getName() ?></b> <span>(Credite <?php echo $option->getAvailable() ?>)</span>
                                         </div>
-                                    <?php } ?>
+                                        <?php
+                                    }
+                                    ?>
                                 </td>
                             </tr>
                         </table>
@@ -122,7 +126,7 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        $(".datepickersimple").datepicker({dateFormat: "yy-mm-dd"});
-    })
+                                    $(document).ready(function() {
+                                        $(".datepickersimple").datepicker({dateFormat: "yy-mm-dd"});
+                                    })
 </script>

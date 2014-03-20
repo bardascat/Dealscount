@@ -57,10 +57,21 @@ class ActiveOption extends AbstractEntity {
     protected $used;
 
     /**
-     * Salvam cum s a folosit aceasta optiune
-     * @Column(type="text",nullable=true) @var string
+     * @Column(type="date",nullable=true) @var string
+     */
+    protected $scheduled;
+
+    /**
+     * Salvam id-ului ofertei sau a newsletterul pe care s-a folosit aceasta optiune
+     * @Column(type="integer",nullable=true) @var string
      */
     protected $used_on;
+
+    /**
+     * Salvam detalii despre ce impact a avut optiunea asupra ofertelor
+     * @Column(type="text",nullable=true) @var string
+     */
+    protected $details;
 
     public function getId() {
         return $this->id;
@@ -142,7 +153,7 @@ class ActiveOption extends AbstractEntity {
         $this->id_option = $id_option;
         return $this;
     }
-    
+
     public function getId_option_order() {
         return $this->id_option_order;
     }
@@ -152,7 +163,32 @@ class ActiveOption extends AbstractEntity {
         return $this;
     }
 
+    public function getDetails() {
+        return $this->details;
+    }
 
+    public function setDetails($details) {
+        $this->details = $details;
+        return $this;
+    }
+
+    public function getScheduled() {
+        return $this->scheduled;
+    }
+
+    public function setScheduled($scheduled) {
+        $this->scheduled = $scheduled;
+        return $this;
+    }
+
+    public function getAvailable() {
+        return $this->available;
+    }
+
+    public function setAvailable($available) {
+        $this->available = $available;
+        return $this;
+    }
 
 }
 

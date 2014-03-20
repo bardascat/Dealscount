@@ -137,16 +137,29 @@ class partener extends \CI_Controller {
         if (!$offer || $offer->getCompany()->getId_user() != $this->getLoggedUser()['id_user']) {
             $this->session->set_flashdata('notification', array("type" => "error", "html" => "Cererea nu a pututut fi finalizata !"));
             redirect(base_url('partener/oferte'));
-            exit();
         }
+
         $statsByCity = $this->OffersModel->getStatsByCity($this->User, $id_offer);
         $statsByGender = $this->OffersModel->getStatsByGender($this->User, $id_offer);
         $statsByAge = $this->OffersModel->getStatsByAge($this->User, $id_offer);
+        $active_options = $this->PartnerModel->getSubscriptionOptions("option", $this->User->getCompanyDetails()->getId_company());
+
+        //pentru fiecare tip de optiune vedem daca partenerul a facut o programare
+        foreach ($active_options as $key => $option) {
+            if ($option->getSlug() == DLConstants::$OPTIUNE_NEWSLETTER_PERSONAL || $option->getSlug() == DLConstants::$OPTIUNE_POSTARE_SUPLIMENTARA) {
+                //nu ne intereseaza in aceasta pagina ceste 2 optiuni
+                unset($active_options[$key]);
+            }
+            $option->setScheduledOptions($this->PartnerModel->getScheduledOptions($id_offer, $option->getId_option()));
+        }
+
+
         $data = array("offer" => $offer,
             "user" => $this->User,
             "statsByCity" => $statsByCity,
             "statsByGender" => $statsByGender,
-            'statsByAge' => $statsByAge
+            'statsByAge' => $statsByAge,
+            'active_options' => $active_options
         );
         $this->load_view('partner/offer_details', $data);
     }
@@ -258,7 +271,10 @@ class partener extends \CI_Controller {
     public function newsletter() {
         $restricedDayes = $this->PartnerModel->getNewsletterRestrictedDays();
         $active_newsletter_option = $this->PartnerModel->getActiveOptions($this->User->getCompanyDetails()->getId_company(), DLConstants::$OPTIUNE_NEWSLETTER_PERSONAL);
-        $this->load_view('partner/newsletters', array("user" => $this->User, 'restricted_days' => $restricedDayes, "cities" => $this->PartnerModel->getActiveCities(), 'active_newsletter_option' => $active_newsletter_option));
+        $this->load_view('partner/newsletters', array("user" => $this->User,
+            'restricted_days' => $restricedDayes,
+            "cities" => $this->PartnerModel->getActiveCities(),
+            'active_newsletter_option' => $active_newsletter_option));
     }
 
     /**
@@ -276,22 +292,36 @@ class partener extends \CI_Controller {
         $this->form_validation->set_message('min_length', 'Campul <b>%s</b> este obligatoriu sa aiba nimim %s caractere ');
         $this->form_validation->set_message('max_length', 'Campul <b>%s</b> este obligatoriu sa aiba maxim %s caractere ');
         if ($this->form_validation->run() == FALSE) {
-            $this->load_view('partner/newsletters', array("notification" => array(
+            $restricedDayes = $this->PartnerModel->getNewsletterRestrictedDays();
+            $active_newsletter_option = $this->PartnerModel->getActiveOptions($this->User->getCompanyDetails()->getId_company(), DLConstants::$OPTIUNE_NEWSLETTER_PERSONAL);
+            $this->load_view('partner/newsletters', array(
+                "notification" => array(
                     "type" => "form_notification",
                     "message" => validation_errors(),
                     "cssClass" => "error"
-                ), "user" => $this->User, "cities" => $this->PartnerModel->getActiveCities()));
+                ),
+                "user" => $this->User,
+                'restricted_days' => $restricedDayes,
+                "cities" => $this->PartnerModel->getActiveCities(),
+                'active_newsletter_option' => $active_newsletter_option));
         } else {
             //forma este corecta, validam business logic
-            $valid = $this->valid_newsletter();
-            if ($valid) {
+
+            try {
+                $this->valid_newsletter($_POST);
+            } catch (\Exception $e) {
+                $this->session->set_flashdata('notification', array("type" => "error", "html" => $e->getMessage()));
+                redirect(base_url('partener/newsletter'));
+            }
+
+
+            try {
                 $this->PartnerModel->createNewsletter($_POST, $this->User);
                 $this->session->set_flashdata('notification', array("type" => "success", "html" => "Newsletterul a fost programat cu succes!"));
-                redirect(base_url('partener/newsletter'));
-            } else {
-
-                exit('no validated');
+            } catch (\Exception $e) {
+                $this->session->set_flashdata('notification', array("type" => "error", "html" => $e->getMessage()));
             }
+            redirect(base_url('partener/newsletter'));
         }
     }
 
@@ -305,6 +335,23 @@ class partener extends \CI_Controller {
             "subscriptions" => $this->PartnerModel->getSubscriptionOptions("valabilitate"),
             "options" => $options
         ));
+    }
+
+    public function apply_option() {
+
+        $this->form_validation->set_rules('id_offer', 'ID offer', 'required');
+        $this->form_validation->set_rules('id_option', 'ID option', 'required');
+        $this->form_validation->set_rules('scheduled', 'Data programare', 'required');
+        $this->form_validation->set_message('required', '<b>%s</b> este obligatoriu');
+        if ($this->form_validation->run() == FALSE) {
+            $this->session->set_flashdata('notification', array("type" => "error", "html" => validation_errors()));
+            redirect(base_url('partener/detalii-oferta/' . $_POST['id_offer']));
+        }
+
+        $this->PartnerModel->applyOption($_POST['id_offer'], $_POST['id_option'], $_POST['scheduled'],$this->User->getCompanyDetails()->getId_company());
+        $this->session->set_flashdata('notification', array("type" => "success", "html" => "Optiunea a fost activata cu succes"));
+        redirect(base_url('partener/detalii-oferta/' . $_POST['id_offer']));
+        exit();
     }
 
     public function buy_option() {
@@ -323,7 +370,8 @@ class partener extends \CI_Controller {
                         $this->buy_option_card($order);
                     }break;
             }
-        } else
+        }
+        else
             show_404();
     }
 
@@ -434,7 +482,8 @@ class partener extends \CI_Controller {
 
                         $order->setPayment_status(DLConstants::$PAYMENT_STATUS_CANCELED);
                         $this->PartnerModel->updateSubscriptionOrder($order);
-                    } else
+                    }
+                    else
                         switch ($objPmReq->objPmNotify->action) {
                             #orice action este insotit de un cod de eroare si de un mesaj de eroare. Acestea pot fi citite folosind $cod_eroare = $objPmReq->objPmNotify->errorCode; respectiv $mesaj_eroare = $objPmReq->objPmNotify->errorMessage;
                             #pentru a identifica ID-ul comenzii pentru care primim rezultatul platii folosim $id_comanda = $objPmReq->orderId;
@@ -588,7 +637,23 @@ class partener extends \CI_Controller {
         return true;
     }
 
-    private function valid_newsletter() {
+    private function valid_newsletter($params) {
+
+        //validam daca programarii este valida
+        if (date("Y-m-d H:i:s", strtotime($params['scheduled'])) > $this->User->getCompanyDetails()->getAvailable_to()->format("Y-m-d H:i:s")) {
+            throw new \Exception('Newsletterul nu poate fi programat dupa ce expira abonamentul. Prelungiti intai valabilitatea abonamentului');
+        }
+        if (date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s") . ' +1 hour')) > date("Y-m-d H:i:s", strtotime($params['scheduled']))) {
+            throw new \Exception('Newsletterul nu poate fi programat mai devreme de ora ' . date("H:i", strtotime(date("Y-m-d H:i:s") . ' +1 hour')));
+        }
+        //validam daca in ziua respectiva se mai trimite un newsletter
+        $restricted = $this->PartnerModel->getNewsletterRestrictedDays();
+        if ($restricted) {
+            foreach ($restricted as $day) {
+                if (date("Y-m-d", strtotime($params['scheduled'])) == $day['scheduled'])
+                    throw new \Exception('In data' . $params['scheduled'] . ' este deja programat un newsletter. Va rugam alegeti alta zi');
+            }
+        }
         return true;
     }
 
@@ -606,45 +671,16 @@ class partener extends \CI_Controller {
         $this->load_view('partner/date_cont', array("user" => $this->User, "cities" => $this->UserModel->getCities()));
     }
 
-    public function change_date_cont() {
-        if (!$_POST)
-            redirect(base_url('partener'));
-        $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
-        $this->form_validation->set_rules('company_name', 'Company name', 'required|xss_clean');
-        $this->form_validation->set_rules('cif', 'Cod fiscal', 'required|xss_clean');
-        $this->form_validation->set_rules('regCom', 'Registrul comertului', 'required|xss_clean');
-        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('lastname', 'Numele de contact', 'required|xss_clean');
-        $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
-
-        if ($this->form_validation->run() == FALSE) {
-            $this->load_view('partner/date_cont', array("notification" => array(
-                    "type" => "form_notification",
-                    "message" => validation_errors(),
-                    "cssClass" => "error",
-                    "cities" => $this->UserModel->getCities(),
-                ), "user" => $this->User));
-        } else {
-            try {
-                $this->PartnerModel->updateCompanyDetails($_POST, $this->User);
-            } catch (\Exception $e) {
-                $this->load_view('partner/date_cont', array("notification" => array(
-                        "type" => "form_notification",
-                        "message" => $e->getMessage(),
-                        "cssClass" => "error"
-                    ), "user" => $this->User));
-            }
-        }
-
-        $this->session->set_flashdata('notification', array("type" => "success", "html" => "Modificarile au fost salvate cu success"));
-        redirect(base_url('partener/date-cont'));
-    }
-
     public function change_date_cont_company() {
 
         if (!$_POST)
             redirect(base_url('partener'));
 
+        $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
+        $this->form_validation->set_rules('company_name', 'Company name', 'required|xss_clean');
+        $this->form_validation->set_rules('cif', 'Cod fiscal', 'required|xss_clean');
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+        $this->form_validation->set_rules('lastname', 'Numele de contact', 'required|xss_clean');
         $this->form_validation->set_rules('commercial_name', 'Comercial name', 'required|xss_clean');
         $this->form_validation->set_rules('description', 'Descriere', 'required|xss_clean');
         $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
@@ -659,7 +695,7 @@ class partener extends \CI_Controller {
             try {
                 $images = $this->upload_images($_FILES['image'], "application_uploads/company/" . $this->User->getId_user(), false);
                 $_POST['image'] = $images;
-                $this->UserModel->updateCompanyDetails($_POST);
+                $this->PartnerModel->updateCompany($_POST);
             } catch (\Exception $e) {
                 $this->load_view('partner/date_cont', array("notification" => array(
                         "type" => "form_notification",
@@ -750,7 +786,8 @@ class partener extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        } else
+        }
+        else
             return true;
     }
 
@@ -832,7 +869,8 @@ class partener extends \CI_Controller {
         if (!preg_match('/^[0-9,]+$/', $str)) {
             $this->form_validation->set_message('numeric_check', '%s trebuie sa fie numar intreg');
             return FALSE;
-        } else
+        }
+        else
             return true;
     }
 

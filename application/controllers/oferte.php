@@ -17,7 +17,7 @@ class oferte extends CI_Controller {
         $slug = $this->uri->segment(2);
         $offer = $this->OffersModel->getOfferBySlug($slug);
         if (!$offer)
-            exit('Page not found');
+            show_404 ();
 
         $data = array(
             "offer" => $offer

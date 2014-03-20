@@ -42,7 +42,7 @@
                                     <tr>
                                         <td style='padding-left:10px;'>
                                             <a style="display: block;" href="<?php echo base_url() ?>">
-                                                <img height="70" alt="<?php DLConstants::$WEBSITE_COMMERCIAL_NAME ?>" src="<?php echo ($company->getCompanyDetails()->getImage() ? base_url($company->getCompanyDetails()->getImage()) : base_url('assets/images_fdd/logo.png') ) ?>"/>
+                                                <img height="60" alt="<?php DLConstants::$WEBSITE_COMMERCIAL_NAME ?>" src="<?php echo ($company->getCompanyDetails()->getImage() ? base_url($company->getCompanyDetails()->getImage()) : base_url('assets/images_fdd/logo.png') ) ?>"/>
                                             </a>
                                         </td>
                                         <td style='text-align: right; padding-right: 10px;'>

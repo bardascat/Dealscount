@@ -130,13 +130,15 @@ class UserModel extends AbstractModel {
         return true;
     }
 
+    /*
     public function updateCompanyDetails($post) {
+        
         $user = $this->getUserByPk($post['id_user']);
         $user->getCompanyDetails()->postHydrate($post);
         $this->em->persist($user);
         $this->em->flush();
         return true;
-    }
+    }*/
 
     /**
      * Cauta userul dupa email si parola.

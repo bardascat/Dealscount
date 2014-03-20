@@ -8,7 +8,7 @@
         <?php $this->load->view('partner/partner_menu'); ?>
 
         <div class="newsletters">
-            <form method="POST" action="<?php echo base_url('partener/change_date_cont') ?>" enctype="multipart/form-data">
+            <form method="POST" action="<?php echo base_url('partener/change_date_cont_company') ?>" enctype="multipart/form-data">
                 <input type="hidden" name="role" value="<?php echo DLConstants::$USER_ROLE ?>"/>
                 <input type="hidden" name="id_user" value="<?php echo $user->getId_user(); ?>"/>
                 <table>
@@ -56,7 +56,7 @@
                         <td>
                             <select style="width: 207px;" name="city">
                                 <?php foreach ($cities as $city) { ?>
-                                <option <?php echo ($user->getCity()==$city->getDistrict() ? "selected" : false)?> value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
+                                    <option <?php echo ($user->getCity() == $city->getDistrict() ? "selected" : false) ?> value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
                                 <?php } ?>
                             </select>
                         </td>
@@ -109,21 +109,16 @@
                             <input type='text' value="<?php echo $user->getFirstname(); ?>" name='firstname'/>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="padding-top: 20px;" colspan="2">
-                            <input id="greenButton" type="submit" value="Salveaza"/>
-                        </td>
-                    </tr>
+
                 </table>
-            </form>
-            <script>
-                $(function() {
-                    load_partner_editor();
-                });
-            </script>
-            <h3>Date contact prentru pagina ofertei</h3>
-            <form method="POST" action="<?php echo base_url('partener/change_date_cont_company') ?>" enctype="multipart/form-data">
-                <input type="hidden" name="id_user" value="<?= $user->getId_user() ?>">
+
+                <script>
+                    $(function() {
+                        load_partner_editor();
+                    });
+                </script>
+                <h4 style='margin-top: 20px; margin-bottom: 10px;'>Date contact prentru pagina ofertei</h4>
+
                 <table  border='0' width='100%' id='add_table' style="margin-top: 15px;">
                     <tr>
                         <td class='label'>
@@ -131,6 +126,7 @@
                         </td>
                         <td class='input' >
                             <input type='file' name='image[]'/>
+                            <span><?php echo ($user->getCompanyDetails()->getImage() ? "<a href='".base_url($user->getCompanyDetails()->getImage())."'>Poza curenta</a>" : false)?></span>
                         </td>
                     </tr>
 

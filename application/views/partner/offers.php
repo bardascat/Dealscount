@@ -19,7 +19,7 @@
                         <?php foreach ($offers as $offer) { ?>
                             <tr>
                                 <td width="150" class="offer_image">
-                                    <a href="<?php echo base_url('oferte/detalii-oferta/' . $offer->getIdItem()) ?>">
+                                    <a href="<?php echo base_url('partener/detalii-oferta/' . $offer->getIdItem()) ?>">
                                         <img style="display: block;" src="<?php echo base_url($offer->getMainImage()) ?>" width="154"/>
                                     </a>
                                 </td>
@@ -71,13 +71,10 @@
                                     </table>
                                 </td>
                                 <td class="actions" style="padding-left: 30px;">
-                                    <a class="offers_details" href="<?php echo base_url('partener/detalii-oferta/' . $offer->getIdItem()) ?>"></a>
-                                    <a class="red_button" style="color: #FFF; margin-top: 15px; margin-bottom: 15px;" 
+                                    <a style='margin-top: 15px;' class="offers_details" href="<?php echo base_url('partener/detalii-oferta/' . $offer->getIdItem()) ?>"></a>
+                                    <a class="red_button" style="color: #FFF; margin-top: 25px; margin-bottom: 15px;" 
                                        href="<?php echo ($offer->getActive() ? base_url('partener/suspenda-oferta/' . $offer->getIdItem()) : base_url('partener/activeaza-oferta/' . $offer->getIdItem())) ?>"><?php echo ($offer->getActive() ? "Suspenda" : "Reporneste"); ?></a>
-                                    <select class="promoted" name="promoted">
-                                        <option value="1">Promovata</option>
-                                        <option value="0">Nepromovata</option>
-                                    </select>
+                                    
                                 </td>
                             </tr>
                         <?php } ?>

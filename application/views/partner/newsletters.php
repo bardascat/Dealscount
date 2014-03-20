@@ -9,7 +9,7 @@
 
         <div class="newsletters">
 
-            <h1>Newsletter</h1>
+            <h1>Newsletter <span style="font-size: 12px;">(<?php echo (!$active_newsletter_option ? "0" : $active_newsletter_option[0]['active_options']) ?> credit) </span></h1>
 
             <div  class="info">
                 Programeaza trimiterea unui newsletter cu toate ofertele active pe site:

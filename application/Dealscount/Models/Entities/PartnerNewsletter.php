@@ -27,6 +27,11 @@ class PartnerNewsletter extends AbstractEntity {
     protected $scheduled;
 
     /**
+     * @Column(type="datetime")
+     */
+    protected $created;
+
+    /**
      * @Column(type="text")
      */
     protected $filters;
@@ -61,6 +66,21 @@ class PartnerNewsletter extends AbstractEntity {
      * @JoinColumn(name="id_user", referencedColumnName="id_user" ,onDelete="CASCADE")
      */
     private $user;
+
+    /**
+     * @OneToOne(targetEntity="ActiveOption",cascade={"persist"})
+     * @JoinColumn(name="id_active_option", referencedColumnName="id")
+     */
+    protected $option;
+
+    /**
+     * @Column(type="integer",nullable=true)
+     */
+    protected $id_active_option;
+
+    function __construct() {
+        $this->created = new \DateTime('now');
+    }
 
     public function getId_newsletter() {
         return $this->id_newsletter;
@@ -151,6 +171,40 @@ class PartnerNewsletter extends AbstractEntity {
         $this->offers = $offers;
         return $this;
     }
+
+    public function getCreated() {
+        return $this->created;
+    }
+
+    public function setCreated($created) {
+        $this->created = $created;
+        return $this;
+    }
+
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\ActiveOption
+     */
+    public function getOption() {
+        return $this->option;
+    }
+
+    public function setOption($option) {
+        $this->option = $option;
+        return $this;
+    }
+    
+    public function getId_active_option() {
+        return $this->id_active_option;
+    }
+
+    public function setId_active_option($id_active_option) {
+        $this->id_active_option = $id_active_option;
+        return $this;
+    }
+
+
+
 
 
 

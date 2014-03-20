@@ -208,6 +208,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
      */
     public function getOffer($id_offer) {
         $offer = $this->em->find("Entities:Item", $id_offer);
+        if (!$offer)
+            throw new \Exception('Invalid offer id');
         return $offer;
     }
 
@@ -218,7 +220,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
      */
     public function getOfferBySlug($slug) {
         $offerRep = $this->em->getRepository("Entities:Item");
-        $offers = $offerRep->findBy(array("slug" => $slug));
+        $offers = $offerRep->findBy(array("slug" => $slug, 'active' => 1));
         if (isset($offers[0]))
             return $offers[0];
         else
@@ -366,6 +368,15 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     }
 
     public function increment_offer_view($id_item) {
+        $item = $this->getOffer($id_item);
+        if (!$item->getStats()) {
+            //nu avem linia de statistici o inseram
+            $stats = new Entities\ItemStats();
+            $stats->setId_item($item->getIdItem());
+            $this->em->persist($stats);
+            $this->em->flush();
+        }
+
         $qb = $this->em->createQueryBuilder();
         $qb->update("Entities:ItemStats", 'stats')
                 ->set("stats.views", 'stats.views+1')
@@ -493,7 +504,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     public function getPartnerDashboardStats(Entities\User $user, $from = false, $to = false) {
 
         $stats = array("total_sales" => 0, "total_views" => 0, "confirmed" => 0);
-        //determinam numarul total de viuzlizari si de descarcari pe toate ofertele
+
+        //determinam numarul total de viuzlizari
         $stm = $this->em->getConnection()->prepare("
             SELECT sum(views) as total_views,sum(sales) as total_sales
             FROM items join items_stats using(id_item)
@@ -507,7 +519,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             $stats['total_views'] = $result[0]['total_views'];
 
         //nr vanzari
-        $vanzari = "select count(*) as sales from 
+        $vanzari = "select sum(quantity) as sales from 
            orders_items
            join orders using(id_order)
            join items using(id_item)
@@ -516,7 +528,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         if ($from && $to) {
             $vanzari.=' and (:from<=DATE_FORMAT(orders.orderedOn,"%Y-%m-%d") and DATE_FORMAT(orders.orderedOn,"%Y-%m-%d")<=:to)';
         }
-        // echo $vanzari;
+
 
         $stm = $this->em->getConnection()->prepare($vanzari);
         $stm->bindParam(":id_user", $user->getId_user());
@@ -526,7 +538,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         }
         $stm->execute();
         $result = $stm->fetchAll();
-        $stats['total_sales'] = $result[0]['sales'];
+        if ($result[0]['sales'])
+            $stats['total_sales'] = $result[0]['sales'];
 
         //adaucam si numarul de vouchere folosite
         $confirmed = "SELECT count(*) as confirmed FROM `orders_vouchers`
@@ -549,7 +562,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         $stm->execute();
         $result = $stm->fetchAll();
-        $stats['confirmed'] = $result[0]['confirmed'];
+        if ($result[0]['confirmed'])
+            $stats['confirmed'] = $result[0]['confirmed'];
 
         return $stats;
     }
