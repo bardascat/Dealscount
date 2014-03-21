@@ -4,19 +4,16 @@
         <div class="nav">
             <ul>
                 <li>
-                    <a href="http://{$project_url}/about.php">Despre noi</a>
+                    <a href="<?php echo base_url('despre') ?>">Despre noi</a>
                 </li>
                 <li>
-                    <a href="http://{$project_url}/terms.php">Termeni si conditii</a>
+                    <a href="<?php echo base_url('termeni') ?>">Termeni si conditii</a>
                 </li>
                 <li>
-                    <a href="http://{$project_url}/suggest.php">Sugereaza o afacere</a>
+                    <a href="<?php echo base_url('despre') ?>">Parteneri</a>
                 </li>
                 <li>
-                    <a href="http://{$project_url}/partner.php">Parteneri</a>
-                </li>
-                <li>
-                    <a href="http://{$project_url}/contact.php">Contact</a>
+                    <a href="<?php echo base_url('contact') ?>">Contact</a>
                 </li>
                 <li>
                     <a target="_blank" href="http://www.anpc.gov.ro/">ANPC</a>
@@ -31,8 +28,8 @@
                        onfocus="if (this.value == 'Adresa e-mail') {
                                    this.value = '';
                                }" onblur="if (this.value == '') {
-                                           this.value = 'Adresa e-mail';
-                                       }" />
+                                   this.value = 'Adresa e-mail';
+                               }" />
                 <input type="submit" value=""/>
             </form>
 
@@ -57,21 +54,21 @@
 
 
 <script type="text/javascript">
-/*
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-20288491-1']);
-    _gaq.push(['_setDomainName', 'getadeal.ro']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-        var ga = document.createElement('script');
-        ga.type = 'text/javascript';
-        ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ga, s);
-    })();
-*/
+                           /*
+                            var _gaq = _gaq || [];
+                            _gaq.push(['_setAccount', 'UA-20288491-1']);
+                            _gaq.push(['_setDomainName', 'getadeal.ro']);
+                            _gaq.push(['_trackPageview']);
+                            
+                            (function() {
+                            var ga = document.createElement('script');
+                            ga.type = 'text/javascript';
+                            ga.async = true;
+                            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                            var s = document.getElementsByTagName('script')[0];
+                            s.parentNode.insertBefore(ga, s);
+                            })();
+                            */
 </script>
 
 </body>

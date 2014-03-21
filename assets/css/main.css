@@ -1,3 +1,9 @@
+html,
+body {
+    margin:0;
+    padding:0;
+    height:100%;
+}
 
 body{
     background-color: #f8f8f8;
@@ -9,6 +15,8 @@ a{color: #FFF; text-decoration: none;}
 img{border:0px;}
 #wrapper{
     width: 100%;
+    min-height:100%;
+    position:relative;
 }
 #header{
     width: 100%;
@@ -68,6 +76,23 @@ img{border:0px;}
     height: 24px;
     position: relative;
 }
+
+.subcats ul{
+    list-style-type: none;
+}
+#header .my_account .subcats{
+    margin-top:-10px;
+    display: none;
+}
+#header .my_account .subcats ul li{
+    margin: 0px;
+    padding-bottom: 0px;
+}
+#header .my_account .subcats ul li div{
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+#header .my_account .subcats a{color: #000; font-size: 13px;}
 #header .center_header .shopping_cart{
     float: left;
     background-image: url('../images_fdd/fab_cart_icon.png');
@@ -99,12 +124,12 @@ img{border:0px;}
     margin-top:31px;
 }
 
-#header .header_categories .subcats a{
+#header  .header_categories .subcats a{
     color: #1d1d1d;
     font-size: 12px;
     font-weight: normal;
 }
-#header .header_categories .subcats{
+#header .subcats{
     position: absolute;
     left: 50%;
     margin-left:-92px;
@@ -112,7 +137,7 @@ img{border:0px;}
     display: none;
     *margin-top:20px;
 }
-#header .header_categories .subcats ul{
+#header .subcats ul{
     list-style-type: none;
 
     padding: 0px;
@@ -129,26 +154,26 @@ img{border:0px;}
 
 
 }
-#header .header_categories .subcats li a:hover{text-decoration: underline}
-#header .header_categories .subcats li{
+#header  .subcats li a:hover{text-decoration: underline}
+#header  .subcats li{
     padding-left: 24px;
     width: 160px;
     background-image: url('../images_fdd/home-meniu-b.png');
 }
-#header .header_categories .subcats li div{
+#header  .subcats li div{
     padding-bottom: 4px;
     border-bottom: 1px solid #f1f1f1;
     padding-top: 4px;
 
     width: 137px;
 }
-#header .header_categories .subcats .footer_end{
+#header  .subcats .footer_end{
     background-image: url('../images_fdd/home-meniu-c_02.png');
     width: 160px;
     height: 19px;
     background-repeat: no-repeat;
 }
-#header .header_categories .elipse{
+#header  .elipse{
     background-image: url('../images_fdd/fab_elipse.png');
     width: 32px; height: 9px;
     position: absolute;
@@ -156,12 +181,12 @@ img{border:0px;}
     left: 50%;
     margin-left: -16px;
 }
-#header .header_categories .last{
+#header  .last{
     background-image: none;
     padding-right: 0px;
 
 }
-#header .header_categories .bullet{
+#header  .bullet{
     background-image: url('../images_fdd/fab_bullet.png');
     background-repeat: no-repeat;
     width: 3px; height: 3px;
@@ -348,6 +373,7 @@ img{border:0px;}
     margin: auto;
     min-height: 300px;
     margin-top:40px;
+    padding-bottom:303px;   /* Height of the footer */
 }
 #clear{clear: both}
 
@@ -433,6 +459,9 @@ img{border:0px;}
     width: 100%;
     height: 223px;
     background-image: url('../images_fdd/fab_footer_bgg.png');
+    position:absolute;
+    bottom:0;
+    width:100%;
 }
 
 #footer .inner_footer{
@@ -1688,5 +1717,16 @@ img{border:0px;}
     top: auto;
 }
 
+#content .simple_page{
+    width: 950px;
+    min-height: 300px;
+    float: left;
+    padding-bottom: 50px;
+    color: #1d1d1d;
+    background-color: #FFF;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 25px;
+}
 
 /* end partener */

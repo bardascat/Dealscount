@@ -25,17 +25,19 @@
                                     </a>
                                 </div>
                                 <div class="header_search">
-                                    <form method="get" action="">
+                                    <form method="get" action="<?php echo base_url('search') ?>">
                                         <input type="text" name="q"/>
                                         <input type="submit" value=""/>
                                     </form>
                                 </div>
                                 <ul class="header_menu">
                                     <li class="my_account">
-                                        <a href="<?php echo (!$this->view->getUser() ? "javascript:toggleLoginHeader()" : base_url("account"))?>">Contul Meu</a>
+                                        <a href="<?php echo (!$this->view->getUser() ? "javascript:toggleLoginHeader()" : "javascript:toggleMyAccount()") ?>"><?php echo ($this->view->getUser() ? ($this->view->getUser()['firstname'] ? $this->view->getUser()['firstname'] : $this->view->getUser()['lastname']) : "Contul Meu") ?></a>
                                         <?php
                                         if (!$this->view->getUser())
                                             $this->load->view('components/header_login.php');
+                                        else
+                                            $this->load->view('components/header_menu.php');
                                         ?>
                                     </li>
                                     <li  class="shopping_cart">
@@ -43,14 +45,13 @@
                                         <?php $this->load->view('components/cart_summary.php'); ?>
                                     </li>
                                 </ul>
-
                                 <ul class="header_categories">
                                     <?php
                                     foreach ($this->view->getCategories() as $category) {
                                         $parent = $category['parent'];
                                         ?>
                                         <li id="parent_<?php echo $parent['id_category'] ?>">
-                                            <a onmouseover = "show_subcats(<?php echo $parent['id_category'] ?>)"
+                                            <a onmouseover = "<?php if (count($category['childs']) > 0): ?>show_subcats(<?php echo $parent['id_category'] ?>)<?php endif; ?>"
                                                href = "<?php echo base_url('categorii/' . $parent['slug']) ?>"><?php echo $parent['name'] ?></a>
                                                <?php if ($this->uri->segment(2) == $parent['slug']) { ?>
                                                 <div class="elipse"></div>

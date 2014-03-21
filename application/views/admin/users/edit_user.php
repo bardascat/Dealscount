@@ -70,14 +70,7 @@
                                         <input type='text' name='email'/>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class='label'>
-                                        <label>Username(*)</label>
-                                    </td>
-                                    <td class='input' >
-                                        <input type='text' name='username'/>
-                                    </td>
-                                </tr>
+
                                 <tr>
                                     <td class='label'>
                                         <label>Telefon</label>
@@ -112,7 +105,7 @@
                                         <label>Parola Noua</label>
                                     </td>
                                     <td class='input' >
-                                        <input type='text' name='phone'/>
+                                        <input type='text' name='new_password'/>
                                     </td>
                                 </tr>
                             </table>

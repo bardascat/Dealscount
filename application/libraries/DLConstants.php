@@ -37,6 +37,7 @@ class DLConstants {
     public static $MASTER_PASSWORD = "MAST3Rpassword";
     public static $DEFAULT_ROLE = "guest";
     public static $PARTNER_ROLE = "partener";
+    public static $OPERATOR_ROLE = "partener";
     public static $ADMIN_ROLE = "admin";
     public static $USER_ROLE = "user";
     public static $WEBSITE = "dev.getadeal.ro";

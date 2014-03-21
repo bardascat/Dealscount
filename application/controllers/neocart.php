@@ -10,6 +10,9 @@ class neocart extends CI_Controller {
         parent::__construct();
         $this->load->library('user_agent');
         $this->NeoCartModel = new Dealscount\Models\NeoCartModel();
+        if(!$this->getLoggedUser()){
+            redirect(base_url('account/login'));
+        }
     }
 
     public function index() {
@@ -38,7 +41,7 @@ class neocart extends CI_Controller {
         //hai sa bagam produsul in shopping cart
         $this->NeoCartModel->addToCart($_POST, $cart);
 
-        $notification = array("type" => "success", "html" => "Produsul a fost adăugat în coș");
+        $notification = array("type" => "success", "html" => "Voucherul a fost adăugat în coș");
         $this->session->set_flashdata('notification', $notification);
         redirect($this->agent->referrer());
     }

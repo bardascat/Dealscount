@@ -57,7 +57,7 @@ class CronJobModel extends AbstractModel {
         }
         $log = array(
             'status' => "success",
-            'msg' => "Am setat optiunea " . $active_option->getOption()->getSlug() . " pentru oferta " . $item->getId_item() . " pe pozitia " . $active_option->getPosition()
+            'msg' => "Am setat optiunea " . $active_option->getOption()->getSlug() . " id=" . $active_option->getId() . " pentru oferta " . $item->getId_item() . " pe pozitia " . $active_option->getPosition()
         );
 
         $this->em->persist($item);
@@ -72,13 +72,15 @@ class CronJobModel extends AbstractModel {
      */
 
     public function resetItemsPosition() {
-        $cDate = date("Y-m-d", strtotime(date("Y-m-d") . ' -1 day'));
+        //$cDate = date("Y-m-d", strtotime(date("Y-m-d") . ' -1 day'));
 
         $qb = $this->em->createQueryBuilder();
-        $result = $qb->select("o")
-                ->from("Entities:ActiveOption", "o")
-                ->where("o.scheduled=:cdate")
-                ->setParameter(":cdate", $cDate)
+        $result = $qb->select("i")
+                ->from("Entities:Item", "i")
+                ->where("i.home_position is not null")
+                ->orWhere("i.category_position is not null")
+                ->orWhere("i.category_position is not null")
+                ->orWhere("i.subcategory_position is not null")
                 ->getQuery()
                 ->getResult();
         if (count($result) < 1) {
@@ -91,35 +93,20 @@ class CronJobModel extends AbstractModel {
         }
 
         echo '<pre>';
-        foreach ($result as $active_option) {
-            $id_item = $active_option->getUsed_on();
-            /* @var $item \Dealscount\Models\Entities\Item */
-            $item = $this->em->find("Entities:Item", $id_item);
+        foreach ($result as $item) {
 
             $log = array(
                 'status' => "success",
-                'msg' => "Am resetat pozitia pentru  optiunea " . $active_option->getOption()->getSlug() . " pentru oferta " . $item->getId_item() . ". Fosta pozitie " . $active_option->getPosition()
+                'msg' => "Am resetat pozitia pentru   pentru oferta " . $item->getId_item()
             );
 
-
-            switch ($active_option->getOption()->getSlug()) {
-                case \DLConstants::$OPTIUNE_OFERTA_PROMOVATA: {
-                        $item->setHome_position(null);
-                    }break;
-                case \DLConstants::$OPTIUNE_OFERTA_PROMOVATA_CATEGORIE: {
-                        $item->setCategory_position(null);
-                    }break;
-                case \DLConstants::$OPTIUNE_OFERTA_PROMOVATA_SUBCATEGORIE: {
-                        $item->setSubcategory_position(null);
-                    }break;
-                case \DLConstants::$OPTIUNE_PROMOVARE_NEWSLETTER: {
-                        $item->setNewsletter_position(null);
-                    }break;
-            }
-            $this->em->persist($item);
-            $this->em->flush();
-            print_r($log);
+            $item->setHome_position(null);
+            $item->setCategory_position(null);
+            $item->setSubcategory_position(null);
         }
+        $this->em->persist($item);
+        $this->em->flush();
+        print_r($log);
     }
 
 }

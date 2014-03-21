@@ -6,9 +6,6 @@ class account extends \CI_Controller {
 
     function __construct() {
         parent::__construct();
-        if ($this->getLoggedUser()['role'] == DLConstants::$PARTNER_ROLE) {
-            redirect(base_url('partener'));
-        }
         $this->OrderModel = new Dealscount\Models\OrdersModel();
         $this->load->library('form_validation');
     }
@@ -50,7 +47,7 @@ class account extends \CI_Controller {
 
         $this->populate_form($user);
 
-        //procesam requestul
+//procesam requestul
         $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
         $this->form_validation->set_rules('lastname', 'Nume', 'required|xss_clean');
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
@@ -85,7 +82,7 @@ class account extends \CI_Controller {
             redirect(base_url('account'));
         $this->populate_form($user);
 
-        //procesam requestul
+//procesam requestul
         $this->form_validation->set_rules('new_password', 'Parola noua', 'required|xss_clean');
         $this->form_validation->set_rules('old_password', 'Parola veche', 'required|xss_clean');
         $this->form_validation->set_rules('old_password', 'Parola veche', 'callback_password_match');
@@ -106,13 +103,36 @@ class account extends \CI_Controller {
         redirect(base_url('account#change_password'));
     }
 
-    public function login_submit() {
+    public function forgot_password_submit() {
+        $user = $this->UserModel->checkEmail($_POST['email']);
+        if (!$user) {
+            $this->load_view('user/forgot_password', array("notification" => array("type" => "form_notification", "message" => "Adresa de email nu exista", "cssClass" => "error")));
+        }
+        $this->UserModel->resetPassword($_POST['email']);
+        
+        $this->load_view('user/forgot_password', array("notification" => array("type" => "form_notification", "message" => "<b>Noua parola a fost trimisa pe adresa de email</b>", "cssClass" => "ui-state-error ui-corner-all")));
+    }
 
-        //userul este deja logat, ii facem redirect la homepage
+    public function forgot_password() {
+        $this->load_view('user/forgot_password');
+    }
+
+    public function login() {
+
+//userul este deja logat, ii facem redirect la homepage
         if ($this->getLoggedUser()) {
             redirect(base_url());
         }
-        //procesam requestul
+        $this->load_view('user/login');
+    }
+
+    public function login_submit() {
+
+//userul este deja logat, ii facem redirect la homepage
+        if ($this->getLoggedUser()) {
+            redirect(base_url());
+        }
+//procesam requestul
         $this->form_validation->set_rules('password', 'parola', 'required|xss_clean');
         $this->form_validation->set_rules('username', 'utilizator', 'required');
         $this->form_validation->set_message('required', 'Campul <b>%s</b> este obligatoriu');
@@ -127,15 +147,15 @@ class account extends \CI_Controller {
         } else {
             $user = $this->login_user($this->input->post('username'), $this->input->post('password'));
             if (!$user) {
-                //datele introduse nu sunt corecte
+//datele introduse nu sunt corecte
                 $this->load_view('user/login', array("notification" => array(
                         "type" => "form_notification",
                         "message" => "Datele introduse sunt incorecte",
                         "cssClass" => "error"
                 )));
             } else {
-                //userul a fost logat
-                //$response = array("type" => "success", "action" => "login", "data" => array("email" => $user->getEmail(), "nume" => $user->getLastname(), "prenume" => $user->getFirstname()));
+//userul a fost logat
+//$response = array("type" => "success", "action" => "login", "data" => array("email" => $user->getEmail(), "nume" => $user->getLastname(), "prenume" => $user->getFirstname()));
                 redirect(base_url('account'));
             }
         }
@@ -148,7 +168,7 @@ class account extends \CI_Controller {
 
         $form_view = ($form_type == "client_form" ? "user/register/client_form.php" : "user/register/company_form.php");
 
-        //userul este deja logat, ii facem redirect la homepage
+//userul este deja logat, ii facem redirect la homepage
         if ($this->getLoggedUser()) {
             $this->session->set_flashdata('notification', array("type" => "error", "html" => "Sunteti deja logat !"));
             redirect(base_url());
@@ -160,13 +180,13 @@ class account extends \CI_Controller {
         if (!$_POST)
             redirect(base_url('account/register'));
 
-        //userul este deja logat, ii facem redirect la homepage
+//userul este deja logat, ii facem redirect la homepage
         if ($this->getLoggedUser()) {
             redirect(base_url());
         }
         $form_type = "client_form";
         $form_view = "user/register/client_form.php";
-        //procesam requestul
+//procesam requestul
         $this->form_validation->set_rules('password', 'Parola', 'required|xss_clean|min_length[6]');
         $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
         $this->form_validation->set_rules('lastname', 'Nume', 'required|xss_clean');
@@ -184,7 +204,7 @@ class account extends \CI_Controller {
         } else {
             try {
                 $status = $this->UserModel->createUser($_POST);
-                //logam utilizatorul
+//logam utilizatorul
                 if ($status) {
                     $this->login_user($status->getEmail());
                     $this->session->set_flashdata('notification', array("type" => "success", "html" => "Contul dumneavoastra a fost creat. Va multumim !"));
@@ -208,11 +228,11 @@ class account extends \CI_Controller {
         if (!$_POST)
             redirect(base_url('account/register/company'));
 
-        //userul este deja logat, ii facem redirect la homepage
+//userul este deja logat, ii facem redirect la homepage
         if ($this->getLoggedUser()) {
             redirect(base_url());
         }
-        //procesam requestul
+//procesam requestul
         $this->form_validation->set_rules('password', 'Parola', 'required|xss_clean|min_length[6]');
         $this->form_validation->set_rules('phone', 'Telefon', 'required|numeric|xss_clean');
         $this->form_validation->set_rules('lastname', 'Nume', 'required|xss_clean');
@@ -231,7 +251,7 @@ class account extends \CI_Controller {
         } else {
             try {
                 $status = $partnerModel->createPartner($_POST);
-                //logam utilizatorul
+//logam utilizatorul
                 if ($status) {
                     $this->login_user($status->getEmail());
                     $this->session->set_flashdata('notification', array("type" => "success", "html" => "Contul dumneavoastra a fost creat. Va multumim !"));
@@ -270,71 +290,73 @@ class account extends \CI_Controller {
 
     public function fblogin() {
 
-        // incarcam modelul 
+// incarcam modelul 
 
         $fb_data = $this->UserModel->fbLogin();
 
-        //salvam de unde a accesat fb login sa il intoarcem acolo
-
         if ((!$fb_data['uid']) || (!$fb_data['me'])) {
-            // If this is a protected section that needs user authentication
-            // you can redirect the user somewhere else
-            // or take any other action you need
-            // redirect('cart');
+// If this is a protected section that needs user authentication
+// you can redirect the user somewhere else
+// or take any other action you need
+// redirect('cart');
+
             if (isset($_GET['return_fb'])) {
-                //a venit dupa facebook dar nu a luat nimic
-                redirect(base_url('account/fberror?msg=01'));
+//a venit dupa facebook dar nu a luat nimic
+//redirect(base_url('account/fberror?msg=01'));
                 exit();
             } else {
+
                 header('Location:' . $fb_data['loginUrl']);
                 exit();
             }
         } else {
             $userData = $fb_data['me'];
 
-            $userData['gender'] = ($userData['gender'] == "male" ? "m" : "f");
-            if (isset($userData['location']['name'])) {
-                $location = explode(',', $userData['location']['name']);
-                $city = (isset($location[0]) ? $location[0] : "Bucuresti");
-                if ($city == "Bucharest")
-                    $city = "Bucuresti";
-            }
-            if (!isset($city))
-                $city = "Bucuresti";
-            $userData['city'] = $city;
-            $date = new DateTime($userData['birthday']);
-            $now = new DateTime();
-            $interval = $now->diff($date);
-            $age = $interval->y;
-            switch ($age) {
-                case ($age >= 18 && $age <= 25): {
-                        $userData['age'] = "18-25";
-                    }break;
-                case ($age > 25 && $age <= 30): {
-                        $userData['age'] = "25-30";
-                    }break;
-                case ($age > 30 && $age <= 40): {
-                        $userData['age'] = "30-40";
-                    }break;
-                case ($age > 40): {
-                        $userData['age'] = ">40";
-                    }break;
-                default: {
-                        $userData['age'] = "18-25";
-                    }break;
-            }
             if (!$userData['email']) {
                 redirect(base_url('account/fberror?msg=02'));
                 exit();
             } else {
-                //procesam datele primite de pe facebook
+//procesam datele primite de pe facebook
                 $user = $this->UserModel->checkEmail($userData['email']);
                 if ($user) {
-                    //contul exista, il logam doar
+//contul exista, il logam doar
                     $this->login_user($user->getEmail());
                     $this->session->set_flashdata('notification', array("type" => "success", "html" => "Autentificare cu succes!"));
                 } else {
-                    //facem un cont nou
+//facem un cont nou
+                    $userData['gender'] = ($userData['gender'] == "male" ? "m" : "f");
+                    if (isset($userData['location']['name'])) {
+                        $location = explode(',', $userData['location']['name']);
+                        $city = (isset($location[0]) ? $location[0] : "Bucuresti");
+                        if ($city == "Bucharest")
+                            $city = "Bucuresti";
+                    }
+                    if (!isset($city))
+                        $city = "Bucuresti";
+                    $userData['city'] = $city;
+                    $date = new DateTime($userData['birthday']);
+                    $now = new DateTime();
+                    $interval = $now->diff($date);
+                    $age = $interval->y;
+                    switch ($age) {
+                        case ($age >= 18 && $age <= 25): {
+                                $userData['age'] = "18-25";
+                            }break;
+                        case ($age > 25 && $age <= 30): {
+                                $userData['age'] = "25-30";
+                            }break;
+                        case ($age > 30 && $age <= 40): {
+                                $userData['age'] = "30-40";
+                            }break;
+                        case ($age > 40): {
+                                $userData['age'] = ">40";
+                            }break;
+                        default: {
+                                $userData['age'] = "18-25";
+                            }break;
+                    }
+
+
                     $userData['lastname'] = $userData['last_name'];
                     $userData['firstname'] = $userData['first_name'];
                     $userData['role'] = DLConstants::$USER_ROLE;
@@ -363,7 +385,7 @@ class account extends \CI_Controller {
             show_404();
 
         $order = $this->OrderModel->getOrderByCode($order_code);
-        //daca nu exista comanda, sau trimite prin get codul comenzii unui alt utilizator
+//daca nu exista comanda, sau trimite prin get codul comenzii unui alt utilizator
         if (!$order || $order->getUser()->getId_user() != $this->getLoggedUser()['id_user'])
             show_404();
 
@@ -429,7 +451,7 @@ class account extends \CI_Controller {
             readfile($file);
         } else {
 
-            // daca se fac modificari la voucher, trebuie sa il regeneram
+// daca se fac modificari la voucher, trebuie sa il regeneram
             $voucher = $this->OrderModel->getVoucherByPk($id_voucher);
             $orderItem = $voucher->getOrderItem();
             $offer = $orderItem->getItem();
@@ -464,7 +486,8 @@ class account extends \CI_Controller {
         if (sha1($old_password) != $this->getLoggedUser(true)->getPassword()) {
             $this->form_validation->set_message('password_match', 'Parola veche este incorecta');
             return false;
-        } else
+        }
+        else
             return true;
     }
 

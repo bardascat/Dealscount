@@ -102,6 +102,7 @@ class UserModel extends AbstractModel {
     }
 
     public function updateUser($post) {
+
         $user = $this->getUserByPk($post['id_user']);
         $roleRep = $this->em->getRepository("Entities:AclRole");
         $r = $roleRep->findBy(array("name" => \DLConstants::$USER_ROLE));
@@ -116,10 +117,17 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
         } catch (\Exception $e) {
-            //nu exista alta exceptie in cazul de fata
-            throw new \Exception("Adresa de email este deja in uz", '1');
+            throw new \Exception($e->getMessage(), '1');
         }
         return 1;
+    }
+
+    public function changePassword($post) {
+        $user = $this->getUserByPk($post['id_user']);
+        $user->setPassword(sha1($post['new_password']));
+        $this->em->persist($user);
+        $this->em->flush();
+        return true;
     }
 
     public function updatePassword($post) {
@@ -131,14 +139,14 @@ class UserModel extends AbstractModel {
     }
 
     /*
-    public function updateCompanyDetails($post) {
-        
-        $user = $this->getUserByPk($post['id_user']);
-        $user->getCompanyDetails()->postHydrate($post);
-        $this->em->persist($user);
-        $this->em->flush();
-        return true;
-    }*/
+      public function updateCompanyDetails($post) {
+
+      $user = $this->getUserByPk($post['id_user']);
+      $user->getCompanyDetails()->postHydrate($post);
+      $this->em->persist($user);
+      $this->em->flush();
+      return true;
+      } */
 
     /**
      * Cauta userul dupa email si parola.

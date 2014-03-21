@@ -1,6 +1,6 @@
 <?php
 
-define("BASEPATH", "/home/oringo/public_html/neo/");
+//define("BASEPATH", "/home/oringo/public_html/neo/");
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * Copyright 2011 Facebook, Inc.

@@ -4,11 +4,11 @@
     html{font-size: 13px; color: #001e63; font-family: Arial;}
 </style>
 <p style="font-size: 13px; color: #001e63; font-family: Arial;">
-    Bună <?php $user->getLastname() ?>,<br/><br/>
+    Bună <?php echo $user->getLastname() ?>,<br/><br/>
 
     Parola dumneavoastră a fost resetată.<br/><br/>
 
-<u>Noua parolă: <?php $user->getRealPassword() ?></u>
+<u>Noua parolă: <?php echo $user->getRealPassword() ?></u>
 <br/>
 Puteti sa modificati parola din contul dumneavoastră, secțiunea "Date personale".
 <br/><br/>

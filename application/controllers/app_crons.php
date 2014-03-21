@@ -34,6 +34,14 @@ class app_crons extends \CI_Controller {
      * Pentru fiecare optiune vedem tipul si setam pozitia corespunzatoare in tabelul items
      */
     public function activate_options() {
+        
+        echo '<pre>';
+        //in fiecare noapte la ora 12 jobul reseteaza pozitiile ofertelor in home,categorie si subcategorie
+        echo "RESETEZ POZITIILE OFERTELOR<br/>";
+        $this->CronJobModel->resetItemsPosition();
+
+        echo "<br/>APLIC OPTIUNILE PE OFERTE";
+        //dupa ce a resetat pozitiile aplica optiunile daca sunt setate
         $options = $this->CronJobModel->getCronOptions();
         foreach ($options as $active_option) {
             //nu ne intereseaza newsletterul personal
@@ -45,10 +53,8 @@ class app_crons extends \CI_Controller {
         exit('DONE JOB');
     }
 
-    public function resetItemsPositon() {
-        $this->CronJobModel->resetItemsPosition();
-        exit('DONE JOB');
-    }
+  
 
 }
+
 ?>

@@ -30,6 +30,7 @@
                             <input type="text" name="lastname" value="<?php echo set_value('lastname') ?>"/>
                         </td>
                     </tr>
+                  
                     <tr>
                         <td>
                             <label>Telefon:</label>

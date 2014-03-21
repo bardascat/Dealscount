@@ -61,7 +61,10 @@ $route['partener/editeaza-oferta/(:any)'] = "partener/edit_offer";
 $route['partener/oferta-noua'] = "partener/add_offer";
 $route['partener/date-cont'] = "partener/date_cont";
 
-$route['404_override'] = '';
+//simple pages
+$route['partener/date-cont'] = "partener/date_cont";
+
+$route['despre'] = "simple_page";
 
 
 /* End of file routes.php */

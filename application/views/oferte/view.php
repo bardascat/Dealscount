@@ -7,8 +7,19 @@ $images = $offer->getImages();
 <style>
     .beneficii a{color:#000;}
 </style>
-<script type='text/javascript' src='<?php echo base_url('assets/js/jquery.innerfade.js') ?>'></script>
+<!--<script type='text/javascript' src='<?php echo base_url('assets/js/jquery.innerfade.js') ?>'></script>-->
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 <script type='text/javascript' src='http://maps.googleapis.com/maps/api/js?sensor=false'></script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id))
+            return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=1402281043349450";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
 
 <div id="content">
     <div class="oferta_view">
@@ -58,7 +69,7 @@ $images = $offer->getImages();
                                         <td>
                                             <b>
                                                 <?php
-                                               echo ($offer->getStats() ? $offer->getStats()->getSales() : 0);
+                                                echo ($offer->getStats() ? $offer->getStats()->getSales() : 0);
                                                 ?>
                                             </b>
                                         </td>
@@ -80,41 +91,45 @@ $images = $offer->getImages();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>
+                                        <td style="padding-top: 25px;">
                                             Share:
                                         </td>
                                         <td>
                                             <table border="0">
                                                 <tr>
-
-                                                    <td style="border:0px;">
-                                                        <div class="fb-like" data-send="false" data-layout="button_count" data-width="50" data-show-faces="false"></div>
+                                                    <td width="80" style="border:0px;">
+                                                        <div style="position: absolute">
+                                                            <div class="fb-like" data-width="140" data-layout="button_count" data-action="like" data-show-faces="true" data-share="false"></div>
+                                                        </div>
                                                     </td>
+                                                    <td width="60" style="border:0px; padding-left: 0px;">
+                                                        <div style="position: absolute">
+                                                            <g:plusone size="medium"></g:plusone>
+                                                        </div>
+                                                    </td>   
 
-                                                    <td style="border:0px;">
-                                                        <g:plusone size="medium" annotation="none"></g:plusone>
-                                                     </td>   
-
-                                                   <td style="border:0px;">
-                                                         <a href="https://twitter.com/share" data-count="none" class="twitter-share-button"></a>
-                                                         <script>!function(d, s, id) {
-                                                            var js, fjs = d.getElementsByTagName(s)[0];
-                                                            if (!d.getElementById(id)) {
-                                                                js = d.createElement(s);
-                                                                js.id = id;
-                                                                js.src = "//platform.twitter.com/widgets.js";
-                                                                fjs.parentNode.insertBefore(js, fjs);
-                                                            }
-                                                        }(document, "script", "twitter-wjs");</script>
+                                                    <td width="70" style="border:0px;">
+                                                        <div style="position: absolute">
+                                                            <a href="https://twitter.com/share"class="twitter-share-button" data-lang="ro">Tweet</a>
+                                                            <script>!function(d, s, id) {
+                                                                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                                                                    if (!d.getElementById(id)) {
+                                                                        js = d.createElement(s);
+                                                                        js.id = id;
+                                                                        js.src = p + '://platform.twitter.com/widgets.js';
+                                                                        fjs.parentNode.insertBefore(js, fjs);
+                                                                    }
+                                                                }(document, 'script', 'twitter-wjs');</script>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </table>
 
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
-                    </table>
-                    </td>
-                    </tr>
                     </table>
                 </div>
             </div>
@@ -153,7 +168,7 @@ $images = $offer->getImages();
                                         <td height="175">
                                             <?php if ($companyDetails->getImage()) { ?>
                                                 <div style="margin-bottom: 10px;">
-                                                    <img src="<?php echo base_url($companyDetails->getImage()) ?>"/>
+                                                    <img height="100" src="<?php echo base_url($companyDetails->getImage()) ?>"/>
                                                 </div>
                                             <?php } ?>
 
@@ -205,20 +220,8 @@ $images = $offer->getImages();
     </div>
 </div>  
 
-<div id="fb-root"></div>
-<!--
-<script>(function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id))
-            return;
-        js = d.createElement(s);
-        js.id = id;
-        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
--->
 
-<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+
 
 <script type="text/javascript">
 

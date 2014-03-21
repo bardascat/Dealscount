@@ -5,6 +5,9 @@
     <div class="offers_list">
         <?php
         if ($offers) {
+            if (isset($_GET['q'])) {
+                echo "<div style='margin-bottom:20px; font-weight:bold;'>Ati cautat \"" . $_GET['q'].'" ('.count($offers).' rezultate)</div>';
+            }
             foreach ($offers as $offer) {
                 $company = $offer->getCompany();
                 $companyDetails = $company->getCompanyDetails();
@@ -28,10 +31,20 @@
                                 <a class="view" href="<?php echo base_url('oferte/' . $offer->getSlug()) ?>"></a>
                             </td>
                             <td width="120" class="price">
-                                <?php echo $offer->getVoucher_price() ?> <span>lei</span>
+
+                                <span style="font-size: 22px;">
+                                    <?php echo $offer->getVoucher_price() ?> <span>lei</span>
+                                </span>
+                                <span style="text-decoration: line-through">
+                                    <?php echo $offer->getPrice() ?> lei
+                                </span>
                             </td>
                             <td style="padding-left: 10px;">
-                                <a class="cart" href="<?php echo base_url('') ?>"></a>
+                                <form id="buy_<?php echo $offer->getIdItem() ?>" method="post" action="<?php echo base_url('neocart/add_to_cart') ?>">
+                                    <input type="hidden" name="quantity" value="1"/>
+                                    <input type="hidden" name="id_item" value="<?php echo $offer->getIdItem() ?>"/>
+                                    <a class="cart" href="javascript:$('#buy_<?php echo $offer->getIdItem() ?>').submit()"></a>
+                                </form>
                             </td>
                         </tr>
                     </table>
@@ -39,9 +52,14 @@
                 <?php
             }
         } else {
-            ?>
-            Nu exista oferte active
-        <?php } ?>
+            if (isset($_GET['q'])) {
+                echo "<h3>Nu am gasit nicio oferta. Incercati o cautare mai generala</h3>";
+            } else {
+                ?>
+                Nu exista oferte active
+            <?php }
+        }
+        ?>
     </div>
     <div id="clear"></div>
 </div>

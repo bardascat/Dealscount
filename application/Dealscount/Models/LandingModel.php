@@ -4,9 +4,16 @@ namespace Dealscount\Models;
 
 class LandingModel extends AbstractModel {
 
-    public function dummyTest(Entities\User $user) {
-        $this->em->persist($user);
-        $this->em->flush();
+    /**
+     * 
+     * @param type $slug
+     * @return \Dealscount\Models\Entities\SimplePage
+     * 
+     */
+    public function getPage($slug) {
+        $simplePage = $this->em->getRepository("Entities:SimplePage");
+        $page = $simplePage->findOneBy(array("slug" => $slug));
+        return $page;
     }
 
 }

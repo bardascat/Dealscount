@@ -166,35 +166,58 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         }
     }
 
-    public function getActiveOffers($limit = 10, $page = 1) {
-        try {
-            $offers = $this->em->createQueryBuilder()
-                    ->select("i")
-                    ->from("Entities:Item", "i")
-                    ->where("i.active=1")
-                    ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
-                    ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
-                    ->orderBy("i.end_date", "asc")
-                    ->getQuery();
-            return $offers->getResult();
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-        };
+    public function getActiveOffers() {
+        $rsm = $this->getItemRsm();
+        $query = "select items.* from items where items.active=1
+        and items.start_date<=NOW()
+        and items.end_date>=NOW()
+        order by -home_position desc,createdDate desc
+        ";
+        $offers = $this->em->createNativeQuery($query, $rsm)->getResult();
 
         return $offers;
     }
 
+    private function getItemRsm() {
+        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm->addEntityResult("Entities:Item", "i");
+        $rsm->addFieldResult("i", "id_item", "id_item");
+        $rsm->addFieldResult("i", "id_user", "id_user");
+        $rsm->addFieldResult("i", "name", "name");
+        $rsm->addFieldResult("i", "brief", "brief");
+        $rsm->addFieldResult("i", "company_name", "company_name");
+        $rsm->addFieldResult("i", "slug", "slug");
+        $rsm->addFieldResult("i", "createdDate", "createdDate");
+        $rsm->addFieldResult("i", "active", "active");
+        $rsm->addFieldResult("i", "home_position", "home_position");
+        $rsm->addFieldResult("i", "category_position", "category_position");
+        $rsm->addFieldResult("i", "subcategory_position", "subcategory_position");
+        $rsm->addFieldResult("i", "newsletter_position", "newsletter_position");
+        $rsm->addFieldResult("i", "id_stats", "id_stats");
+        $rsm->addFieldResult("i", "location", "location");
+        $rsm->addFieldResult("i", "city", "city");
+        $rsm->addFieldResult("i", "terms", "terms");
+        $rsm->addFieldResult("i", "benefits", "benefits");
+        $rsm->addFieldResult("i", "price", "price");
+        $rsm->addFieldResult("i", "voucher_price", "voucher_price");
+        $rsm->addFieldResult("i", "sale_price", "sale_price");
+        $rsm->addFieldResult("i", "start_date", "start_date");
+        $rsm->addFieldResult("i", "end_date", "end_date");
+        $rsm->addFieldResult("i", "end_date", "end_date");
+        return $rsm;
+    }
+
     public function getNewsletterOffers() {
         try {
-            $offers = $this->em->createQueryBuilder()
-                    ->select("i")
-                    ->from("Entities:Item", "i")
-                    ->where("i.active=1")
-                    ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
-                    ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
-                    ->orderBy("i.end_date", "asc")
-                    ->getQuery();
-            return $offers->getResult();
+            $rsm = $this->getItemRsm();
+            $query = "select items.* from items where items.active=1
+        and items.start_date<=NOW()
+        and items.end_date>=NOW()
+        order by -newsletter_position desc,createdDate desc
+        ";
+            $offers = $this->em->createNativeQuery($query, $rsm)->getResult();
+
+            return $offers;
         } catch (\Exception $e) {
             echo $e->getMessage();
         };
@@ -271,6 +294,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             return false;
 
         $childs = $categoriesModel->getChilds($category->getId_category());
+        $parent = $category->getParent();
 
         $in = "";
         foreach ($childs as $child) {
@@ -280,18 +304,20 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $in = substr($in, 0, -1);
 
         try {
-            $qb = $this->em->createQueryBuilder();
+            //daca este categorie adica nu are parinte ordonam dupa category_position
+            //daca este subcategorie adica are parinte ordonam dupa subcategory_position
+            $rsm = $this->getItemRsm();
+            $query = "select items.* from items 
+                left join item_categories using(id_item)
+                where id_category in ($in) 
+                and items.active=1
+                and items.start_date<=NOW()
+                and items.end_date>=NOW()
+                order by " . (!$parent ? "-category_position" : "-subcategory_position") . " desc,createdDate desc
+        ";
 
-            $offers = $qb->select("i")
-                    ->from("Entities:Item", "i")
-                    ->join('i.ItemCategories', 'cat')
-                    ->add('where', $qb->expr()->in('cat.id_category', $in))
-                    ->andWhere("i.active=1")
-                    ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
-                    ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
-                    ->orderBy("i.end_date", "asc")
-                    ->getQuery();
-            return $offers->getResult();
+            $offers = $this->em->createNativeQuery($query, $rsm)->getResult();
+            return $offers;
         } catch (\Exception $e) {
             echo $e->getMessage();
         };
@@ -334,37 +360,24 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     }
 
     public function searchOffers($searchQuery) {
-        try {
-            if (isset($_GET['pagina']))
-                $startForm = ($_GET['pagina'] * 30) - 30;
-            else
-                $startForm = 0;
 
-            $query = "select count(id_item) as nr_items from items where name like :name";
-            $stm = $this->em->getConnection()->prepare($query);
-            $stm->bindValue(":name", '%' . $searchQuery . '%');
-            $stm->execute();
-            $nr_results = $stm->fetchAll();
-
-            $result = $this->em->createQueryBuilder()
-                    ->select("items")
-                    ->from("Entities:Item", "items")
-                    ->where("items.name like :name")
-                    ->join("items.offer", "o")
-                    ->andWhere("items.item_type='offer'")
-                    ->andWhere("items.active=1")
-                    ->andWhere("o.end_date>CURRENT_TIMESTAMP()")
-                    ->andWhere("o.start_date<=CURRENT_TIMESTAMP()")
-                    ->setParameter(":name", '%' . $searchQuery . '%')
-                    ->setFirstResult($startForm)
-                    ->setMaxResults(30)
-                    ->orderBy("o.end_date", "asc")
-                    ->getQuery()
-                    ->execute();
-            return array("nr_items" => $nr_results[0]['nr_items'], "result" => $result);
-        } catch (\Doctrine\ORM\Query\QueryException $e) {
+        try{
+        $result = $this->em->createQueryBuilder()
+                ->select("i")
+                ->from("Entities:Item", "i")
+                ->where("i.name like :name")
+                ->andWhere("i.active=1")
+                ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
+                ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
+                ->setParameter(":name", '%' . $searchQuery . '%')
+                ->setMaxResults(50)
+                ->orderBy("i.createdDate", "desc")
+                ->getQuery()
+                ->execute();
+        }catch(\Exception $e){
             echo $e->getMessage();
         }
+        return $result;
     }
 
     public function increment_offer_view($id_item) {

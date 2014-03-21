@@ -67,12 +67,13 @@
                                     </td>
                                     <td class='input' >
                                         <select name='id_role'>
-                                            <?php foreach ($roles as $role) {
-                                                if ($role->getName() == "guest")
+                                            <?php
+                                            foreach ($roles as $role) {
+                                                if ($role->getName() == 3)
                                                     continue;
                                                 ?>
                                                 <option value='<?php echo $role->getId_role() ?>'><?php echo $role->getName() ?></option>
-<?php } ?>
+                                            <?php } ?>
                                         </select>
                                     </td>
                                 </tr>
@@ -84,14 +85,7 @@
                                         <input type='text' value="<?php echo set_value('email') ?>" name='email'/>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class='label'>
-                                        <label>Username(*)</label>
-                                    </td>
-                                    <td class='input' >
-                                        <input type='text' value="<?php echo set_value('username') ?>" name='username'/>
-                                    </td>
-                                </tr>
+
                                 <tr>
                                     <td class='label'>
                                         <label>Telefon</label>

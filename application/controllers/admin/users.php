@@ -6,11 +6,12 @@
 class users extends CI_Controller {
 
     private $PartnerModel;
+
     function __construct() {
         parent::__construct();
         $this->load->library('user_agent');
         $this->load->library('form_validation');
-        $this->PartnerModel=new \Dealscount\Models\PartnerModel();
+        $this->PartnerModel = new \Dealscount\Models\PartnerModel();
     }
 
     /**
@@ -64,8 +65,8 @@ class users extends CI_Controller {
                     "cssClass" => "ui-state-error ui-corner-all"
                 )
             );
-            $data['roles']=$roles;
-            $this->load_view_admin('admin/users/add_user',$data);
+            $data['roles'] = $roles;
+            $this->load_view_admin('admin/users/add_user', $data);
         } else {
             try {
                 $status = $this->UserModel->createUser($_POST);
@@ -80,8 +81,8 @@ class users extends CI_Controller {
                         "cssClass" => "ui-state-error ui-corner-all"
                     )
                 );
-                $data['roles']=$roles;
-                $this->load_view_admin('admin/users/add_user',$data);
+                $data['roles'] = $roles;
+                $this->load_view_admin('admin/users/add_user', $data);
                 exit();
             }
             $this->session->set_flashdata('notification', array("type" => "success", "html" => "Userul a fost creat"));
@@ -107,6 +108,13 @@ class users extends CI_Controller {
         else
             $this->session->set_flashdata('notification', array("type" => "error", "html" => "Datele nu sunt corecte: " . str_replace('"', '', str_replace("'", '', $status))));
         redirect($this->agent->referrer());
+    }
+
+    public function changePassword() {
+
+        $this->UserModel->changePassword($_POST);
+        $this->session->set_flashdata('notification', array("type" => "success", "html" => "Utilizatorul a fost salvat"));
+        redirect(base_url('admin/users/edit_user/' . $_POST['id_user']));
     }
 
     /**

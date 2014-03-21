@@ -17,14 +17,14 @@
                 <input type="submit" value=""/>
             </form>
             <div class="username">
-                Ciau, <?php echo $user->getLastname() ?>
+                Ciau, <?php echo $user->getLastname() . ' ' . $user->getFirstname() ?>
             </div>
         </div>
 
         <div class="orders_list">
             <table cellpadding="0" cellspacing="0">
                 <?php
-                if ($orders) {
+                if (count($orders)) {
                     foreach ($orders as $order) {
                         $orderItems = $order->getItems();
                         foreach ($orderItems as $orderItem) {

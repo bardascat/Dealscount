@@ -10,14 +10,14 @@ class oferte extends CI_Controller {
     }
 
     public function index() {
-        echo 'index';
+        show_404();
     }
 
     public function view() {
         $slug = $this->uri->segment(2);
         $offer = $this->OffersModel->getOfferBySlug($slug);
         if (!$offer)
-            show_404 ();
+            show_404();
 
         $data = array(
             "offer" => $offer
@@ -25,7 +25,7 @@ class oferte extends CI_Controller {
         $this->view->setMetaTitle(($offer->getMeta_title() ? $offer->getMeta_title() : $offer->getName()));
         $this->view->setMetaDesc(($offer->getMeta_desc() ? $offer->getMeta_desc() : $offer->getBrief()));
         $this->view->setMetaKeywords($offer->getTagsInfo());
-        
+
         $this->load_view('oferte/view', $data);
     }
 
