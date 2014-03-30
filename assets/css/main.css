@@ -723,6 +723,94 @@ img{border:0px;}
     padding-right: 25px;
     padding-top: 25px;
 }
+#content .cart_page  .quantity input[type="text"]{
+
+    width:15px;
+    height:20px;
+    text-align: center;
+
+    font-size: 18px;
+
+    float: left;
+
+    border:0px;
+
+}
+
+#content .cart_page  .quantity{
+
+    padding-left: 30px;
+
+}
+#content .cart_page  .beneficiariTable input[type="text"]{
+    height: 23px;
+    line-height: 23px;
+    font-size: 13px;
+}
+#content .cart_page  .inner_table td{
+    
+}
+
+#content .cart_page .quantity .update_quantity{
+
+    margin: auto;
+
+    width: 100px;
+
+}
+
+#content .cart_page .quantity .minus input{
+
+    background: transparent;
+
+    background-image: url('../images_fdd/quantity_minus.png');
+
+    width: 20px;
+
+    height: 20px;
+
+    border: 0px;
+
+    cursor: pointer;
+
+}
+
+#content .cart_page .quantity .plus input{
+
+    background: transparent;
+
+    background-image: url('../images_fdd/quantity_add.png');
+
+    width: 20px;
+
+    height: 20px;
+
+    border: 0px;
+
+    cursor: pointer;
+
+}
+
+#content .cart_page .quantity .minus{
+
+    float: left;
+
+    margin-right: 7px;
+
+    cursor: pointer;
+
+}
+
+#content .cart_page .quantity .plus{
+
+    cursor: pointer;
+
+    float: left;
+
+    margin-left: 7px;
+
+}
+
 #content .cart_page .breadcrumbs{margin-bottom: 0px;}
 #content .cart_page h1{border: 0px}
 #content .cart_page .delete{
@@ -1120,6 +1208,15 @@ img{border:0px;}
     font-size: 14px;
     margin-top: 20px;
 }
+#content .partner .extraCategory{
+    cursor: pointer;
+    background-image: url('../images_fdd/plus_small.png');
+    height: 17px;
+    padding-left: 20px;
+    background-repeat: no-repeat;
+    background-position: 0px 1px;
+    
+}
 #content .partner .edit_offer .offer_form .label{
     width: 140px;
 }
@@ -1160,6 +1257,25 @@ img{border:0px;}
     float: left;
     height: 130px;
     margin-right: 10px;
+}
+
+#content .partner .edit_offer .offer_form .variant_list li{
+    
+    padding-bottom: 10px;
+}
+#content .partner .edit_offer .offer_form .variantTdHeader{
+    padding-top: 10px;
+}
+#content .partner .edit_offer .offer_form .removeVariant{
+   
+    background-image: url('../images_fdd/fab_delete_icon.png');
+    cursor: pointer;
+    margin-bottom: 10px;
+    height: 26px;
+    background-repeat: no-repeat;
+    padding-top: 4px;
+    margin-top: 10px;
+    padding-left: 32px;
 }
 
 #content .partner .edit_offer .offer_form #tabs-1{

@@ -26,6 +26,17 @@ class CartItem {
     private $id_item;
 
     /**
+     * @Column(type="integer",nullable=true)
+     */
+    private $id_variant;
+
+    /**
+     * @ManyToOne(targetEntity="ItemVariant")
+     * @JoinColumn(name="id_variant", referencedColumnName="id_variant",onDelete="CASCADE")
+     */
+    private $ItemVariant;
+
+    /**
      * @Column(type="integer")
      */
     private $id_cart;
@@ -97,6 +108,9 @@ class CartItem {
          * Ar trebui sa creasca cantitatea
          */
         $this->unique_hash = $this->id_cart . $this->id_item . $this->is_gift;
+        if ($this->ItemVariant)
+            $this->unique_hash.=$this->ItemVariant->getId_variant();
+
         $this->unique_hash = md5($this->unique_hash);
     }
 
@@ -142,6 +156,18 @@ class CartItem {
 
     public function setIs_gift($is_gift) {
         $this->is_gift = $is_gift;
+    }
+
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\ItemVariant
+     */
+    public function getItemVariant() {
+        return $this->ProductVariant;
+    }
+
+    public function setItemVariant(ItemVariant $itemVariant) {
+        $this->ItemVariant = $itemVariant;
     }
 
 }

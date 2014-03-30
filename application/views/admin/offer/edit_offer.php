@@ -1,6 +1,23 @@
+<?php /* @var $item \Dealscount\Models\Entities\Item */ ?>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
 <script>
     $(function() {
+        $("#browser").treeview({
+            animated: "fast",
+            collapsed: true,
+            toggle: function() {
+            }
+        });
+        $('.select_categories').fancybox({
+            'transitionIn': 'fade',
+            'height': 100,
+            afterShow: function() {
+                $(".fancybox-inner").css({'overflow-x': 'hidden'});
+            },
+            beforeClose: function() {
+                showSelectedCategories();
+            }
+        });
         $(document).tooltip({
             position: {
                 my: "center bottom-20",
@@ -16,20 +33,16 @@
         $("#tabs").tabs();
         load_offer_editor();
         $("input[type=submit]").button();
-        $("input[type=button]").button();
-
+        $("input[type=button],.jqueryButton").button();
         $('.fancybox').fancybox({
             'transitionIn': 'fade',
             'height': 100,
             afterShow: function() {
                 $(".fancybox-inner").css({'overflow-x': 'hidden'});
-
             }
         });
         $(".datepicker").datetimepicker({timeFormat: 'HH:mm:ss', dateFormat: "dd-mm-yy"});
-
-    });
-</script>
+    });</script>
 
 <div id="admin_content">
 
@@ -44,7 +57,7 @@
                 </div>
 
                 <form id="addProductForm" method="post" action="<?= base_url() ?>admin/offer/editOfferDo" enctype="multipart/form-data">
-                    <input type="hidden" name="id_item" value="<?=$item->getId_item()?>"/>
+                    <input type="hidden" name="id_item" value="<?= $item->getId_item() ?>"/>
                     <div class="categoriesInput">
                     </div>
                     <div id="submit_btn_right">
@@ -57,6 +70,7 @@
                             <li><a href="#tabs-3">Date</a></li>
                             <li><a href="#tabs-4">Galerie Foto</a></li>
                             <li><a href="#tabs-5">SEO</a></li>
+                            <li><a href="#tabs-6">Variante</a></li>
                         </ul>
                         <div id="tabs-1">
 
@@ -108,9 +122,10 @@
                                     </td>
                                     <td class='small_input'>
                                         <input type="text" value="<?php echo set_value('price') ?>" name="price"/>
+                                        <input type="hidden"  value="0" name="sale_price"/>
                                     </td>
                                 </tr>
-                                 <tr>
+                                <tr>
                                     <td class="label">
                                         Pret cu cupon
                                     </td>
@@ -118,6 +133,7 @@
                                         <input type="text" value="<?php echo set_value('voucher_price') ?>" name="voucher_price"/>
                                     </td>
                                 </tr>
+                                <!--
                                 <tr>
                                     <td class="label">
                                         Pret Vanzare
@@ -126,6 +142,8 @@
                                         <input type="text"  value="<?php echo set_value('sale_price') ?>" name="sale_price"/>
                                     </td>
                                 </tr>
+                                -->
+                                <!--
                                 <tr>
                                     <td class="label">
                                         Comision
@@ -142,23 +160,26 @@
                                         <input type="text" value="<?php echo set_value('startWith') ?>" name="startWith"/>
                                     </td>
                                 </tr>
+                                -->
                                 <tr>
                                     <td class='label'>
                                         <label>Categorie</label>
                                     </td>
                                     <td class='input'>
-                                        <a class="fancybox" href="#alege_categorie">Modifica Categorie Produs (  
+                                        <a class="select_categories extraCategory" href="#select_categories">Seteaza Categorie Oferta</a>
+                                        <span id="selectedCategories">(
                                             <?php
-                                            if ($item->getCategory())
-                                                echo "Categorie Curenta: " . $item->getCategory()->getName();
-                                            else
-                                                echo "Nicio categorie aleasa";
-                                            ?> )</a>
+                                            $itemcategories = $item->getItemCategories();
+                                            foreach ($itemcategories as $itemcategory)
+                                                echo $itemcategory->getCategory()->getName() . ', ';
+                                            ?>
+                                            )
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="label">
-                                        Nume partener
+                                        Denumire comerciala(optional)
                                     </td>
                                     <td class='small_input'>
                                         <input type="text" value="<?php echo set_value('company_name') ?>"  name="company_name"/>
@@ -287,10 +308,14 @@
                                 </tr>
                                 <tr>
                                     <td class='big_label'>
-                                        <label>Oras</label>
+                                        <label>Judet</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input type='text' value="<?php echo set_value('city') ?>" name='city'/>
+                                        <select name='city'>
+                                            <?php foreach ($citites as $city) { ?>
+                                                <option <?php if ($city->getDistrict() == $item->getCity()) echo "selected"; ?> value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </td>
                                 </tr>
 
@@ -371,6 +396,68 @@
                                 </tr>
                             </table>
                         </div>
+                        <div id="tabs-6">
+                            <table  id='add_table' border="0" class="variants_table" width="100%">
+                                <!--<tr>
+                                    <td colspan="4" style="padding-bottom: 25px; font-size: 11px;"><b>Atentie:</b>
+                                        Toate variantele produsului trebuie sa contina acelasi set de atribute.<br/> Ex: daca prima varianta are( Marime, Culoare) , celelalte variante trebuie sa aiba tot (Marime,Culoare) in aceeasi ordine.
+                                    </td>
+                                </tr>
+                                -->
+                                <tr>
+                                    <td style="padding-bottom: 30px;"  colspan="4"><div onclick="addVariant()"  class="jqueryButton">Adaugă Variantă:</div> </td>
+                                </tr>
+                                <tr>
+                                    <td class="variant_list">
+                                        <ol style="padding-left: 10px;">
+
+                                            <?php
+                                            if ($item->getItemVariants()) {
+                                                $variants = $item->getItemVariants();
+                                                foreach ($variants as $variant) {
+                                                    $attributes = $variant->getAttributes();
+                                                    ?>
+                                                    <li id="variant_<?= $variant->getId_variant() ?>">
+                                                        <table width = "70%" border = "0" class = "attributesTable">
+                                                            <tr>
+                                                                <td colspan = "3" class = "variantTdHeader" width = "80">
+                                                                    <div class = "variantHeader" > Varianta  <?php if (!$variant->getActive()) echo "Inactiva" ?> </div>
+                                                                    <div class = "removeVariant" onclick = "removeVariant(<?= $variant->getId_variant() ?>, 'inactive')"> Sterge Varianta </div>
+                                                                    <input type="hidden" name="id_variant[]" value="<?= $variant->getId_variant() ?>"/>
+                                                                </td>
+                                                            </tr>
+                                                            <?php foreach ($attributes as $attribute) { ?>
+                                                                <tr id="id_attribute_<?= $attribute->getId() ?>">
+                                                                    <td width="90">
+                                                                        <label><?= $attribute->getAttribute()->getName() ?></label>
+                                                                    </td>
+                                                                    <td class="">
+                                                                        <input type="hidden" name="id_attribute[]" value="<?= $attribute->getId_attribute() ?>"/>
+                                                                        <input type="hidden" name="id_attribute_value[]" value="<?= $attribute->getId() ?>"/>
+                                                                        <?php if ($attribute->getAttribute()->getName() == "Descriere"): ?>
+                                                                            <textarea name="attribute_value[]"><?= $attribute->getValue() ?></textarea>
+                                                                        <?php else: ?>
+                                                                            <input <?php if ($attribute->getAttribute()->getName() == "active") echo "title='0 inactiva, 1 activa'" ?> type="text" name="attribute_value[]" value="<?= $attribute->getValue() ?>"/>
+                                                                        <?php endif; ?>
+                                                                    </td>
+                                                                    <td>
+
+                                                                    </td>
+                                                                </tr>
+                                                            <?php } ?>
+                                                        </table>
+                                                    </li>
+                                                    <?php
+                                                } //end foreach
+                                            } //end if
+                                            ?>
+
+                                        </ol>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
 
                     </div>
                 </form>
@@ -379,10 +466,9 @@
         </tr>
     </table>
 
-
-    <div id="alege_categorie" style="width: 600px;">
-        <h1>Alege din ce categorii face parte acesta oferta (Categoria finala)</h1>
-        <?php print_r($tree); ?>
+    <div id="select_categories" style="width: 600px;">
+        <h1>Alege din ce categorii face parte acesta oferta</h1>
+        <?php print_r($category_tree); ?>
     </div>
 
 </div>

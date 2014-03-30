@@ -78,8 +78,8 @@
                                         <input type='text' value="<?php echo set_value('email') ?>" name='email'/>
                                     </td>
                                 </tr>
-
-                                <tr style="display: none;">
+                                <!--
+                                <tr>
                                     <td class='label'>
                                         <label>Username(*)</label>
                                     </td>
@@ -87,6 +87,7 @@
                                         <input type='text' value="<?php echo set_value('username') ?>" name='username'/>
                                     </td>
                                 </tr>
+                                -->
                             </table>
 
                         </div>

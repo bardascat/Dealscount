@@ -16,6 +16,9 @@ class partener extends \CI_Controller {
         DLConstants::pushJS('assets/js/timepicker/timepicker.js');
         DLConstants::pushJS('assets/js/ckeditorScripts/ckeditor.js');
         DLConstants::pushCSS('assets/js/jquery_ui/ui-1-10.css');
+        DLConstants::pushCSS('assets/js/treeview/jquery.treeview.css');
+        DLConstants::pushJS('assets/js/treeview/jquery.treeview.js');
+
         $this->load->library('user_agent');
         $this->User = $this->getLoggedUser(true);
         $this->load->library('form_validation');
@@ -176,7 +179,7 @@ class partener extends \CI_Controller {
             redirect(base_url('partener/oferte'));
             exit();
         }
-        $data = array("offer" => $offer, "user" => $this->User, "categories" => $this->CategoriesModel->getRootCategories());
+        $data = array("offer" => $offer, "user" => $this->User, "category_tree" => $this->CategoriesModel->createCheckboxList("offer", $id_offer));
         $this->populate_form($offer);
         $this->load_view('partner/edit_offer', $data);
     }
@@ -186,7 +189,7 @@ class partener extends \CI_Controller {
             redirect($this->agent->referrer());
 
         $this->form_validation->set_rules($this->setOfferRules());
-        $this->form_validation->set_rules('category', 'Categorie', 'callback_categories_check');
+        $this->form_validation->set_rules('categories', 'Categorie', 'callback_categories_check');
         $this->form_validation->set_message('required', '<b>%s</b> este obligatoriu');
         if ($this->form_validation->run() == FALSE) {
             $offer = $this->OffersModel->getOffer($this->input->post("id_item"));
@@ -195,7 +198,7 @@ class partener extends \CI_Controller {
             $data = array(
                 'offer' => $offer,
                 'user' => $this->User,
-                "categories" => $this->CategoriesModel->getRootCategories(),
+                "category_tree" => $this->CategoriesModel->createCheckboxList("offer", $this->input->post("id_item")),
                 "notification" => array(
                     "type" => "form_notification",
                     "message" => validation_errors(),
@@ -219,7 +222,8 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: Creeaza Oferta"
      */
     public function add_offer() {
-        $data = array("user" => $this->User, "categories" => $this->CategoriesModel->getRootCategories());
+        $tree = $this->CategoriesModel->createCheckboxList("offer");
+        $data = array("user" => $this->User, "category_tree" => $tree);
         $this->load_view('partner/add_offer', $data);
     }
 
@@ -228,13 +232,13 @@ class partener extends \CI_Controller {
             redirect($this->agent->referrer());
 
         $this->form_validation->set_rules($this->setOfferRules());
-        $this->form_validation->set_rules('category', 'Categorie', 'callback_categories_check');
+        $this->form_validation->set_rules('categories', 'Categorie', 'callback_categories_check');
         $this->form_validation->set_message('required', '<b>%s</b> este obligatoriu');
         if ($this->form_validation->run() == FALSE) {
 
             $data = array(
                 'user' => $this->User,
-                "categories" => $this->CategoriesModel->getRootCategories(),
+                "category_tree" => $this->CategoriesModel->createCheckboxList("offer"),
                 "notification" => array(
                     "type" => "form_notification",
                     "message" => validation_errors(),
@@ -244,8 +248,10 @@ class partener extends \CI_Controller {
             $this->session->set_flashdata('notification', array("type" => "error", "html" => "Va rugam completati toate campurile."));
             $this->load_view('partner/add_offer', $data);
         } else {
+            $id = $this->OffersModel->getNextId("items", "id_item");
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
+
             $offer = $this->OffersModel->addOffer($_POST, $this->User->getId_user());
             $this->session->set_flashdata('form_message', '<div class="ui-state-highlight ui-corner-all" style="padding:5px;color:green">Felicitari, oferta a fost creata cu succes</div>');
             $this->session->set_flashdata('notification', array("type" => "success", "html" => "Felicitari, oferta a fost creata. "));
@@ -357,7 +363,7 @@ class partener extends \CI_Controller {
 
     public function getOptionAvailablePosition() {
         $id_option = $_POST['id_option'];
-        $date = date("Y-m-d",strtotime($_POST['date']));
+        $date = date("Y-m-d", strtotime($_POST['date']));
         $positon = $this->PartnerModel->getOptionAvailablePosition($id_option, $date);
         echo json_encode(array("status" => "success", "position" => $positon));
         exit();
@@ -825,6 +831,11 @@ class partener extends \CI_Controller {
                 "rules" => "required|callback_numeric_check|xss_clean"
             ),
             array(
+                "field" => "voucher_price",
+                "label" => "Pret Redus",
+                "rules" => "required|callback_numeric_check|xss_clean"
+            ),
+            array(
                 "field" => "sale_price",
                 "label" => "Pret vanzare",
                 "rules" => "required|callback_numeric_check|xss_clean"
@@ -860,6 +871,41 @@ class partener extends \CI_Controller {
                 "rules" => "required|xss_clean"
             ),
             array(
+                "field" => "latitude",
+                "label" => "Locatie",
+                "rules" => "xss_clean"
+            ),
+            array(
+                "field" => "longitude",
+                "label" => "Longitudine",
+                "rules" => "xss_clean"
+            ),
+            array(
+                "field" => "meta_title",
+                "label" => "meta_title",
+                "rules" => "xss_clean"
+            ),
+            array(
+                "field" => "meta_desc",
+                "label" => "meta_desc",
+                "rules" => "xss_clean"
+            ),
+            array(
+                "field" => "tags",
+                "label" => "tags",
+                "rules" => "xss_clean"
+            ),
+            array(
+                "field" => "voucher_max_limit_user",
+                "label" => "Numar maxim de vouchere persoana",
+                "rules" => "required|xss_clean"
+            ),
+            array(
+                "field" => "voucher_max_limit",
+                "label" => "Numar Total de vouchere",
+                "rules" => "required|xss_clean"
+            ),
+            array(
                 "field" => "city",
                 "label" => "Oras",
                 "rules" => "required|xss_clean"
@@ -889,29 +935,27 @@ class partener extends \CI_Controller {
     }
 
     public function categories_check($data) {
+
         //daca a ales o categorie
-        if ($_POST['category']) {
-            $category = $this->CategoriesModel->getCategoryByPk($_POST['category']);
-            if (is_object($category)) {
-                //a ales categoria, verificam daca a ales subcategoria
-                $subcategory = $this->CategoriesModel->getCategoryByPk($_POST['subcategory']);
-                if (!is_object($subcategory)) {
-                    /**
-                     * Subcategoria nu a fost aleasa.
-                     * Daca categoria principala nu are subcategorii atunci e ok, else eroare
-                     */
-                    if (count($category->getChildren()) == 0) {
-                        $_POST['categories'][0] = $category->getId_category();
-                        return true;
-                    }
-                } else {
-                    $_POST['categories'][0] = $subcategory->getId_category();
-                    return true;
-                }
-            }
+        if (isset($data[0]) and is_numeric($data[0]))
+            return true;
+        else {
+            $this->form_validation->set_message('categories_check', 'Este obligatoriu sa alegi categoria ofertei');
+            return false;
         }
-        $this->form_validation->set_message('categories_check', 'Este obligatoriu sa alegi categoria ofertei');
         return false;
+    }
+
+    public function toggleVariant() {
+        if (isset($_POST['id_variant'])) {
+            $this->OffersModel->toggleVariant($_POST['id_variant'], $_POST['action']);
+            if ($_POST['action'] == "active")
+                $htmlAction = "Activata";
+            else
+                $htmlAction = "Dezactivata";
+            echo json_encode(array("action" => $htmlAction));
+        }
+        exit();
     }
 
     //end validatoare

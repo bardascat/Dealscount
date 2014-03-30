@@ -20,13 +20,15 @@ class DLConstants {
         "assets/js/custom_alert/customAlert.js",
         "assets/js/ckeditorScripts/ckeditor.js",
         "assets/js/timepicker/timepicker.js",
-        'assets/js/noty-2.2.2/js/noty/packaged/jquery.noty.packaged.js'
+        'assets/js/noty-2.2.2/js/noty/packaged/jquery.noty.packaged.js',
+        'assets/js/treeview/jquery.treeview.js',
     );
     private static $ADMIN_CSS_FILES = array(
         'assets/css/admin.css',
         'assets/js/jquery_ui/ui-1-10.css',
         "assets/js/source_fancy/jquery.fancybox.css",
-        "assets/js/custom_alert/customAlert.css"
+        "assets/js/custom_alert/customAlert.css",
+        'assets/js/treeview/jquery.treeview.css',
     );
     private static $ADMIN_CSS_FILES_POPUP = array(
         'assets/css/popups.css',
@@ -74,19 +76,16 @@ class DLConstants {
     public static $OPTIUNE_PROMOVARE_NEWSLETTER = "promovare_newsletter";
     public static $OPTIUNE_NEWSLETTER_PERSONAL = "newsletter_personal";
     public static $OPTIUNE_POSTARE_SUPLIMENTARA = "postare_suplimentara";
-
-    public static $INVOICE_SERIES="GAD";
-    
+    public static $INVOICE_SERIES = "GAD";
     //supplierr info
-    public static $SUPPLIER_NAME="Get A deal";
-    public static $SUPPLIER_REG_COM="REG COM";
-    public static $SUPPLIER_CUI="CUI";
-    public static $SUPPLIER_ADDRESS="bucuresti, dorotbanti";
-    public static $SUPPLIER_IBAN="RO123";
-    public static $SUPPLIER_BANK="TRANSILVANIA";
-    
-    public static $CRON_ACCESS="145839a025a99bda2e8f4f6a21ebbd5a4c893e91";
-    
+    public static $SUPPLIER_NAME = "Get A deal";
+    public static $SUPPLIER_REG_COM = "REG COM";
+    public static $SUPPLIER_CUI = "CUI";
+    public static $SUPPLIER_ADDRESS = "bucuresti, dorotbanti";
+    public static $SUPPLIER_IBAN = "RO123";
+    public static $SUPPLIER_BANK = "TRANSILVANIA";
+    public static $CRON_ACCESS = "145839a025a99bda2e8f4f6a21ebbd5a4c893e91";
+
     public static function pushCSS($css) {
         array_push(self::$CSS_FILES, $css);
     }

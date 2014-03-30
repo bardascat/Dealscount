@@ -14,8 +14,9 @@
             <h1><?php echo $offer->getName() ?></h1>
 
             <div class="offer_form">
-                <form id="saveForm" method="post" action="<?= base_url() ?>partener/editOfferDo" enctype="multipart/form-data">
+                <form id="offerForm" method="post" action="<?= base_url() ?>partener/editOfferDo" enctype="multipart/form-data">
                     <input type="hidden" name="id_item" value="<?= $offer->getId_item() ?>"/>
+                    <div class="categoriesInput"></div>
                     <div id="tabs">
 
                         <div id="tabs-1">
@@ -47,38 +48,6 @@
                                 </tr>
                                 <tr>
                                     <td class='label'>
-                                        <label>Categorie</label>
-                                    </td>
-                                    <td class='input'>
-                                        <select onchange="selectSubcategory(this)" name="category">
-                                            <?php foreach ($categories as $category) { ?>
-                                                <option  value="<?php echo $category['id_category'] ?>"><?php echo $category['name'] ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>
-                                        <label>Subcategorie</label>
-                                    </td>
-                                    <td class='input'>
-                                        <select name="subcategory">
-                                            <?php
-                                            $parent = $offer->getCategory()->getParent();
-                                            if ($parent) {
-                                                $childs = $parent->getChildren();
-                                                foreach ($childs as $child) {
-                                                    echo "<option " . ($offer->getCategory()->getId_category() == $child->getId_category() ? "selected" : false) . " value='" . $child->getId_category() . "'>" . $child->getName() . "</option>";
-                                                }
-                                            } else
-                                                echo "<option value='0'>Fara subcategorii</option>"
-                                                ?>
-                                        </select>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class='label'>
                                         <label>Oras</label>
                                     </td>
                                     <td class='' >
@@ -99,7 +68,7 @@
                                         <label>Latitudine</label>
                                     </td>
                                     <td class='' >
-                                        <input class="lat" type='text' value="<?php echo set_value('latitude') ?>" name='latitude'/>
+                                        <input class="lat" title="Dati click pe harta google si alegeti locatia"  type='text' value="<?php echo set_value('latitude') ?>" name='latitude'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -107,7 +76,7 @@
                                         <label>Longitudine</label>
                                     </td>
                                     <td class='' >
-                                        <input class="lng" type='text' value="<?php echo set_value('longitude') ?>" name='longitude'/>
+                                        <input class="lng" title="Dati click pe harta google si alegeti locatia"  type='text' value="<?php echo set_value('longitude') ?>" name='longitude'/>
                                         <a style="position: absolute; margin-left: 50px; margin-top:-30px;" id="inline" href="#data"><img height="50" src="<?php echo base_url('assets/images_fdd/gmap.jpg') ?>"/></a>
                                     </td>
                                 </tr>
@@ -155,6 +124,19 @@
                                         </table>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td style="padding-top: 5px;" colspan="2">
+                                        <a class="select_categories extraCategory" href="#select_categories">Seteaza Categorie Oferta</a>
+                                        <span id="selectedCategories">(
+                                            <?php
+                                            $itemcategories = $offer->getItemCategories();
+                                            foreach ($itemcategories as $itemcategory)
+                                                echo $itemcategory->getCategory()->getName() . ', ';
+                                            ?>
+                                            )
+                                        </span>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                         <div id="tabs-2">
@@ -198,6 +180,59 @@
                                 <input type="hidden" value="<?php echo set_value('company_name') ?>"  name="company_name"/>
                                 <input type="hidden" name="id_company"/>
 
+                            </table>
+
+                            <div style="margin-top: 10px; margin-bottom: 15px;" onclick="addItemVariant()" id="greenButtonSmall">Adauga Variante</div> 
+
+                            <table celpadding="0" class="variants_table" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td class="variant_list">
+                                        <ol style="padding-left: 20px; vertical-align: top;">
+
+                                            <?php
+                                            if ($offer->getItemVariants()) {
+                                                $variants = $offer->getItemVariants();
+                                                $it = new CachingIterator(new ArrayIterator($variants));
+
+                                                foreach ($variants as $variant) {
+
+                                                    $attributes = $variant->getAttributes();
+                                                    ?>
+                                                    <li <?php if (1 == 1) echo "style='border:0px;'" ?> id="variant_<?= $variant->getId_variant() ?>">
+                                                        <div class="removeVariant" onclick = "removeVariant(<?= $variant->getId_variant() ?>, 'inactive')" style="margin-top:10px;">Sterge Varianta</div>
+                                                        <input type="hidden" name="id_variant[]" value="<?= $variant->getId_variant() ?>"/>
+                                                        <table width = "100%" border = "0">
+                                                            <?php foreach ($attributes as $attribute) { ?>
+                                                                <tr id="id_attribute_<?= $attribute->getId() ?>">
+                                                                    <td width="128">
+                                                                        <label><?= $attribute->getAttribute()->getName() ?></label>
+                                                                    </td>
+                                                                    <td class="">
+                                                                        <input type="hidden" name="id_attribute[]" value="<?= $attribute->getId_attribute() ?>"/>
+                                                                        <input type="hidden" name="id_attribute_value[]" value="<?= $attribute->getId() ?>"/>
+                                                                        <?php if ($attribute->getAttribute()->getName() == "Descriere") { ?>
+                                                                            <textarea style="width: 264px;" name="attribute_value[]"><?= $attribute->getValue() ?></textarea>
+                                                                        <?php } elseif ($attribute->getAttribute()->getName() == "active") { ?>
+                                                                            <select name="attribute_value[]">
+                                                                                <option value="1" <?php if ($attribute->getValue() == 1) echo "seelected" ?>>Da</option>
+                                                                                <option value="0" <?php if ($attribute->getValue() == 0) echo "seelected" ?>>Nu</option>
+                                                                            </select>
+                                                                        <?php } else { ?>
+                                                                            <input type="text" name="attribute_value[]" value="<?= $attribute->getValue() ?>"/>
+                                                                        <?php } ?>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php } ?>
+                                                        </table>
+                                                    </li>
+                                                    <?php
+                                                } //end foreach
+                                            } //end if
+                                            ?>
+
+                                        </ol>
+                                    </td>
+                                </tr>
                             </table>
 
                         </div>
@@ -311,7 +346,7 @@
                             <table>
                                 <tr>
                                     <td style="padding-top: 45px;">
-                                        <div onclick="$('#saveForm').submit()" id="greenButton">Salveaza Oferta</div>
+                                        <div  <div onclick="submitOfferForm()" id="greenButton">Salveaza Oferta</div>
                                     </td>
                                 </tr>    
                             </table>
@@ -336,8 +371,6 @@
     }
 
     $(document).ready(function() {
-        //selectSubcategory($('select[name="category"]',<?php echo $offer->getCategory()->getId_category() ?>));
-
         $('input').tooltip({
             position: {
                 my: "center bottom-20",
@@ -351,8 +384,8 @@
             }
         });
         load_offer_editor();
-        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy",minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
-        $(".datepickersimple").datepicker({dateFormat: "dd-mm-yy",minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
+        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy", minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
+        $(".datepickersimple").datepicker({dateFormat: "dd-mm-yy", minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
 
 
         $("#dialog-form").dialog({
@@ -375,13 +408,30 @@
         ;
     })
     $(document).ready(function() {
+        $('.select_categories').fancybox({
+            'transitionIn': 'fade',
+            'height': 100,
+            afterShow: function() {
+                $(".fancybox-inner").css({'overflow-x': 'hidden'});
+
+            },
+            beforeClose: function() {
+                showSelectedCategories();
+            }
+        });
+        $("#browser").treeview({
+            animated: "fast",
+            collapsed: true,
+            toggle: function() {
+            }
+        });
         $('#inline').fancybox({
             openEffect: 'none',
             closeEffect: 'none',
             beforeShow: function() {
                 google.maps.event.trigger(map, "resize");
-                
-                map.setCenter(new google.maps.LatLng(<?php echo ($offer->getLatitude() && $offer->getLongitude() ? "'".$offer->getLatitude()."','".$offer->getLongitude()."'" : "'44.435511213939165', '26.1025071144104'")?>));
+
+                map.setCenter(new google.maps.LatLng(<?php echo ($offer->getLatitude() && $offer->getLongitude() ? "'" . $offer->getLatitude() . "','" . $offer->getLongitude() . "'" : "'44.435511213939165', '26.1025071144104'") ?>));
             }
         });
         globalZoom = 12;
@@ -401,4 +451,8 @@
     </div>
 </div>
 <div id="dialog-form" title="Setari imagine" style="font-size: 12px;">
+</div>
+<div id="select_categories" style="width: 600px;">
+    <h1>Alege din ce categorii face parte acesta oferta</h1>
+    <?php print_r($category_tree); ?>
 </div>

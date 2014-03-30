@@ -48,8 +48,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $item->postHydrate($post);
         if ($post['slug']) {
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['slug'] . '-' . $next_id));
-        }
-        else
+        } else
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($post['name'] . '-' . $next_id));
 
         $item->setOperator($this->em->find("Entities:User", $id_operator));
@@ -57,6 +56,9 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 //asociem partenerul
         $company = $this->em->find("Entities:User", $post['id_company']);
         $item->setCompany($company);
+
+        //adaugam variantele
+        $item = $this->addProductVariants($item);
 
         $this->em->persist($item);
         $this->em->flush();
@@ -71,10 +73,10 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
     public function updateOffer($post, $id_operator) {
 
+        $this->em->beginTransaction();
+        
         $item = $this->getOffer($post['id_item']);
         $current_slug = $item->getSlug();
-
-        echo $current_slug;
 
         $item->postHydrate($post);
 
@@ -82,8 +84,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         if ($post['slug'] != substr($current_slug, 0, strripos($current_slug, '-'))) {
             $slug = $post['slug'];
             $item->setSlug(\Dealscount\Util\NeoUtil::makeSlugs($slug . '-' . $post['id_item']));
-        }
-        else
+        } else
             $item->setSlug($current_slug);
 
         if (isset($post['images']))
@@ -95,23 +96,19 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             $this->setPrimaryImage($_POST['primary_image']);
         }
 
+        //asociem categoriile
+        $this->em->createQuery("delete  Entities:ItemCategories c where c.id_item=:id_item")
+                ->setParameter(":id_item", $post['id_item'])
+                ->execute();
 
-//daca se modifica categoria
-        if ((!$item->getCategory()) || $item->getCategory()->getId_category() != $post['categories'][0]) {
-//stergem asocierile de categorii
-            $this->em->createQuery("delete  Entities:ItemCategories c where c.id_item=:id_item")
-                    ->setParameter(":id_item", $post['id_item'])
-                    ->execute();
-
-            $category = $this->em->find("Entities:Category", $post['categories'][0]);
+        foreach ($post['categories'] as $category) {
+            $category = $this->em->find("Entities:Category", $category);
             $categoryReference = new Entities\ItemCategories();
             $categoryReference->setCategory($category);
             $item->addCategory($categoryReference);
         }
-        else
-            $category = $item->getCategory();
 
-//asociem partenerul
+        //asociem partenerul
         $company = $this->em->find("Entities:User", $post['id_company']);
         $item->setCompany($company);
 
@@ -135,6 +132,9 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
             }
         }
 
+        //adaugam variantele
+        $item = $this->addProductVariants($item);
+
         try {
             $this->em->persist($item);
             $this->em->flush();
@@ -145,11 +145,110 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         return true;
     }
 
+    private function addProductVariants(Entities\Item &$item) {
+        
+        if (isset($_POST['id_variant'])) {
+            $nr_variants = count($_POST['id_variant']);
+
+//nr_atribute in total
+            $nr_attributes = count($_POST['id_attribute']);
+
+//cate atribute avem pe varianta
+            $nr_attributes_each = $nr_attributes / $nr_variants;
+            $indexAtribut = 0;
+            for ($i = 0; $i < $nr_variants; $i++) {
+
+//daca se face update la varianta
+                if ($_POST['id_variant'][$i])
+                    $variant = $this->em->find("Entities:ItemVariant", $_POST['id_variant'][$i]);
+                else
+                    $variant = new Entities\ItemVariant();
+
+                for ($j = 0; $j < $nr_attributes_each; $j++) {
+
+                    $id_attribute = $_POST['id_attribute'][$indexAtribut];
+
+//atributul cu id-ul  1,2,3 sunt pentru pret,pret redus si descriere si se salveaza in tabelul de variante
+                    if ($id_attribute == "1") {
+                        $variant->setPrice($_POST['attribute_value'][$indexAtribut]);
+                    }
+                    if ($id_attribute == "2") {
+                        $variant->setSale_price($_POST['attribute_value'][$indexAtribut]);
+                    }
+                    if ($id_attribute == "3") {
+                        $variant->setDescription($_POST['attribute_value'][$indexAtribut]);
+                    }
+                    if ($id_attribute == "6") {
+                        $variant->setActive($_POST['attribute_value'][$indexAtribut]);
+                    }
+
+                    //daca se face update la atribut
+                    if ($_POST['id_attribute_value'][$indexAtribut]) {
+                        $attributeValue = $this->em->find("Entities:AttributeValue", $_POST['id_attribute_value'][$indexAtribut]);
+                        if (!$attributeValue)
+                            exit("Fatal error: 12:04 Msg: Eroare la variante.");
+                    } else {
+                        /* @var $attrbute Entities\Attribute */
+                        $attribute = $this->em->find("Entities:Attribute", $id_attribute);
+                        if (!$attribute) {
+                            exit("Fatal Error: 10:17 - Un atribut ales nu exista in sistem ID ATRIBUT: " . $id_attribute);
+                        }
+                        $attributeValue = new Entities\AttributeValue();
+                        $attributeValue->setAttribute($attribute);
+                    }
+
+                    try {
+                        $attributeValue->setValue($_POST['attribute_value'][$indexAtribut]);
+                    } catch (\Exception $e) {
+                        $this->em->rollback();
+                        echo $e->getMessage();
+                        exit();
+                    }
+                    $variant->addAtributeValue($attributeValue);
+                    $indexAtribut++;
+                }
+
+                $item->addItemVariant($variant);
+            }
+        }
+
+        $this->em->commit();
+        return $item;
+    }
+
+    /**
+     * @param type $id_variant
+     * @param type $action
+     * @return boolean
+     */
+    public function toggleVariant($id_variant, $action) {
+        if ($action ==
+                "active")
+            $action = 1;
+        else
+            $action = 0;
+        try {
+            $updateQuery = "update Entities:ItemVariant variant set variant.active=:action where variant.id_variant=:id_variant";
+            $deleteQuery = "delete Entities:ItemVariant variant where variant.id_variant=:id_variant";
+            $this->em->createQuery($deleteQuery)
+                    ->setParameter(":id_variant", $id_variant)->execute();
+        } catch (Doctrine\ORM\Query\QueryException $e) {
+            echo $e->getMessage();
+            exit();
+        }
+
+
+        return true;
+    }
+
     public function getOffers() {
 
         $productsRep = $this->em->getRepository("Entities:Item");
         $products = $productsRep->findBy(array("item_type" => "offer"), array("id_item" => "DESC"));
-        return $products;
+
+        return
+
+                $products;
     }
 
     public function PaginateOffers($page = 1, $limit = 30) {
@@ -159,6 +258,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
                     ->setMaxResults($limit);
 
             $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+
 
             return $paginator;
         } catch (\Doctrine\ORM\Query\QueryException $e) {
@@ -175,7 +275,10 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         ";
         $offers = $this->em->createNativeQuery($query, $rsm)->getResult();
 
-        return $offers;
+
+        return
+
+                $offers;
     }
 
     private function getItemRsm() {
@@ -204,6 +307,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $rsm->addFieldResult("i", "start_date", "start_date");
         $rsm->addFieldResult("i", "end_date", "end_date");
         $rsm->addFieldResult("i", "end_date", "end_date");
+
+
         return $rsm;
     }
 
@@ -217,10 +322,12 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         ";
             $offers = $this->em->createNativeQuery($query, $rsm)->getResult();
 
+
             return $offers;
         } catch (\Exception $e) {
             echo $e->getMessage();
         };
+
         return $offers;
     }
 
@@ -231,8 +338,10 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
      */
     public function getOffer($id_offer) {
         $offer = $this->em->find("Entities:Item", $id_offer);
-        if (!$offer)
+        if (!
+                $offer)
             throw new \Exception('Invalid offer id');
+
         return $offer;
     }
 
@@ -244,7 +353,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     public function getOfferBySlug($slug) {
         $offerRep = $this->em->getRepository("Entities:Item");
         $offers = $offerRep->findBy(array("slug" => $slug, 'active' => 1));
-        if (isset($offers[0]))
+        if (isset(
+                        $offers[0]))
             return $offers[0];
         else
             return false;
@@ -274,7 +384,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         $result = $dql->getResult();
 
-        if (count($result) < 0)
+        if (count(
+                        $result) < 0)
             return false;
         else
             return $result;
@@ -290,7 +401,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         $categoriesModel = new CategoriesModel();
         $category = $categoriesModel->getCategoryBySlug($category_slug);
-        if (!$category)
+        if (!
+                $category)
             return false;
 
         $childs = $categoriesModel->getChilds($category->getId_category());
@@ -313,10 +425,11 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
                 and items.active=1
                 and items.start_date<=NOW()
                 and items.end_date>=NOW()
-                order by " . (!$parent ? "-category_position" : "-subcategory_position") . " desc,createdDate desc
+                order by " . (!$parent ? "-category_position" : "-subcategory_position" ) . " desc,createdDate desc
         ";
 
             $offers = $this->em->createNativeQuery($query, $rsm)->getResult();
+
             return $offers;
         } catch (\Exception $e) {
             echo $e->getMessage();
@@ -339,7 +452,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
     public function delete_image($id_image) {
         $image = $this->em->find("Entities:ItemImage", $id_image);
         $this->em->remove($image);
-        $this->em->flush();
+        $this->em->
+                flush();
     }
 
     public function setPrimaryImage($id_image) {
@@ -356,28 +470,66 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
                 ->setParameter(":id_image", $image->getId_image())
                 ->execute();
 
+
+
         return true;
+    }
+
+    public function adminSearchOffers($searchQuery) {
+        try {
+            $result = $this->em->createQueryBuilder()
+                    ->select("i")
+                    ->from("Entities:Item", "i")
+                    ->where("1=1");
+
+            if (isset($searchQuery ['keywords']) && $searchQuery['keywords']) {
+                $result->andWhere("i.name like :name");
+                $result->setParameter(":name", '%' . $searchQuery ['keywords'] . '%');
+            }
+
+            if (isset($searchQuery ['id_company']) && $searchQuery['id_company']) {
+                $result->andWhere("i.id_user=:id_user");
+                $result->setParameter(":id_user", $searchQuery['id_company']);
+            }
+
+            if (isset($searchQuery ['from']) && $searchQuery['from']) {
+                $result->andWhere("i.createdDate>=:from");
+                $result->setParameter(":from", $searchQuery['from']);
+            }
+
+            if (isset($searchQuery['to']) && $searchQuery['to']) {
+                $result->andWhere("i.createdDate<=:to");
+                $result->setParameter(":to", $searchQuery['to']);
+            }
+            $result->orderBy("i.createdDate", "desc");
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+        return $result->getQuery()->
+                        getResult();
     }
 
     public function searchOffers($searchQuery) {
 
-        try{
-        $result = $this->em->createQueryBuilder()
-                ->select("i")
-                ->from("Entities:Item", "i")
-                ->where("i.name like :name")
-                ->andWhere("i.active=1")
-                ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
-                ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
-                ->setParameter(":name", '%' . $searchQuery . '%')
-                ->setMaxResults(50)
-                ->orderBy("i.createdDate", "desc")
-                ->getQuery()
-                ->execute();
-        }catch(\Exception $e){
+        try {
+            $result = $this->em->createQueryBuilder()
+                    ->select("i")
+                    ->from("Entities:Item", "i")
+                    ->where("i.name like :name")
+                    ->andWhere("i.active=1")
+                    ->andWhere("i.end_date>CURRENT_TIMESTAMP()")
+                    ->andWhere("i.start_date<=CURRENT_TIMESTAMP()")
+                    ->setParameter(":name", '%' . $searchQuery . '%')
+                    ->setMaxResults(50)
+                    ->orderBy("i.createdDate", "desc")
+                    ->getQuery()
+                    ->execute();
+        } catch (\Exception $e) {
             echo $e->getMessage();
         }
-        return $result;
+        return
+
+                $result;
     }
 
     public function increment_offer_view($id_item) {
@@ -396,7 +548,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
                 ->where('stats.id_item=:id_item')
                 ->setParameter(":id_item", $id_item)
                 ->getQuery()
-                ->execute();
+                ->
+                execute();
     }
 
     public function getStatsByCity(Entities\User $user, $id_item = false) {
@@ -415,13 +568,15 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
            ");
 
         $stm->bindParam(":id_user", $user->getId_user());
-        if ($id_item)
+        if (
+                $id_item)
             $stm->bindParam(":id_item", $id_item);
 
         $stm->execute();
         $result = $stm->fetchAll();
 
-        if (count($result) < 1)
+        if (count(
+                        $result) < 1)
             return false;
 
         $total_sales = 0;
@@ -431,11 +586,12 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         //calculate percentage y=(sales*100/)total_sales
         foreach ($result as $key => $city) {
-            $city['percentage'] = round(($city['sales'] * 100) / $total_sales, 1);
+            $city['percentage'] = round(($city ['sales'] * 100) / $total_sales, 1);
             $result[$key] = $city;
         }
         return $result;
-        exit('done');
+        exit(
+                'done');
     }
 
     public function getStatsByGender(Entities\User $user, $id_item = false) {
@@ -455,12 +611,14 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
            ");
 
         $stm->bindParam(":id_user", $user->getId_user());
-        if ($id_item)
+        if (
+                $id_item)
             $stm->bindParam(":id_item", $id_item);
         $stm->execute();
         $result = $stm->fetchAll();
 
-        if (count($result) < 1)
+        if (count(
+                        $result) < 1)
             return false;
 
         $total_sales = 0;
@@ -470,10 +628,12 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         //calculate percentage y=(sales*100/)total_sales
         foreach ($result as $key => $gender) {
-            $gender['percentage'] = round(($gender['sales'] * 100) / $total_sales, 1);
+            $gender['percentage'] = round(($gender ['sales'] * 100) / $total_sales, 1);
             $result[$key] = $gender;
         }
-        return $result;
+        return
+
+                $result;
     }
 
     public function getStatsByAge(Entities\User $user, $id_item = false) {
@@ -492,12 +652,14 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
            ");
 
         $stm->bindParam(":id_user", $user->getId_user());
-        if ($id_item)
+        if (
+                $id_item)
             $stm->bindParam(":id_item", $id_item);
         $stm->execute();
         $result = $stm->fetchAll();
 
-        if (count($result) < 1)
+        if (count(
+                        $result) < 1)
             return false;
 
         $total_sales = 0;
@@ -507,11 +669,13 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         //calculate percentage y=(sales*100/)total_sales
         foreach ($result as $key => $age) {
-            $age['percentage'] = round(($age['sales'] * 100) / $total_sales, 1);
+            $age['percentage'] = round(($age ['sales'] * 100) / $total_sales, 1);
             $result[$key] = $age;
         }
 
-        return $result;
+        return
+
+                $result;
     }
 
     public function getPartnerDashboardStats(Entities\User $user, $from = false, $to = false) {
@@ -528,7 +692,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $stm->bindParam(":id_user", $user->getId_user());
         $stm->execute();
         $result = $stm->fetchAll();
-        if (isset($result[0]['total_views']))
+        if (isset($result[0][
+                        'total_views']))
             $stats['total_views'] = $result[0]['total_views'];
 
         //nr vanzari
@@ -551,7 +716,8 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         }
         $stm->execute();
         $result = $stm->fetchAll();
-        if ($result[0]['sales'])
+        if ($result[0][
+                'sales'])
             $stats['total_sales'] = $result[0]['sales'];
 
         //adaucam si numarul de vouchere folosite
@@ -575,8 +741,10 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
 
         $stm->execute();
         $result = $stm->fetchAll();
-        if ($result[0]['confirmed'])
+        if ($result[0][
+                'confirmed'])
             $stats['confirmed'] = $result[0]['confirmed'];
+
 
         return $stats;
     }
@@ -601,9 +769,9 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
         $stm->execute();
         $r = $stm->fetchAll();
 
-        if (count($r) < 1)
-            return false;
-        else {
+        if (count(
+                        $r) < 1)
+            return false; else {
             $sql_confirmed = "
                 SELECT count(*) as confirmed
             FROM orders_vouchers

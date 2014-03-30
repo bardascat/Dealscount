@@ -1,6 +1,23 @@
 <script>
     $(function() {
-         $(document).tooltip({
+        $("#browser").treeview({
+            animated: "fast",
+            collapsed: true,
+            toggle: function() {
+            }
+        });
+        $('.select_categories').fancybox({
+            'transitionIn': 'fade',
+            'height': 100,
+            afterShow: function() {
+                $(".fancybox-inner").css({'overflow-x': 'hidden'});
+
+            },
+            beforeClose: function() {
+                showSelectedCategories();
+            }
+        });
+        $(document).tooltip({
             position: {
                 my: "center bottom-20",
                 at: "left+20 top",
@@ -16,6 +33,7 @@
         load_offer_editor();
         $("input[type=submit]").button();
         $("input[type=button]").button();
+
 
         $('.fancybox').fancybox({
             'transitionIn': 'fade',
@@ -42,8 +60,7 @@
                 </div>
 
                 <form id="addProductForm" method="post" action="<?= base_url() ?>admin/offer/addOfferDo" enctype="multipart/form-data">
-                    <div class="categoriesInput">
-                    </div>
+                    <div class="categoriesInput"></div>
                     <div id="submit_btn_right">
                         <input onclick="addProduct()" type="button" value="Salveaza" />
                     </div>
@@ -54,6 +71,7 @@
                             <li><a href="#tabs-3">Date</a></li>
                             <li><a href="#tabs-4">Galerie Foto</a></li>
                             <li><a href="#tabs-5">SEO</a></li>
+                            <li><a href="#tabs-6">Variante</a></li>
                         </ul>
                         <div id="tabs-1">
 
@@ -113,8 +131,10 @@
                                     </td>
                                     <td class='small_input'>
                                         <input type="text" value="<?php echo set_value('voucher_price') ?>" name="voucher_price"/>
+                                        <input type="hidden"  value="0" name="sale_price"/>
                                     </td>
                                 </tr>
+                                <!--
                                 <tr>
                                     <td class="label">
                                         Pret Vanzare
@@ -123,6 +143,8 @@
                                         <input type="text"  value="<?php echo set_value('sale_price') ?>" name="sale_price"/>
                                     </td>
                                 </tr>
+                                -->
+                                <!--
                                 <tr>
                                     <td class="label">
                                         Comision
@@ -139,17 +161,19 @@
                                         <input type="text" value="<?php echo set_value('startWith') ?>" name="startWith"/>
                                     </td>
                                 </tr>
+                                -->
                                 <tr>
                                     <td class='label'>
                                         <label>Categorie</label>
                                     </td>
                                     <td class='input'>
-                                        <a class="fancybox" href="#alege_categorie">Alege Categorie Oferta</a>
+                                        <a class="select_categories extraCategory" href="#select_categories">Seteaza Categorie Oferta</a>
+                                        <span id="selectedCategories"></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="label">
-                                        Nume partener
+                                        Denumire comerciala(optional)
                                     </td>
                                     <td class='small_input'>
                                         <input type="text" value="<?php echo set_value('company_name') ?>"  name="company_name"/>
@@ -278,10 +302,14 @@
                                 </tr>
                                 <tr>
                                     <td class='big_label'>
-                                        <label>Oras</label>
+                                        <label>Judet</label>
                                     </td>
                                     <td class='small_input' >
-                                        <input type='text' value="<?php echo set_value('city') ?>" name='city'/>
+                                        <select name='city'>
+                                            <?php foreach ($citites as $city) { ?>
+                                                <option value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </td>
                                 </tr>
 
@@ -334,6 +362,28 @@
                                 </tr>
                             </table>
                         </div>
+                        <div id="tabs-6">
+                            <table  id='add_table' border="0" class="variants_table" width="100%">
+                                <!--<tr>
+                                    <td colspan="4" style="padding-bottom: 25px; font-size: 11px;"><b>Atentie:</b>
+                                        Toate variantele produsului trebuie sa contina acelasi set de atribute.<br/> Ex: daca prima varianta are( Marime, Culoare) , celelalte variante trebuie sa aiba tot (Marime,Culoare) in aceeasi ordine.
+                                    </td>
+                                </tr>
+                                -->
+                                <tr>
+                                    <td style="padding-bottom: 30px;"  colspan="4"><input  type="button" style="width: 150px;" onclick="addVariant()" value="Adaugă Variantă:"/> </td>
+                                </tr>
+                                <tr>
+                                    <td class="variant_list">
+                                        <ol style="padding-left: 10px;">
+
+
+                                        </ol>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
 
                     </div>
                 </form>
@@ -341,10 +391,8 @@
             </td>
         </tr>
     </table>
-
-
-    <div id="alege_categorie" style="width: 600px;">
-        <h1>Alege din ce categorii face parte acesta oferta (Categoria finala)</h1>
+    <div id="select_categories" style="width: 600px;">
+        <h1>Alege din ce categorii face parte acesta oferta</h1>
         <?php print_r($category_tree); ?>
     </div>
 

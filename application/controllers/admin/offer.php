@@ -19,7 +19,7 @@ class offer extends CI_Controller {
         $this->load->library('user_agent');
         $this->load->library('form_validation');
         $this->OffersModel = new Dealscount\Models\OffersModel();
-        $this->CompaniesModel=new Dealscount\Models\PartnerModel();
+        $this->CompaniesModel = new Dealscount\Models\PartnerModel();
     }
 
     /**
@@ -36,7 +36,20 @@ class offer extends CI_Controller {
 
         $data = array(
             "totalPages" => round(count($offers) / 30) + 1,
-            "offers" => $offers
+            "offers" => $offers,
+            'companies' => $this->CompaniesModel->getCompaniesList()
+        );
+        $this->load_view_admin('admin/offer/offers_list', $data);
+    }
+
+    public function searchOffers() {
+
+        $offers = $this->OffersModel->adminSearchOffers($_GET);
+
+        $data = array(
+            "totalPages" => round(count($offers) / 30) + 1,
+            "offers" => $offers,
+            'companies' => $this->CompaniesModel->getCompaniesList()
         );
         $this->load_view_admin('admin/offer/offers_list', $data);
     }
@@ -47,12 +60,13 @@ class offer extends CI_Controller {
     public function add_offer() {
         $this->view->setPage_name("Adauga Oferta");
 
-        $companies = $this->UserModel->getCompaniesList();
+        $companies = $this->CompaniesModel->getCompaniesList();
         $tree = $this->CategoriesModel->createCheckboxList("offer");
 
         $data = array(
             'companies' => $companies,
-            'category_tree' => $tree
+            'category_tree' => $tree,
+            'citites' => $this->UserModel->getCities()
         );
         $this->load_view_admin('admin/offer/add_offer', $data);
     }
@@ -65,10 +79,11 @@ class offer extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             $tree = $this->CategoriesModel->createCheckboxList("offer");
-            $companies = $this->UserModel->getCompaniesList();
+            $companies = $this->CompaniesModel->getCompaniesList();
             $data = array(
                 'companies' => $companies,
                 'category_tree' => $tree,
+                'citites' => $this->UserModel->getCities(),
                 "notification" => array(
                     "type" => "form_notification",
                     "message" => validation_errors(),
@@ -81,7 +96,7 @@ class offer extends CI_Controller {
             $images = $this->upload_images($_FILES['image'], "application_uploads/items/" . $id);
             $_POST['images'] = $images;
             $this->OffersModel->addOffer($_POST, $this->getLoggedUser()['id_user']);
-
+            exit('done');
             $this->session->set_flashdata('form_ok', 'Oferta a fost adaugata');
             $this->session->set_flashdata('notification', array("type" => "success", "html" => "Oferta a fost adaugata"));
             redirect(base_url('admin/offer/offers_list'));
@@ -104,8 +119,9 @@ class offer extends CI_Controller {
         $this->populate_form($item);
         $data = array(
             "companies" => $companies,
-            "tree" => $tree,
-            "item" => $item
+            "category_tree" => $tree,
+            "item" => $item,
+            'citites' => $this->UserModel->getCities()
         );
         $this->load_view_admin('admin/offer/edit_offer', $data);
     }
@@ -124,7 +140,8 @@ class offer extends CI_Controller {
             $data = array(
                 'item' => $item,
                 'companies' => $companies,
-                'tree' => $tree,
+                'category_tree' => $tree,
+                'citites' => $this->UserModel->getCities(),
                 "notification" => array(
                     "type" => "form_notification",
                     "message" => validation_errors(),
@@ -167,18 +184,17 @@ class offer extends CI_Controller {
         }
     }
 
-    public function searchOffers() {
-        $searchQuery = $_GET['search'];
-        if (strlen($searchQuery) < 2) {
-            header('Location:' . URL . 'admin/offer/offers_list');
-            exit();
+    public function toggleVariant() {
+        if (isset($_POST['id_variant'])) {
+            $this->OffersModel->toggleVariant($_POST['id_variant'], $_POST['action']);
+            if ($_POST['action'] == "active")
+                $htmlAction = "Activata";
+            else
+                $htmlAction = "Dezactivata";
+            echo json_encode(array("action" => $htmlAction));
         }
-        $offer = $this->OffersModel->searchOffers($searchQuery);
-        $this->view->offers = $offer['result'];
-        $this->view->render('admin/offer/offers_list', true);
+        exit();
     }
-
-
 
     private function setOfferRules() {
         $config = array(
@@ -210,6 +226,11 @@ class offer extends CI_Controller {
             array(
                 "field" => "sale_price",
                 "label" => "Pret vanzare",
+                "rules" => "required|callback_numeric_check|xss_clean"
+            ),
+            array(
+                "field" => "voucher_price",
+                "label" => "Pret cu cupon",
                 "rules" => "required|callback_numeric_check|xss_clean"
             ),
             array(

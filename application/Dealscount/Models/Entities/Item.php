@@ -58,19 +58,22 @@ class Item extends AbstractEntity {
      * @Column(type="integer") @var float
      */
     protected $active = 1;
-    
+
     /**
      * @Column(type="integer",nullable=true) @var float
      */
     protected $home_position;
+
     /**
      * @Column(type="integer",nullable=true) @var float
      */
     protected $category_position;
+
     /**
      * @Column(type="integer",nullable=true) @var float
      */
     protected $subcategory_position;
+
     /**
      * @Column(type="integer",nullable=true) @var float
      */
@@ -151,7 +154,7 @@ class Item extends AbstractEntity {
 
     /**
      *
-     * @Column(type="float")
+     * @Column(type="float",nullable=true)
      */
     protected $commission;
 
@@ -175,13 +178,13 @@ class Item extends AbstractEntity {
 
     /**
      *
-     * @Column(type="integer")
+     * @Column(type="integer",nullable=true)
      */
     protected $voucher_max_limit;
 
     /**
      *
-     * @Column(type="integer")
+     * @Column(type="integer",nullable=true)
      */
     protected $voucher_max_limit_user;
 
@@ -237,12 +240,15 @@ class Item extends AbstractEntity {
      */
     protected $updated_by;
 
+    /** @OneToMany(targetEntity="ItemVariant", mappedBy="item",cascade={"persist"}) */
+    private $ItemVariants;
+
     public function __construct() {
         $this->createdDate = new \DateTime("now");
         $this->images = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->ItemCategories = new ArrayCollection();
-        $this->ProductVariants = new ArrayCollection();
+        $this->ItemVariants = new ArrayCollection();
     }
 
     public function getCreatedDate() {
@@ -309,15 +315,10 @@ class Item extends AbstractEntity {
 
     /**
      * 
-     * @return \Dealscount\Models\Entities\Category
+     * @return \Dealscount\Models\Entities\ItemCategories
      */
-    public function getCategory() {
-        if (count($this->ItemCategories) < 1)
-            return false;
-
-        $firstCategory = $this->ItemCategories[0];
-        $category = $firstCategory->getCategory();
-        return $category;
+    public function getItemCategories() {
+        return $this->ItemCategories;
     }
 
     /**
@@ -398,15 +399,6 @@ class Item extends AbstractEntity {
             $iteration['id_company'] = null;
         else
             $iteration['id_company'] = $company->getId_user();
-
-        $parent = $this->getCategory()->getParent();
-
-        if (!$parent)
-            $iteration['category'] = $this->getCategory()->getId_category();
-        else {
-            $iteration['category'] = $parent->getId_category();
-            $iteration['subcategory'] = $this->getCategory()->getId_category();
-        }
 
         return $iteration;
     }
@@ -683,7 +675,7 @@ class Item extends AbstractEntity {
         $this->voucher_price = $voucher_price;
         return $this;
     }
-    
+
     public function getHome_position() {
         return $this->home_position;
     }
@@ -720,7 +712,18 @@ class Item extends AbstractEntity {
         return $this;
     }
 
+    public function addItemVariant(ItemVariant $variant) {
+        $this->ItemVariants->add($variant);
+        $variant->setItem($this);
+    }
 
+    /**
+     * 
+     * @return \Dealscount\Models\Entities\ItemVariant
+     */
+    public function getItemVariants() {
+        return $this->ItemVariants;
+    }
 
 }
 

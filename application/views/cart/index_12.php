@@ -15,28 +15,28 @@ $cartItems = $neoCart->getCartItems();
 
                 <table cellpadding="0" cellspacing="0" class="table_header" width="100%" border="0">
                     <tr>
-                        <td width="320">
+                        <td width="44%">
                         </td>
-                        <td width="150">
+                        <td width="17%">
                             Cantitate
                         </td>
-                        <td width="100">
+                        <td width="17%">
                             Platesti pe site
                         </td>
-                        <td width="190">
+                        <td width="17%">
                             Platesti la furnizor
                         </td>
-                        <td width="100">
+                        <td width="17%">
                             Economisesti
                         </td>
-                        <td width="50">
+                        <td width="5%">
 
                         </td>
                     </tr>
                 </table>
 
                 <div style="margin-top: 20px"></div>
-                <table border="0" width="100%" style="font-size: 12px;">
+                <table border="1" width="100%" style="font-size: 12px;">
                     <tr>
                         <td style="color:#f00">
                             <?php
@@ -57,7 +57,7 @@ $cartItems = $neoCart->getCartItems();
                         ?>
                         <tr>
                             <td class="detalii">
-                                <table width="340" cellpadding="0" cellspacing="0" border="0" cellspacing="0">
+                                <table width="44%" cellpadding="0" border="1" cellspacing="0">
                                     <tr>
                                         <td width="50">
                                             <img width="50" src="<?php echo $offer->getMainImage() ?>"/>
@@ -69,30 +69,30 @@ $cartItems = $neoCart->getCartItems();
                                 </table>
 
 
-                                <table class="inner_table" border="0" width="100%">
+                                <table class="inner_table" border="1" width="100%">
                                     <tr>
-                                        <th width="314">
+                                        <th>
 
                                         </th>
-                                        <th width="150">
+                                        <th>
 
                                         </th>
-                                        <th width="100">
+                                        <th>
 
                                         </th>
-                                        <th width="190">
+                                        <th>
 
                                         </th>
-                                        <th width="100">
+                                        <th>
 
                                         </th>
-                                        <th width="50">
+                                        <th>
 
                                         </th>
                                     </tr>
                                     <?php for ($i = 0; $i < $cartItem->getQuantity(); $i++) { ?>
                                         <tr>
-                                            <td>
+                                            <td width="60">
                                                 <table>
                                                     <tr>
                                                         <td>
@@ -118,21 +118,21 @@ $cartItems = $neoCart->getCartItems();
 
 
 
-                                            <td class="total_plata">
-                                                <?php echo $offer->getSale_price()*$cartItem->getQuantity() ?> lei
+                                            <td class="total_plata" width="17%">
+                                                <?php echo $offer->getSale_price() ?> lei
                                             </td>
-                                            <td class="plata_partener">
-                                                <?php echo $offer->getVoucher_price()*$cartItem->getQuantity() ?> lei
+                                            <td class="plata_partener" width="17%">
+                                                <?php echo $offer->getVoucher_price() ?> lei
                                             </td>
-                                            <td class="economie">
+                                            <td class="economie" width="17%">
                                                 <?php
                                                 //economie
-                                                echo ($offer->getPrice() - $offer->getVoucher_price())*$cartItem->getQuantity();
+                                                echo ($offer->getPrice() - $offer->getVoucher_price());
                                                 ?>
                                                 lei
                                             </td>
-                                            <td width="5%" style="text-align: right">
-                                                <a style="float: right;" class="delete" href="javascript:deleteCartItem(<?= $cartItem->getId() ?>, 'minus')"></a>
+                                            <td width="5%" style="text-align: center">
+                                                <a class="delete" href="javascript:updateQuantity(<?= $cartItem->getId() ?>, 'minus')"></a>
                                             </td>
                                         </tr>
 
@@ -161,7 +161,3 @@ $cartItems = $neoCart->getCartItems();
     </div>
 </div>
 
-
-<form id="deleteForm" method="post" action="<?php echo base_url('neocart/deleteCartItem') ?>">
-    <input type="hidden" name="cartItem"/>
-</form>

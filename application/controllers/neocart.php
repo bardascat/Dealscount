@@ -10,7 +10,7 @@ class neocart extends CI_Controller {
         parent::__construct();
         $this->load->library('user_agent');
         $this->NeoCartModel = new Dealscount\Models\NeoCartModel();
-        if(!$this->getLoggedUser()){
+        if (!$this->getLoggedUser()) {
             redirect(base_url('account/login'));
         }
     }
@@ -25,12 +25,12 @@ class neocart extends CI_Controller {
             exit("Page not found");
 
         $this->NeoCartModel->updateQuantity($_POST);
-        
+
         redirect($this->agent->referrer());
     }
 
     public function deleteCartItem() {
-        $this->NeoCartModel->deleteCartItem($_POST['cartItem']);
+        $this->NeocartModel->deleteCartItem($_POST['cartItem']);
         redirect($this->agent->referrer());
     }
 
@@ -81,7 +81,7 @@ class neocart extends CI_Controller {
 
         /* @var $order Entity\Order */
         $order = $this->NeoCartModel->insertOrder($this->getLoggedUser(true), $_POST);
-     
+
 
         $email = $order->getUser()->getEmail();
 
@@ -94,10 +94,10 @@ class neocart extends CI_Controller {
          * Nu mai generam nimic, serverul e prea praf si dureaza mult finalizarea comenzii.
          * Poate un request ajax in pagina de thankyou
          * 
-        $vouchers = $this->NeoCartModel->generateVouchers($order);
-        NeoMail::genericMailAttach($body, $subject, $email, $vouchers);
-        //$this->informOwner($order);
-        */
+          $vouchers = $this->NeoCartModel->generateVouchers($order);
+          NeoMail::genericMailAttach($body, $subject, $email, $vouchers);
+          //$this->informOwner($order);
+         */
         redirect(base_url('account/finalizare?type=free&code=' . $order->getOrderNumber()));
         exit();
     }
@@ -150,7 +150,7 @@ class neocart extends CI_Controller {
     private function processCardPayment() {
 
         $order = $this->NeoCartModel->insertOrder($this->logged_user['orm'], $_POST);
-       
+
         require_once 'NeoMvc/Libs/Mobilpay/Payment/Request/Abstract.php';
         require_once 'NeoMvc/Libs//Mobilpay/Payment/Request/Card.php';
         require_once 'NeoMvc/Libs//Mobilpay/Payment/Invoice.php';
@@ -270,5 +270,7 @@ class neocart extends CI_Controller {
         else
             return false;
     }
+
+
 
 }

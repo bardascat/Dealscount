@@ -1,0 +1,20 @@
+/* 
+    Created on : Mar 29, 2014, 3:07:55 PM
+    Author     : Neo
+*/
+#alege_categorie {display: none; border: 1px solid #CCC; float: left; padding: 15px;}
+#alege_categorie  li{clear: both; margin-top: 5px; float: left; clear:both;
+}
+#alege_categorie .container{
+    background-color: #ececec;
+    padding: 10px;
+    margin-bottom: 10px;
+    float: left;
+    min-width: 200px;
+    border:1px solid #CCC;
+}
+#alege_categorie  ul {margin-left: 40px; list-style-type: none;  clear: both; float: left; clear: both }
+#alege_categorie h1{font-size: 16px; margin-bottom: 20px; margin-left: 20px;}
+#alege_categorie input{width: auto; height: auto; margin-left: 5px; margin-top:4px; float: left;}
+#alege_categorie .name{margin-top:2px; margin-left: 7px; float: left; font-size: 13px; }
+

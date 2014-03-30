@@ -53,7 +53,7 @@ function load_partner_editor(width, height) {
                     '/',
                     {
                         name: 'styles',
-                        items: ['Source', 'FontSize', 'Font', 'TextColor','Image', 'Table']
+                        items: ['Source', 'FontSize', 'Font', 'TextColor', 'Image', 'Table']
                     },
                     {
                         name: 'basicstyles',
@@ -186,11 +186,11 @@ function submit_update_category() {
 
 function addProduct() {
 
-    $('#alege_categorie input[type=checkbox]').each(function() {
+    $('#select_categories input[type=checkbox]').each(function() {
 
         if (this.checked) {
             var input = $("<input>").attr("type", "hidden").attr("name", "categories[]").val($(this).val());
-            $('#addProductForm .categoriesInput').append($(input));
+            $('#addProductForm .categoriesInput').append(input);
         }
     });
 
@@ -276,4 +276,86 @@ function triggerDeleteConfirm(selectorButton, link) {
             }
         }
     });
+}
+
+function showSelectedCategories() {
+    $('#selectedCategories').empty();
+    var categories = '';
+    $('#select_categories input[type=checkbox]').each(function() {
+        if (this.checked) {
+            categories += ($(this).attr('category_name')) + ', ';
+        }
+    });
+    if (categories)
+        $('#selectedCategories').append('(' + categories.slice(0, -2) + ')');
+}
+
+function addVariant() {
+    var rand = 1 + Math.floor(Math.random() * 99999);
+    var firstVariant = $('.variant_list ol li:first-child table tbody tr');
+
+    var pret_intreg = '<tr><td width="90"><label>Pret Intreg</label></td><td class=""><input type="hidden" value="" name="id_attribute_value[]"><input name="id_attribute[]" value="1" type="hidden"><input  onkeyup="numericRestrict(this)"  name="attribute_value[]" value="" type="text"> lei</td></tr>';
+    var pret_redus = '<tr><td width="90"><label>Pret Redus</label></td><td class=""><input type="hidden" value="" name="id_attribute_value[]"><input name="id_attribute[]" value="2" type="hidden"><input onkeyup="numericRestrict(this)"  name="attribute_value[]" value="" type="text"> lei</td> </tr>';
+    var descriere = '<tr><td width="90"><label>Descriere</label></td><td class=""><input type="hidden" value="" name="id_attribute_value[]"><input name="id_attribute[]" value="3" type="hidden"><textarea name="attribute_value[]"></textarea></td></tr>';
+    var status = '<tr><td width="90"><label>Activa?</label></td><td class=""><input type="hidden" value="" name="id_attribute_value[]"><input name="id_attribute[]" value="6" type="hidden"><select name="attribute_value[]"><option value="1">Da</option><option value="0">Nu</option></select></td></tr>';
+
+    var attributes = pret_intreg + pret_redus + descriere + status;
+
+    var html = '<li id="variant_' + rand + '"><table width = "70%" border = "0" class = "attributesTable"><tr><td colspan = "3" class = "variantTdHeader" width = "80"><div class = "variantHeader" > Varianta </div><div class = "removeVariant" onclick = "removeVariant(' + rand + ',0)"> Sterge Varianta </div><input type="hidden" name="id_variant[]" value=""/></td></tr>' + attributes + '</table></li>';
+    $('.variants_table .variant_list ol').prepend(html);
+
+    /*
+     for (var i = 1; i < firstVariant.length; i++) {
+     
+     var attributes = firstVariant[i];
+     
+     var newRand = 1 + Math.floor(Math.random() * 99999);
+     var newId = "id_attribute_" + newRand;
+     $('#variant_' + rand + ' .attributesTable').append("<tr id=" + newId + ">" + $(attributes).html() + "</tr>");
+     
+     $("#" + newId + ' input[name="id_attribute_value[]"]').val("");
+     $("#" + newId + ' input[name="attribute_value[]"]').val("");
+     }
+     */
+}
+function removeVariant(id_variant, action) {
+
+    if (action) {
+        $.ajax({
+            type: "POST",
+            url: url + "offer/toggleVariant",
+            data: "id_variant=" + id_variant + '&action=' + action,
+            dataType: 'json',
+            success: function(result) {
+                if (action == "active") {
+                    var msg1 = "Varianta Activa";
+                    var msg2 = "Dezactiveaza Varianta";
+                    var new_action = "inactive";
+                }
+                else {
+                    var msg1 = "Varianta Inactiva";
+                    var msg2 = "Activeaza Varianta";
+                    var new_action = "active";
+                }
+                /*
+                 $('#variant_' + id_variant + ' .variantHeader').html(msg1);
+                 $('#variant_' + id_variant + ' .removeVariant').html(msg2);
+                 $('#variant_' + id_variant + ' .removeVariant').attr('onclick', "removeVariant(" + id_variant + ",'" + new_action + "')");
+                 */
+                $('#variant_' + id_variant).fadeOut(300, function() {
+                    $('#variant_' + id_variant).remove();
+                });
+            }
+        });
+    } else
+        $('#variant_' + id_variant).fadeOut(300, function() {
+            $('#variant_' + id_variant).remove();
+        });
+}
+
+function numericRestrict(input) {
+    var $th = $(input);
+    if (!$.isNumeric($th.val())) {
+        $th.val('');
+    }
 }

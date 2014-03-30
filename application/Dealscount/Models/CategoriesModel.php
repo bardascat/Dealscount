@@ -239,17 +239,17 @@ class CategoriesModel extends AbstractModel {
     public function createCheckboxList($item_type, $id_item = false, $id_category = false) {
 
         $pdoObject = $this->em->getConnection();
-        $stm = $pdoObject->prepare("select * from categories where item_type=:item_type order by name ");
+        $stm = $pdoObject->prepare("select c.*,(select 1 from categories where id_parent=c.id_category limit 1) as has_childs from categories c where c.item_type='offer' order by c.name");
+        
         $stm->bindValue(":item_type", $item_type);
         $data = $stm->execute();
 
         $data = $stm->fetchAll();
-
         if (count($data) < 1)
             return false;
         foreach ($data as $row) {
 
-            $this->menu_array[$row['id_category']] = array('name' => ucfirst($row['name']), 'slug' => $row['slug'], 'parent' => $row['id_parent']);
+            $this->menu_array[$row['id_category']] = array('name' => ucfirst($row['name']), 'slug' => $row['slug'], 'parent' => $row['id_parent'],'has_childs'=>$row['has_childs']);
         }
         //daca avem produs ca parametrul trebuie sa setam niste categorii checked
         $cRep = $this->em->getRepository("Entities:ItemCategories");
@@ -293,7 +293,7 @@ class CategoriesModel extends AbstractModel {
 
                     $has_childs = true;
                     if ($parent == 0)
-                        echo ' <ul>';
+                        echo ' <ul id="browser" class="filetree">';
                     else
                         echo "\n<ul> \n";
                 }
@@ -308,12 +308,11 @@ class CategoriesModel extends AbstractModel {
                     if ($key == $this->checkedCategory)
                         $checked = "checked";
                 }
-                echo '<li> <div class="container">
-                      
-                    <input ' . $checked . '  type="checkbox" class="checkbox"  name="categories[]" value="' . $key . '">
-                    <div class="name">' . $value["name"] . '</div>
-                    </div>    
-                    ';
+                // class="'. ? "folder":"file").'
+                echo '<li> <span class="'.(!$value['has_childs'] ? "no_childs" : false).'">';
+                if(!$value['has_childs'])
+                    echo '<span  class="input"><input category_name="'.$value['name'].'" id="'.$value['slug'].'" ' . $checked . '  type="checkbox" class="checkbox"  name="categories[]" value="' . $key . '"></span>';
+                echo '<label for="'.$value['slug'].'" class="name">' . $value["name"] . '</label></span>';
 
                 $this->generateCheckboxList($key);
 

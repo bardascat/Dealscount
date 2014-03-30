@@ -11,14 +11,13 @@
 
         <div class="edit_offer">
 
-            <h1></h1>
+            <h1>Completati datele ofertei</h1>
 
             <div class="offer_form">
-                <form id="saveForm" method="post" action="<?= base_url() ?>partener/addOfferDo" enctype="multipart/form-data">
+                <form id="offerForm" method="post" action="<?= base_url() ?>partener/addOfferDo" enctype="multipart/form-data">
+                    <div class="categoriesInput"></div>
                     <div id="tabs">
-
                         <div id="tabs-1">
-
                             <table  border='0' width='100%'>
                                 <tr>
                                     <td colspan="2">
@@ -44,37 +43,7 @@
                                         <textarea  id="name" title="Acest titlu va aparea in pagina ofertei. Nu trebuie sa depaseasca 6 randuri" name='brief'><?php echo set_value('brief') ?></textarea>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class='label'>
-                                        <label>Categorie</label>
-                                    </td>
-                                    <td class='input'>
-                                        <select onchange="selectSubcategory(this)" name="category">
-                                            <?php foreach ($categories as $category) { ?>
-                                                <option  value="<?php echo $category['id_category'] ?>"><?php echo $category['name'] ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>
-                                        <label>Subcategorie</label>
-                                    </td>
-                                    <td class='input'>
-                                        <select name="subcategory">
-                                            <?php
-                                            
-                                            if ($parent) {
-                                                $childs = $parent->getChildren();
-                                                foreach ($childs as $child) {
-                                                    echo "<option value='" . $child->getId_category() . "'>" . $child->getName() . "</option>";
-                                                }
-                                            } else
-                                                echo "<option value='0'>Fara subcategorii</option>"
-                                                ?>
-                                        </select>
-                                    </td>
-                                </tr>
+
 
                                 <tr>
                                     <td class='label'>
@@ -106,7 +75,7 @@
                                         <label>Longitudine</label>
                                     </td>
                                     <td class='' >
-                                        <input class="lng" type='text' value="<?php echo set_value('longitude') ?>" name='longitude'/>
+                                        <input title="Dati click pe harta google si alegeti locatia" class="lng" type='text' value="<?php echo set_value('longitude') ?>" name='longitude'/>
                                         <a style="position: absolute; margin-left: 50px; margin-top:-30px;" id="inline" href="#data"><img height="50" src="<?php echo base_url('assets/images_fdd/gmap.jpg') ?>"/></a>
                                     </td>
                                 </tr>
@@ -154,6 +123,12 @@
                                         </table>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td style="padding-top: 5px;" colspan="2">
+                                        <a class="select_categories extraCategory" href="#select_categories">Alege Categorie Oferta</a>
+                                        <span id="selectedCategories"></span>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                         <div id="tabs-2">
@@ -195,10 +170,22 @@
                                     </td>
                                 </tr>
                                 <input type="hidden" value="<?php echo set_value('company_name') ?>"  name="company_name"/>
-                                <input type="hidden" name="id_company" value="<?php echo $user->getId_user()?>"/>
+                                <input type="hidden" name="id_company" value="<?php echo $user->getId_user() ?>"/>
 
                             </table>
+                            
+                            <div title="Puteti adauga oferte auxiliare" style="margin-top: 10px; margin-bottom: 5px;" onclick="addItemVariant()" id="greenButtonSmall">Adauga Variante</div> 
+                            
+                            <table celpadding="0" class="variants_table" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td class="variant_list" style="padding-top: 10px;">
+                                        <ol style="padding-left: 20px; vertical-align: top;">
 
+                                        </ol>
+                                    </td>
+                                </tr>
+                            </table>
+                            
                         </div>
                         <div id="tabs-3">
                             <table  border='0' width='100%' id='add_table'>
@@ -245,7 +232,7 @@
                             </div>
                             <div class="plusButton" onclick="new_image()"></div>
                             <div class="pictures">
-                                
+
                             </div>
                             <div id="clear"></div>
 
@@ -293,7 +280,7 @@
                             <table>
                                 <tr>
                                     <td style="padding-top: 45px;">
-                                        <div onclick="$('#saveForm').submit()" id="greenButton">Creeaza Oferta</div>
+                                        <div onclick="submitOfferForm()" id="greenButton">Creeaza Oferta</div>
                                     </td>
                                 </tr>    
                             </table>
@@ -312,9 +299,7 @@
 </style>
 <script type="text/javascript">
     $(document).ready(function() {
-        selectSubcategory($('select[name="category"]'));
-
-        $('input').tooltip({
+        $('input,div').tooltip({
             position: {
                 my: "center bottom-20",
                 at: "left+20 top",
@@ -327,21 +312,39 @@
             }
         });
         load_offer_editor();
-        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy",minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
-        $(".datepickersimple").datepicker({dateFormat: "dd-mm-yy",minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
+        $(".datepicker").datetimepicker({timeFormat: 'HH:mm', dateFormat: "dd-mm-yy", minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
+        $(".datepickersimple").datepicker({dateFormat: "dd-mm-yy", minDate: new Date(), maxDate: new Date(<?php echo date("Y", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("m", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>,<?php echo date("d", strtotime($user->getCompanyDetails()->getAvailable_to()->format("Y-m-d"))) ?>)});
 
     })
     $(document).ready(function() {
+        $("#browser").treeview({
+            animated: "fast",
+            collapsed: true,
+            toggle: function() {
+            }
+        });
+        $('.select_categories').fancybox({
+            'transitionIn': 'fade',
+            'height': 100,
+            afterShow: function() {
+                $(".fancybox-inner").css({'overflow-x': 'hidden'});
+
+            },
+            beforeClose: function() {
+                showSelectedCategories();
+            }
+        });
+
         $('#inline').fancybox({
             openEffect: 'none',
             closeEffect: 'none',
             beforeShow: function() {
                 google.maps.event.trigger(map, "resize");
-                map.setCenter(new google.maps.LatLng('44.435511213939165','26.1025071144104')); 
+                map.setCenter(new google.maps.LatLng('44.435511213939165', '26.1025071144104'));
             }
         });
-        globalZoom=12;
-        displayPartnerMap('44.435511213939165','26.1025071144104');
+        globalZoom = 12;
+        displayPartnerMap('44.435511213939165', '26.1025071144104');
     });
 
 </script>
@@ -351,4 +354,8 @@
             <div style="width: 530px; height: 400px" id="map_canvas"></div>
         </div>
     </div>
+</div>
+<div id="select_categories" style="width: 600px;">
+    <h1>Alege din ce categorii face parte acesta oferta</h1>
+    <?php print_r($category_tree); ?>
 </div>
