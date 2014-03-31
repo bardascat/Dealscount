@@ -74,8 +74,10 @@ class CartItem {
      * @return Item
      */
     public function getItem() {
+        $this->item->setItemVariant($this->getItemVariant());
         return $this->item;
     }
+    
 
     public function setItem(Item $item) {
         $this->item = $item;
@@ -163,7 +165,7 @@ class CartItem {
      * @return \Dealscount\Models\Entities\ItemVariant
      */
     public function getItemVariant() {
-        return $this->ProductVariant;
+        return $this->ItemVariant;
     }
 
     public function setItemVariant(ItemVariant $itemVariant) {

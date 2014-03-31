@@ -9,6 +9,7 @@ class orders extends CI_Controller {
 
     private $OrdersModel;
     private $OffersModel;
+    private $CompaniesModel;
 
     function __construct() {
         parent::__construct();
@@ -16,6 +17,7 @@ class orders extends CI_Controller {
         $this->view->setPage_name("Lista comenzi");
         $this->OffersModel = new \Dealscount\Models\OffersModel();
         $this->OrdersModel = new Dealscount\Models\OrdersModel();
+        $this->CompaniesModel = new Dealscount\Models\PartnerModel();
     }
 
     /**
@@ -29,20 +31,19 @@ class orders extends CI_Controller {
 
         $orders = $this->OrdersModel->PaginateOrders($page);
         $data = array(
-            "orders" => $orders
+            "orders" => $orders,
+            'companies' => $this->CompaniesModel->getCompaniesList(),
         );
         $this->load_view_admin('admin/orders/orders_list', $data);
     }
 
-    public function searchOrder() {
+    public function searchOrders() {
         $searchQuery = $_GET['search'];
-        if (strlen($searchQuery) < 2) {
-            header('Location:' . URL . 'admin/orders/orders_list');
-            exit();
-        }
-        $orders = $this->OrdersModel->searchOrders($searchQuery);
+
+        $orders = $this->OrdersModel->searchOrders($_GET);
         $data = array(
-            "orders" => $orders
+            "orders" => $orders,
+            'companies' => $this->CompaniesModel->getCompaniesList()
         );
         $this->load_view_admin('admin/orders/orders_list', $data);
     }
@@ -75,8 +76,7 @@ class orders extends CI_Controller {
 
             $this->OrdersModel->addOrderItem($_POST);
             echo "<b>Voucherul a fost adaugat cu success<b/>";
-        }
-        else
+        } else
             exit("page not found");
     }
 
@@ -246,8 +246,7 @@ class orders extends CI_Controller {
             if (!$order) {
                 exit("<h2>Comanda invalida</h2>");
             }
-        }
-        else
+        } else
             exit("eroare");
     }
 

@@ -9,7 +9,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title><?php DLConstants::$WEBSITE_COMMERCIAL_NAME?> Voucher</title>
+        <title><?php DLConstants::$WEBSITE_COMMERCIAL_NAME ?> Voucher</title>
         <style type="text/css">
             *{font-family: Arial;}
             #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
@@ -129,7 +129,7 @@
                         <img width="313" src="<?php echo base_url($offer->getMainImage()) ?>"/>
                     </td>
                     <td width="400" style="padding-top: 30px; font-size: 17px; padding-left: 20px; vertical-align: top;">
-                        <?php echo $offer->getBrief() ?>
+                        <?php echo ($offer->getItemVariant() ? $offer->getItemVariant()->getDescription() : $offer->getBrief()) ?>
 
                         <table>
                             <tr>
@@ -151,10 +151,17 @@
                     </td>
                 </tr>
                 <tr>
+
+                    <td colspan="2"  style="padding-top: 7px; padding-bottom: 7px; width:250px;">
+                        <span style="font-size: 14px;">Valabilitate: </span> <span style="font-size: 15px; font-weight: bold;"><?php echo date("d-m-Y", strtotime($offer->getVoucher_start_date())) . ' - ' . date("d-m-Y", strtotime($offer->getVoucher_end_date())) ?></span>
+                    </td>
+                </tr>
+                <tr>
+
                     <td style="padding-top: 20px; vertical-align: top; padding-right: 10px;">
                         <h1 style="font-size: 20px;  font-weight: normal;">Despre Oferta</h1>
                         <br/>
-                        <?php echo $offer->getBenefits() ?>
+                        <?php echo substr($offer->getBenefits(), 0, 600) . '...'; ?>
                     </td>
                     <td style="padding-left: 20px;padding-right: 10px; padding-top: 20px;  vertical-align: top; ">
                         <h1 style="font-size: 20px; font-weight: normal;">Termeni Oferta</h1>

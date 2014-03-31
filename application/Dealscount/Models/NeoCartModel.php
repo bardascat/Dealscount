@@ -28,6 +28,9 @@ class NeoCartModel extends AbstractModel {
             $cartItem->setDetails($post['details']);
         }
 
+        if (isset($post['id_variant']))
+            $cartItem->setItemVariant($this->getItemVariant($post['id_variant']));
+
         //setam unique hash. Acest hash este generat de atributele ce fac cartitem-ul unic=> id_cart,id_item
         $cartItem->setUniqueHash();
 
@@ -35,6 +38,7 @@ class NeoCartModel extends AbstractModel {
         if ($this->tryUpdateQuantity($cart, $cartItem)) {
             return true;
         }
+
         $cart->addCartItem($cartItem);
         $this->em->persist($cart);
         $this->em->flush();
@@ -194,19 +198,19 @@ class NeoCartModel extends AbstractModel {
          * Generam item-urile comenzii
          */
         foreach ($cartItems as $cartItem) {
+            
             $orderItem = new Entities\OrderItem();
 
             $item = $cartItem->getItem();
-
             $orderItem->setQuantity($cartItem->getQuantity());
             $orderItem->setTotal($cartItem->getTotal($item->getSale_price()));
             $orderItem->setItem($item);
 
-            /*
-              if ($cartItem->getProductVariant())
-              $orderItem->setProductVariant($cartItem->getProductVariant());
-             */
 
+            if ($cartItem->getItemVariant())
+                $orderItem->setItemVariant($cartItem->getItemVariant());
+
+           
             $total+=$orderItem->getTotal();
 
             /**
@@ -298,8 +302,7 @@ class NeoCartModel extends AbstractModel {
         }
         return $order;
     }
-    
-    
+
     public function getShippingCost($params, $total) {
         //cupoanele nu au  taxa de transport
         return 0;
@@ -359,6 +362,20 @@ class NeoCartModel extends AbstractModel {
             return false;
         else
             return $vouchers_list;
+    }
+
+    /**
+     * 
+     * @param type $id_variant
+     * @return \Dealscount\Models\Entities\ItemVariant
+     * @throws \Exception
+     */
+    public function getItemVariant($id_variant) {
+        $variant = $this->em->find("Entities:ItemVariant", $id_variant);
+        if (!$variant)
+            throw new \Exception("Invalid id_variant");
+
+        return $variant;
     }
 
 }

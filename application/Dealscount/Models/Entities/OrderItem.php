@@ -30,6 +30,17 @@ class OrderItem extends AbstractEntity {
     protected $id_item;
 
     /**
+     * @Column(type="integer",nullable=true)
+     */
+    protected $id_variant;
+
+    /**
+     * @ManyToOne(targetEntity="ItemVariant")
+     * @JoinColumn(name="id_variant", referencedColumnName="id_variant")
+     */
+    private $ItemVariant;
+
+    /**
      * @ManyToOne(targetEntity="Order",inversedBy="orderItems")
      * @JoinColumn(name="id_order", referencedColumnName="id_order" ,onDelete="CASCADE")
      */
@@ -61,7 +72,6 @@ class OrderItem extends AbstractEntity {
      * @Column(type="string")
      */
     protected $status = "F";
-
 
     function __construct() {
         $this->vouchers = new ArrayCollection();
@@ -104,6 +114,8 @@ class OrderItem extends AbstractEntity {
      * @return \Dealscount\Models\Entities\Item
      */
     public function getItem() {
+        //injectam varianta
+        $this->item->setItemVariant($this->getItemVariant());
         return $this->item;
     }
 
@@ -136,7 +148,6 @@ class OrderItem extends AbstractEntity {
         $this->status = $status;
     }
 
-
     public function getId_order() {
         return $this->id_order;
     }
@@ -153,7 +164,17 @@ class OrderItem extends AbstractEntity {
         $this->id_item = $id_item;
     }
 
-   
+    /**
+     * @return \Dealscount\Models\Entities\ItemVariant
+     */
+    public function getItemVariant() {
+        return $this->ItemVariant;
+    }
+
+    public function setItemVariant(ItemVariant $variant) {
+        $this->ItemVariant = $variant;
+    }
+
 }
 
 ?>

@@ -17,7 +17,7 @@
                 <input type="submit" value=""/>
             </form>
             <div class="username">
-                Ciau, <?php echo $user->getLastname() . ' ' . $user->getFirstname() ?>
+                Salut, <?php echo $user->getLastname() . ' ' . $user->getFirstname() ?>
             </div>
         </div>
 

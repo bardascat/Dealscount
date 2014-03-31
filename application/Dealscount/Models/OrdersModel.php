@@ -27,17 +27,50 @@ class OrdersModel extends AbstractModel {
             $result = $this->em->createQueryBuilder()
                     ->select("orders")
                     ->from("Entities:Order", "orders")
-                    ->join("orders.user", 'u')
-                    ->where("orders.order_number like :searchQuery")
-                    ->orWhere("orders.id_order like :searchQuery")
-                    ->orWhere("u.firstname like :searchQuery")
-                    ->orWhere("u.lastname like :searchQuery")
-                    ->orWhere("u.email like :searchQuery")
-                    ->setParameter(":searchQuery", '%' . $searchQuery . '%')
-                    ->getQuery()
-                    ->execute();
+                    ->join("orders.user", 'u');
 
-            return $result;
+
+            $and = 0;
+            if (isset($searchQuery['id_company']) && $searchQuery['id_company']) {
+                $and = 1;
+                $result->join("orders.orderItems", "orderItems")
+                        ->join("orderItems.item", "item")
+                        ->where("item.id_user=:id_user")
+                        ->setParameter(":id_user", $searchQuery['id_company']);
+            }
+
+            if ($searchQuery['search']) {
+                if ($and == 1)
+                    $result->andWhere("orders.order_number like :searchQuery or orders.id_order like :searchQuery or u.firstname like :searchQuery or u.lastname like :searchQuery or u.email like :searchQuery");
+                else
+                    $result->where("orders.order_number like :searchQuery or orders.id_order like :searchQuery or u.firstname like :searchQuery or u.lastname like :searchQuery or u.email like :searchQuery");
+                $result->setParameter(":searchQuery", '%' . $searchQuery['search'] . '%');
+                $and = 1;
+            }
+
+            if ($searchQuery['from']) {
+                if ($and == 1)
+                    $result->andWhere("orders.orderedOn>=:from");
+                else
+                    $result->where("orders.orderedOn>=:from");
+
+                $result->setParameter(":from", $searchQuery['from']);
+                $and = 1;
+            }
+            if ($searchQuery['to']) {
+                if ($and == 1)
+                    $result->andWhere("orders.orderedOn<=:to");
+                else
+                    $result->where("orders.orderedOn<=:to");
+
+                $result->setParameter(":to", $searchQuery['to']);
+                $and = 1;
+            }
+
+
+            $result->orderBy("orders.orderedOn", "desc");
+
+            return $result->getQuery()->execute();
         } catch (\Doctrine\ORM\Query\QueryException $e) {
             echo $e->getMessage();
         }

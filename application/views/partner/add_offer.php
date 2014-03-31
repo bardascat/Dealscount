@@ -43,14 +43,17 @@
                                         <textarea  id="name" title="Acest titlu va aparea in pagina ofertei. Nu trebuie sa depaseasca 6 randuri" name='brief'><?php echo set_value('brief') ?></textarea>
                                     </td>
                                 </tr>
-
-
+                                
                                 <tr>
                                     <td class='label'>
-                                        <label>Oras</label>
+                                        <label>Judet</label>
                                     </td>
-                                    <td class='' >
-                                        <input type='text' value="<?php echo set_value('city') ?>" name='city'/>
+                                    <td class="input">
+                                        <select name="city">
+                                            <?php foreach ($cities as $city) { ?>
+                                                <option value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -173,9 +176,9 @@
                                 <input type="hidden" name="id_company" value="<?php echo $user->getId_user() ?>"/>
 
                             </table>
-                            
+
                             <div title="Puteti adauga oferte auxiliare" style="margin-top: 10px; margin-bottom: 5px;" onclick="addItemVariant()" id="greenButtonSmall">Adauga Variante</div> 
-                            
+
                             <table celpadding="0" class="variants_table" cellspacing="0" border="0" width="100%">
                                 <tr>
                                     <td class="variant_list" style="padding-top: 10px;">
@@ -185,7 +188,7 @@
                                     </td>
                                 </tr>
                             </table>
-                            
+
                         </div>
                         <div id="tabs-3">
                             <table  border='0' width='100%' id='add_table'>

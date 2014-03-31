@@ -15,5 +15,12 @@
             Date cont
         </a>
     </li>
+    <?php if ($user->getAclRole()->getName() == DLConstants::$PARTNER_ROLE) { ?>
+        <li class="date_cont">
+            <a href="<?php echo base_url('partener') ?>">
+                Cont Partener
+            </a>
+        </li>
+    <?php } ?>
 
 </ul>

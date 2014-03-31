@@ -10,8 +10,35 @@
 
         <div class="offers_list">
 
+            <div class="search_offers" style="float: left; margin-bottom:20px;">
+                <form method="get" action="<?php base_url('partener/oferte/search') ?>">
+                    <table cellpadding="0" cellspacing="0" border="0" width="950">
+                        <tr>
+                            <td>
+                                <input type="text" placeholder="Cauta dupa nume oferta sau categorie" name="query" value="<?php echo $this->input->get('query')?>" class="query_field" value="<?php echo $this->input->get("voucher") ?>" />
+                                <input type="submit" value=""/>
+                            </td>
+                            <td style="padding-left: 30px; font-size: 14px;">
+                                Interval:
+                            </td>
+                            <td width="200">
+                                <div class="programeaza">
+                                    <input value="<?php echo $this->input->get('start_date')?>"  class="datepicker" placeholder="data start"  value="<?php echo set_value('start_date') ?>"  type="text" name="start_date"/>
+                                </div>
+                            </td>
+                            <td>
+                                -
+                            </td>
+                            <td width="200" style="padding-left: 10px;">
+                                <div class="programeaza">
+                                    <input value="<?php echo $this->input->get('end_date')?>"  placeholder="data final" class="datepicker"  value="<?php echo set_value('start_date') ?>"  type="text" name="end_date"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
             <?php
-            $offers = $user->getItems();
             if (count($offers)) {
                 ?>
                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -74,14 +101,14 @@
                                     <a style='margin-top: 15px;' class="offers_details" href="<?php echo base_url('partener/detalii-oferta/' . $offer->getIdItem()) ?>"></a>
                                     <a class="red_button" style="color: #FFF; margin-top: 25px; margin-bottom: 15px;" 
                                        href="<?php echo ($offer->getActive() ? base_url('partener/suspenda-oferta/' . $offer->getIdItem()) : base_url('partener/activeaza-oferta/' . $offer->getIdItem())) ?>"><?php echo ($offer->getActive() ? "Suspenda" : "Reporneste"); ?></a>
-                                    
+
                                 </td>
                             </tr>
                         <?php } ?>
                     </tbody>
                 </table>
             <?php } else { ?>
-            <h4 style="margin-top:40px; font-weight: normal;">Momentan nu aveti nicio oferta postata.</h4>
+                <h4 style="margin-top:40px; clear: both; float: left; font-weight: normal;">Nu am gasit nicio oferta.</h4>
             <?php } ?>
 
 
@@ -91,3 +118,8 @@
     </div>
     <div id="clear"></div>
 </div>
+<script>
+    $(document).ready(function() {
+        $(".datepicker").datepicker({dateFormat: "yy-mm-dd"});
+    })
+</script>

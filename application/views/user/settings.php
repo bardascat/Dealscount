@@ -1,5 +1,6 @@
 <?php
 /* @var $user Dealscount\Models\Entities\User */ $user
+        
 ?>
 
 <div id="content">

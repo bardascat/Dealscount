@@ -403,7 +403,7 @@ img{border:0px;}
 .offers_list .offer .image .time_left{
     background-image: url('../images_fdd/fab_green_clock.png');
     width: 16px; height: 20px;
-    padding-left: 17px;
+    padding-left: 19px;
     background-repeat: no-repeat;
     width: 100%;
     letter-spacing: 0px;
@@ -415,8 +415,9 @@ img{border:0px;}
     position: absolute;
 }
 .offers_list .offer .image .image_over{
+    display: none;
     background-image: url('../images_fdd/fab_grey_transparent.png');
-    width: 77px;
+    width: 90px;
     top:10px;
     color: #fff;
     padding-left: 5px;
@@ -448,6 +449,40 @@ img{border:0px;}
 .offers_list .price_details .price span{
     font-size: 13px;
 }
+
+#content  .search_offers form{width: 359px; height: 39px;
+                                background-image: url('../images_fdd/fab_search_bar_border.png');
+                                background-repeat: no-repeat;
+                                float: left;
+                                margin-top:10px;
+                                margin-left: 5px;
+}
+#content .search_offers td{
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+}
+#content .search_offers form input[type="submit"]{
+    width: 34px;
+    height: 32px;
+    margin-top: 2px;
+    border:0px;
+    background-color: transparent;
+    cursor: pointer;
+}
+#content  .search_offers form .query_field[type="text"]{
+    width:290px;    
+    height: 25px;
+    margin-left: 6px;
+    border:0px;
+    font-family: 'Noto Sans';
+    font-size: 15px;
+    line-height: 25px;
+    margin-top: 0px;
+    border:0px solid #ccc;
+    float:left;
+    margin-top:5px;
+}
+
 .offers_list .price_details .price{
     text-align: center;
     font-size: 24px;
@@ -748,7 +783,7 @@ img{border:0px;}
     font-size: 13px;
 }
 #content .cart_page  .inner_table td{
-    
+
 }
 
 #content .cart_page .quantity .update_quantity{
@@ -938,14 +973,14 @@ img{border:0px;}
 
 /* user orders list */
 
-#content .account .search_vouchers form{width: 359px; height: 39px;
-                                        background-image: url('../images_fdd/fab_search_bar_border.png');
-                                        background-repeat: no-repeat;
-                                        float: left;
-                                        margin-top:10px;
-                                        margin-left: 5px;
+#content  .search_vouchers form{width: 359px; height: 39px;
+                                background-image: url('../images_fdd/fab_search_bar_border.png');
+                                background-repeat: no-repeat;
+                                float: left;
+                                margin-top:10px;
+                                margin-left: 5px;
 }
-#content .account .search_vouchers form input[type="submit"]{
+#content .search_vouchers form input[type="submit"]{
     width: 34px;
     height: 32px;
     margin-top: 2px;
@@ -953,7 +988,7 @@ img{border:0px;}
     background-color: transparent;
     cursor: pointer;
 }
-#content .account .search_vouchers form input[type="text"]{
+#content  .search_vouchers form input[type="text"]{
     width:302px;    
     height: 25px;
     margin-left: 6px;
@@ -1215,7 +1250,7 @@ img{border:0px;}
     padding-left: 20px;
     background-repeat: no-repeat;
     background-position: 0px 1px;
-    
+
 }
 #content .partner .edit_offer .offer_form .label{
     width: 140px;
@@ -1260,14 +1295,14 @@ img{border:0px;}
 }
 
 #content .partner .edit_offer .offer_form .variant_list li{
-    
+
     padding-bottom: 10px;
 }
 #content .partner .edit_offer .offer_form .variantTdHeader{
     padding-top: 10px;
 }
 #content .partner .edit_offer .offer_form .removeVariant{
-   
+
     background-image: url('../images_fdd/fab_delete_icon.png');
     cursor: pointer;
     margin-bottom: 10px;

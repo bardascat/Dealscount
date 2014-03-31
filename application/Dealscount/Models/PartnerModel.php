@@ -78,6 +78,39 @@ class PartnerModel extends AbstractModel {
         return $r;
     }
 
+    public function filterOffers(Entities\User $user, $filters) {
+
+        $qb = $this->em->createQueryBuilder();
+
+        $qb->select("e")
+                ->from("Entities:Item", "e")
+                ->join("e.ItemCategories", "itemCategories")
+                ->join("itemCategories.category", "categories")
+                ->where("e.id_user=:id_user")
+                ->setParameter(":id_user", $user->getId_user());
+
+        if (isset($filters['query']) && $filters['query']) {
+            $qb->andWhere("categories.name like :category_name or e.name like :category_name  or e.brief like :category_name")
+                    ->setParameter(":category_name", '%' . $filters['query'] . '%');
+        }
+
+        if (isset($filters['start_date']) && $filters['start_date']) {
+            $qb->andWhere("e.createdDate>=:start_date")
+                    ->setParameter(":start_date", new \DateTime($filters['start_date']));
+        }
+        if (isset($filters['end_date']) && $filters['end_date']) {
+            $qb->andWhere("e.createdDate<=:end_date")
+                    ->setParameter(":end_date", new \DateTime($filters['end_date']));
+        }
+
+
+        try {
+            return $qb->getQuery()->execute();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
     /**
      * @param type $id_company
      * @return \NeoMvc\Models\Entity\User

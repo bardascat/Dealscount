@@ -6,20 +6,20 @@
         <?php
         if ($offers) {
             if (isset($_GET['q'])) {
-                echo "<div style='margin-bottom:20px; font-weight:bold;'>Ati cautat \"" . $_GET['q'].'" ('.count($offers).' rezultate)</div>';
+                echo "<div style='margin-bottom:20px; font-weight:bold;'>Ati cautat \"" . $_GET['q'] . '" (' . count($offers) . ' rezultate)</div>';
             }
             foreach ($offers as $offer) {
                 $company = $offer->getCompany();
                 $companyDetails = $company->getCompanyDetails();
                 ?>
-                <div class="offer">
+                <div class="offer offer_<?php echo $offer->getIdItem() ?>">
                     <div class="image">
-                        <div class="image_over">
-                            <div class="time_left"><?php echo $offer->getRemainingHours() ?></div>
+                        <div style="<?php if ($offer->getRemainingDays() < 1) echo "background-color: #F00; background-image: none;" ?>" class="image_over">
+                            <div class="time_left"><?php echo $offer->getRemainingTime() ?></div>
                         </div>
                         <div class="image_over" style="top: 37px; text-align: center;">-<?php echo $offer->getPercentageDiscount() ?>%</div>
                         <a href="<?php echo base_url('oferte/' . $offer->getSlug()) ?>">
-                            <img width="233" src="<?php echo base_url($offer->getMainImage()) ?>"/>
+                            <img onmouseover="showOfferDetails(<?php echo $offer->getIdItem()?>)" onmouseout="hideOfferDetails(<?php echo $offer->getIdItem()?>)" width="233" src="<?php echo base_url($offer->getMainImage()) ?>"/>
                         </a>
                     </div>
                     <div class="info">
@@ -43,7 +43,7 @@
                                 <form id="buy_<?php echo $offer->getIdItem() ?>" method="post" action="<?php echo base_url('neocart/add_to_cart') ?>">
                                     <input type="hidden" name="quantity" value="1"/>
                                     <input type="hidden" name="id_item" value="<?php echo $offer->getIdItem() ?>"/>
-                                    <a class="cart" href="javascript:<?php echo (count($offer->getItemVariants())>0 ? "javascript:add_to_cart(".$offer->getIdItem().",'mb')" : "$('#buy_".$offer->getIdItem()."').submit()")?>"></a>
+                                    <a class="cart" href="javascript:<?php echo (count($offer->getItemVariants()) > 0 ? "javascript:add_to_cart(" . $offer->getIdItem() . ",'mb')" : "$('#buy_" . $offer->getIdItem() . "').submit()") ?>"></a>
                                 </form>
                             </td>
                         </tr>
@@ -57,7 +57,8 @@
             } else {
                 ?>
                 Nu exista oferte active
-            <?php }
+                <?php
+            }
         }
         ?>
     </div>

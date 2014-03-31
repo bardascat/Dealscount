@@ -242,6 +242,8 @@ class Item extends AbstractEntity {
 
     /** @OneToMany(targetEntity="ItemVariant", mappedBy="item",cascade={"persist"}) */
     private $ItemVariants;
+    //injecteaza varianta daca exista, pentru a afisa descrierea si pretul in functie de varianta
+    private $ItemVariant;
 
     public function __construct() {
         $this->createdDate = new \DateTime("now");
@@ -264,7 +266,10 @@ class Item extends AbstractEntity {
     }
 
     public function getName() {
-        return $this->name;
+        if ($this->getItemVariant())
+            return $this->getItemVariant()->getDescription();
+        else
+            return $this->name;
     }
 
     public function setName($name) {
@@ -485,7 +490,10 @@ class Item extends AbstractEntity {
     }
 
     public function getPrice() {
-        return $this->price;
+        if ($this->getItemVariant())
+            return $this->getItemVariant()->getPrice();
+        else
+            return $this->price;
     }
 
     public function setPrice($price) {
@@ -494,7 +502,10 @@ class Item extends AbstractEntity {
     }
 
     public function getSale_price() {
-        return $this->sale_price;
+        if ($this->getItemVariant())
+            return $this->getItemVariant()->getSale_price();
+        else
+            return $this->sale_price;
     }
 
     public function setSale_price($sale_price) {
@@ -649,26 +660,41 @@ class Item extends AbstractEntity {
     /**
      * Metode particulare
      */
-    public function getRemainingHours() {
-        $date1 = strtotime(date("Y-m-d H:i:s"));
-        $date2 = strtotime(date("Y-m-d") . ' 23:59:59');
+    public function getRemainingTime() {
+        $seconds = strtotime($this->getEnd_date()) - time();
 
-        $all = round(($date2 - $date1) / 60);
-        $d = floor($all / 1440);
-        $h = floor(($all - $d * 1440) / 60);
-        $m = $all - ($d * 1440) - ($h * 60);
-        if ($h < 2)
-            return $h . ' ora  ' . $m . ' m';
-        else
-            return $h . ' ore  ' . $m . ' m';
+        $days = floor($seconds / 86400);
+        $seconds %= 86400;
+
+        $hours = floor($seconds / 3600);
+        $seconds %= 3600;
+
+        $minutes = floor($seconds / 60);
+        $seconds %= 60;
+
+        //  return "$days zile $hours ore si $minutes min";
+        return "$days zile $hours ore";
+    }
+
+    public function getRemainingDays() {
+        $seconds = strtotime($this->getEnd_date()) - time();
+
+        $days = floor($seconds / 86400);
+        return $days;
     }
 
     public function getPercentageDiscount() {
-        return round(100 - ($this->getVoucher_price() * 100 ) / $this->getPrice());
+        if ($this->getItemVariant())
+            return $this->getItemVariant()->getPercentageDiscount();
+        else
+            return round(100 - ($this->getVoucher_price() * 100 ) / $this->getPrice());
     }
 
     public function getVoucher_price() {
-        return $this->voucher_price;
+        if ($this->getItemVariant())
+            return $this->getItemVariant()->getVoucher_price();
+        else
+            return $this->voucher_price;
     }
 
     public function setVoucher_price($voucher_price) {
@@ -723,6 +749,18 @@ class Item extends AbstractEntity {
      */
     public function getItemVariants() {
         return $this->ItemVariants;
+    }
+
+    /**
+     * @return \Dealscount\Models\Entities\ItemVariant
+     */
+    public function getItemVariant() {
+        return $this->ItemVariant;
+    }
+
+    public function setItemVariant($ItemVariant) {
+        $this->ItemVariant = $ItemVariant;
+        return $this;
     }
 
 }

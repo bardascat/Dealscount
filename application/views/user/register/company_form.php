@@ -68,6 +68,8 @@
                 <label>Oras:</label>
             </td>
             <td>
+                <input type="hidden" name="age" value="25-30"/>
+                <input type="hidden" name="sex" value="M"/>
                 <select style="width: 207px;" name="city">
                     <?php foreach ($cities as $city) { ?>
                         <option value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
@@ -75,6 +77,7 @@
                 </select>
             </td>
         </tr>
+        <!--
         <tr>
             <td>
                 <label>Varsta:</label>
@@ -99,7 +102,7 @@
                 </select>
             </td>
         </tr>
-
+        -->
         <tr>
             <td style="padding-top: 25px;">
                 <label>Parola:</label>

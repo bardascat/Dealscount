@@ -22,6 +22,11 @@
         </td>
         <td class="minimenu">
             <ul>
+                <li class="date_cont">
+                    <a href="<?php echo base_url('account') ?>">
+                        Cont Client
+                    </a>
+                </li>
                 <li class="date_cont <?php if ($this->uri->segment(2) == "date-cont") echo "selected"; ?>">
                     <a href="<?php echo base_url('partener/date-cont') ?>">
                         Date cont

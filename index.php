@@ -1,7 +1,6 @@
 <?php
+
 /*
- * asd edited asd sadsadXX
- xxYYxx
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
  *---------------------------------------------------------------
@@ -201,6 +200,5 @@ if (defined('ENVIRONMENT'))
  *
  */
 require_once BASEPATH.'core/CodeIgniter.php';
-
 /* End of file index.php */
 /* Location: ./index.php */

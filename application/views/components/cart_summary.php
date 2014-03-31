@@ -28,7 +28,6 @@ $cartItems = $cart->getCartItems();
                             <?php
                             $total_economie=0;
                             foreach ($cartItems as $cartItem) {
-                                
                                 $item = $cartItem->getItem();
                                 ?>
                                 <tr>

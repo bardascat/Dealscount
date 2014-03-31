@@ -48,10 +48,14 @@
                                 </tr>
                                 <tr>
                                     <td class='label'>
-                                        <label>Oras</label>
+                                        <label>Judet</label>
                                     </td>
-                                    <td class='' >
-                                        <input type='text' value="<?php echo set_value('city') ?>" name='city'/>
+                                    <td>
+                                        <select  name="city">
+                                            <?php foreach ($cities as $city) { ?>
+                                                <option <?php if ($offer->getCity() == $city->getDistrict()) echo " selected "; ?> value="<?php echo $city->getDistrict() ?>"><?php echo $city->getDistrict() ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>

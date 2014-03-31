@@ -92,7 +92,7 @@ class partener extends \CI_Controller {
      * @AclResource "Partener: Lista Oferte"
      */
     public function oferte() {
-        $this->load_view('partner/offers', array("user" => $this->User));
+        $this->load_view('partner/offers', array("user" => $this->User, "offers" => $this->PartnerModel->filterOffers($this->User, $_GET)));
     }
 
     /**
@@ -179,7 +179,7 @@ class partener extends \CI_Controller {
             redirect(base_url('partener/oferte'));
             exit();
         }
-        $data = array("offer" => $offer, "user" => $this->User, "category_tree" => $this->CategoriesModel->createCheckboxList("offer", $id_offer));
+        $data = array("offer" => $offer, "user" => $this->User, "cities" => $this->UserModel->getCities(), "category_tree" => $this->CategoriesModel->createCheckboxList("offer", $id_offer));
         $this->populate_form($offer);
         $this->load_view('partner/edit_offer', $data);
     }
@@ -198,6 +198,7 @@ class partener extends \CI_Controller {
             $data = array(
                 'offer' => $offer,
                 'user' => $this->User,
+                "cities" => $this->UserModel->getCities(),
                 "category_tree" => $this->CategoriesModel->createCheckboxList("offer", $this->input->post("id_item")),
                 "notification" => array(
                     "type" => "form_notification",
@@ -223,7 +224,7 @@ class partener extends \CI_Controller {
      */
     public function add_offer() {
         $tree = $this->CategoriesModel->createCheckboxList("offer");
-        $data = array("user" => $this->User, "category_tree" => $tree);
+        $data = array("user" => $this->User, "category_tree" => $tree, "cities" => $this->UserModel->getCities());
         $this->load_view('partner/add_offer', $data);
     }
 
@@ -238,6 +239,7 @@ class partener extends \CI_Controller {
 
             $data = array(
                 'user' => $this->User,
+                "cities" => $this->UserModel->getCities(),
                 "category_tree" => $this->CategoriesModel->createCheckboxList("offer"),
                 "notification" => array(
                     "type" => "form_notification",
