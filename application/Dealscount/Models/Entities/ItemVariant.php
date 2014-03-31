@@ -38,7 +38,7 @@ class ItemVariant {
      * @Column(type="float")
      */
     private $price;
-    
+
     /**
      * @Column(type="text")
      */
@@ -47,7 +47,12 @@ class ItemVariant {
     /**
      * @Column(type="float")
      */
-    private $sale_price;
+    private $sale_price = 0;
+
+    /**
+     * @Column(type="float")
+     */
+    private $voucher_price;
 
     /**
      * @Column(type="integer",nullable=true)
@@ -153,13 +158,25 @@ class ItemVariant {
     public function setItem($item) {
         $this->item = $item;
     }
-    
+
     public function getDescription() {
         return $this->description;
     }
 
     public function setDescription($description) {
         $this->description = $description;
+        return $this;
+    }
+
+    public function getPercentageDiscount() {
+        return round(100 - ($this->getVoucher_price() * 100 ) / $this->getPrice());
+    }
+    public function getVoucher_price() {
+        return $this->voucher_price;
+    }
+
+    public function setVoucher_price($voucher_price) {
+        $this->voucher_price = $voucher_price;
         return $this;
     }
 

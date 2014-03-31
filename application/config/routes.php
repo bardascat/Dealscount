@@ -47,6 +47,8 @@ $route['categorii/getSubcategory'] = "categorii/getSubcategory";
 
 //oferte
 $route['oferte/increment_offer_view'] = "oferte/increment_offer_view";
+$route['oferte/loadItemVariant'] = "oferte/loadItemVariant";
+
 $route['oferte/show_offer'] = "oferte/show_offer";
 $route['oferte/(:any)'] = "oferte/view";
 

@@ -50,4 +50,34 @@ class oferte extends CI_Controller {
             $this->OffersModel->increment_offer_view($id_item);
     }
 
+    public function loadItemVariant() {
+        $id_item = $this->input->post('id_item');
+        //$id_item = 7;
+
+        $item = $this->OffersModel->getOffer($id_item);
+        if (!$item)
+            show_404();
+
+        ob_start();
+        require_once('application/views/components/multiple_buy.php');
+
+        $html = ob_get_clean();
+        echo json_encode(array("type" => "success", "html" => $html));
+    }
+
+    /*
+      public function loadItemVariant() {
+
+      $id_item = $this->input->get('id_item');
+      $item = $this->OffersModel->getOffer($id_item);
+      if (!$item)
+      show_404();
+
+      ob_start();
+      require_once('application/views/components/multiple_buy.php');
+
+      $html = ob_get_clean();
+      echo $html;
+      }
+     */
 }

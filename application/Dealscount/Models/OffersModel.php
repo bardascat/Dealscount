@@ -173,7 +173,7 @@ class OffersModel extends \Dealscount\Models\AbstractModel {
                         $variant->setPrice($_POST['attribute_value'][$indexAtribut]);
                     }
                     if ($id_attribute == "2") {
-                        $variant->setSale_price($_POST['attribute_value'][$indexAtribut]);
+                        $variant->setVoucher_price($_POST['attribute_value'][$indexAtribut]);
                     }
                     if ($id_attribute == "3") {
                         $variant->setDescription($_POST['attribute_value'][$indexAtribut]);

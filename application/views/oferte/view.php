@@ -47,7 +47,7 @@ $images = $offer->getImages();
                                 <form id="cart_form" method="post" action="<?php echo base_url('neocart/add_to_cart') ?>">
                                     <input type="hidden" name="id_item" value="<?php echo $offer->getIdItem() ?>"/>
                                     <input type="hidden" name="quantity" value="1"/>
-                                    <a class="cumpara_btn" href="javascript:add_to_cart()"></a>
+                                    <a class="cumpara_btn" href="javascript:add_to_cart(<?php echo $offer->getIdItem()?>,<?php echo (count($offer->getItemVariants()) > 0 ? "'mb'" : 0) ?>)"></a>
 
                                     <?php if ($this->view->getUser() && $this->view->getUser()['role'] == DLConstants::$ADMIN_ROLE) : ?>
 
@@ -224,7 +224,6 @@ $images = $offer->getImages();
 
 
 <script type="text/javascript">
-
     $(document).ready(function() {
 
 <?php if ($offer->getLongitude() && $offer->getLatitude()) { ?>
@@ -233,21 +232,4 @@ $images = $offer->getImages();
         $(".adminAdaugaItem").fancybox({width: 550, height: 250, autoResize: false, autoSize: false, openEffect: 'none', closeEffect: 'none'});
         increment_offer_view(<?php echo $offer->getIdItem() ?>);
     })
-    function optBox(id) {
-        var html = $('#offer_' + id).html();
-
-        $.fancybox.open({
-            content: html,
-            width: 580,
-            autoSize: true,
-            closeClick: false,
-            openEffect: 'none',
-            closeEffect: 'none'
-        });
-    }
-
-    function add_to_cart() {
-        $('#cart_form').submit();
-    }
-
 </script>

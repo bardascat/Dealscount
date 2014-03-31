@@ -43,7 +43,7 @@
                                 <form id="buy_<?php echo $offer->getIdItem() ?>" method="post" action="<?php echo base_url('neocart/add_to_cart') ?>">
                                     <input type="hidden" name="quantity" value="1"/>
                                     <input type="hidden" name="id_item" value="<?php echo $offer->getIdItem() ?>"/>
-                                    <a class="cart" href="javascript:$('#buy_<?php echo $offer->getIdItem() ?>').submit()"></a>
+                                    <a class="cart" href="javascript:<?php echo (count($offer->getItemVariants())>0 ? "javascript:add_to_cart(".$offer->getIdItem().",'mb')" : "$('#buy_".$offer->getIdItem()."').submit()")?>"></a>
                                 </form>
                             </td>
                         </tr>
