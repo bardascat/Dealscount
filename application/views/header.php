@@ -68,10 +68,20 @@
                                             </div>
                                         </li>
                                         <li class="bullet"></li>
-                                        <?php }
-                                        ?>
+                                    <?php }
+                                    ?>
 
 
                                 </ul>
+                            </div>
+                        </div>
+
+                        <div id="abonare">
+                            <div onclick="showAbonareForm()" class="abonare_icon"></div>
+                            <div class="abonare_form">
+                                <form onsubmit="return abonareNewsletter(this)" method="post" action="">
+                                    <input type="text" id="abonareEmail" name="email"/>
+                                    <input type="submit" value=""/>
+                                </form>
                             </div>
                         </div>

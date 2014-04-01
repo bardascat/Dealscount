@@ -110,7 +110,8 @@ class Doctrine {
             $em->getClassMetadata("Entities:ActiveOption"),
             $em->getClassMetadata("Entities:Attribute"),
             $em->getClassMetadata("Entities:AttributeValue"),
-            $em->getClassMetadata("Entities:ItemVariant")
+            $em->getClassMetadata("Entities:ItemVariant"),
+            $em->getClassMetadata("Entities:NewsletterSubscriber")
         );
 
         $tool->updateSchema($classes);

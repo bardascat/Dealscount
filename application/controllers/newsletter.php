@@ -27,6 +27,20 @@ class newsletter extends \CI_Controller {
         echo 'done';
     }
 
+    public function subscribe() {
+        $email = $_POST['email'];
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(array("type" => "error"));
+        } else {
+            $status = $this->UserModel->newsletterSubscribe($email);
+            if (!$status)
+                echo json_encode(array("type" => "already"));
+            else
+                echo json_encode(array("type" => "success"));
+        }
+        exit();
+    }
+
 }
 
 ?>

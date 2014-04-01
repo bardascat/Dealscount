@@ -65,8 +65,7 @@ class UserModel extends AbstractModel {
             $this->em->persist($user);
             $this->em->flush();
             return true;
-        }
-        else
+        } else
             return false;
     }
 
@@ -77,12 +76,6 @@ class UserModel extends AbstractModel {
             $str .= $charset[mt_rand(0, $count - 1)];
         }
         return $str;
-    }
-
-    public function subscribeUser(Entity\User $user = null) {
-
-
-        return true;
     }
 
     public function sendNotification(Entities\User $user) {
@@ -278,6 +271,18 @@ class UserModel extends AbstractModel {
 
 
         return $fb_data;
+    }
+
+    public function newsletterSubscribe($email) {
+        $newsletterSubscriber = new Entities\NewsletterSubscriber();
+        $newsletterSubscriber->setEmail($email);
+        try {
+            $this->em->persist($newsletterSubscriber);
+            $this->em->flush();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
 }
