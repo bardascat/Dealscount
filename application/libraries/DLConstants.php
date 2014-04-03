@@ -85,6 +85,8 @@ class DLConstants {
     public static $SUPPLIER_IBAN = "RO123";
     public static $SUPPLIER_BANK = "TRANSILVANIA";
     public static $CRON_ACCESS = "145839a025a99bda2e8f4f6a21ebbd5a4c893e91";
+    
+    public static $OFFERS_PER_ROW=4;
 
     public static function pushCSS($css) {
         array_push(self::$CSS_FILES, $css);

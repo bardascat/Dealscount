@@ -52,6 +52,14 @@ class ActiveOption extends AbstractEntity {
     protected $used_at;
 
     /**
+     * diferenta intre activated si used este:
+     * Used_at este data cand se aplica optiunea pe oferta
+     * activated este data cand este activata optiunea de catre job
+     * @Column(type="datetime",nullable=true) @var string
+     */
+    protected $activated;
+
+    /**
      * @Column(type="integer",nullable=true) @var string
      */
     protected $used;
@@ -208,6 +216,16 @@ class ActiveOption extends AbstractEntity {
         $this->position = $position;
         return $this;
     }
+    
+    public function getActivated() {
+        return $this->activated;
+    }
+
+    public function setActivated($activated) {
+        $this->activated = $activated;
+        return $this;
+    }
+
 
 
 }

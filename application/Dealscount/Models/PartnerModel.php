@@ -542,21 +542,43 @@ class PartnerModel extends AbstractModel {
     }
 
     //intoarce un intreg ce seminifica pozitia ofertei ce urmeaza sa fie programata
-    public function getOptionAvailablePosition($id_option, $date) {
+    public function getOptionAvailablePosition($id_option, $date, $id_company) {
         $option = $this->getSubscriptionOption($id_option);
-        switch ($option->getSlug()) {
-            case \DLConstants::$OPTIUNE_PROMOVARE_NEWSLETTER: {
-                    //optiunea pentru newsletter este valabila 7 zile
-                    $query = "select max(position) as position from active_options "
-                            . "where id_option=$id_option and date_add(scheduled, INTERVAL 7 DAY) >='$date'";
-                    $position = $this->em->getConnection()->fetchAll($query);
-                    return $position[0]['position'] + 1;
-                }break;
+        switch ($option->getSlug()) {/*
+          case \DLConstants::$OPTIUNE_PROMOVARE_NEWSLETTER: {
+          //optiunea pentru newsletter este valabila 7 zile
+          $query = "select max(position) as position from active_options "
+          . "where id_option=$id_option and date_add(scheduled, INTERVAL 7 DAY) >='$date'";
+          $position = $this->em->getConnection()->fetchAll($query);
+          return $position[0]['position'] + 1;
+          }break; */
             default: {
-                    //celelalte optiuni sunt valabile 1 zi
+                    /**
+                     * Toate optiunile sunt valabile 1 zi.
+                     * Fiecare optiune are un numar de randuri disponibile in care partenerii isi pot promova ofertele
+                     * Fiecare optiune poate fi folosita de un partener in acelasi timp de un numar limita de ori, definit in baza de date
+                     * Verificam cele 2 conditii pentru a valida
+                     */
                     $position = $this->em->getConnection()->fetchAll("select max(position) as position from active_options "
                             . "where id_option=$id_option and scheduled='$date'");
-                    return $position[0]['position'] + 1;
+                    $position = $position[0]['position'] + 1;
+                    //validam pe ce rand se pune oferta
+                    $nr_row = $position / \DLConstants::$OFFERS_PER_ROW;
+
+                    //daca se pune pe un rand care nu este oferit spre publicitate nu mai oferim nimic
+                    if ($nr_row > $option->getAvailable_rows()) {
+                        return array("type" => false, "info" => "In ziua " . $date . ' nu mai avem locuri disponibile pentru promovare. Va rugam alegeti alta zi.');
+                    }
+                    //validam daca cumva a depasit numarul de promovari
+                    $query="select count(*) as nr_options from active_options "
+                            . " where (used=1) and scheduled>current_date and activated is null and id_company=$id_company";
+                  
+                    $current_active_options = $this->em->getConnection()->fetchAll($query);
+
+                    if ($current_active_options[0]['nr_options'] > $option->getAvailable_rows()) {
+                        return array("type" => false, "info" => "Puteti promova maxim " . $option->getMax_bought() . " oferte . Ati atins deja aceasta limita");
+                    }
+                    return array("type" => "success", "nr" => $position);
                 }break;
         }
     }
@@ -724,7 +746,9 @@ class PartnerModel extends AbstractModel {
         $option->setUsed_on($id_offer);
         $option->setUsed(1);
         $option->setScheduled(new \DateTime($scheduled));
-        $option->setPosition($this->getOptionAvailablePosition($id_option, $scheduled));
+        
+        $position=$this->getOptionAvailablePosition($id_option, $scheduled,$id_company);
+        $option->setPosition($position['nr']);
         $this->em->persist($option);
         $this->em->flush();
         return true;

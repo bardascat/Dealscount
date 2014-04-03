@@ -48,6 +48,18 @@ class SubscriptionOption extends AbstractEntity {
     protected $type;
 
     /**
+     *  @Column(type="integer")
+     */
+    protected $available_rows=4;
+    
+     /**
+     *  @Column(type="integer")
+     */
+    protected $max_bought=5;
+    
+    
+
+    /**
      * //memoram informatii specifice optiunilor, ex pentru valabilitate, anual sau lunar
      *  @Column(type="string")
      */
@@ -159,12 +171,31 @@ class SubscriptionOption extends AbstractEntity {
         $this->ScheduledOptions = $ScheduledOptions;
         return $this;
     }
+
     public function getDisabledPosition() {
         return $this->disabledPosition;
     }
 
     public function setDisabledPosition($disabledPosition) {
         $this->disabledPosition = $disabledPosition;
+        return $this;
+    }
+    
+    public function getAvailable_rows() {
+        return $this->available_rows;
+    }
+
+    public function setAvailable_rows($available_rows) {
+        $this->available_rows = $available_rows;
+        return $this;
+    }
+
+    public function getMax_bought() {
+        return $this->max_bought;
+    }
+
+    public function setMax_bought($max_bought) {
+        $this->max_bought = $max_bought;
         return $this;
     }
 

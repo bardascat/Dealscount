@@ -67,7 +67,7 @@ class Doctrine {
 
         try {
 
-       // $this->updateSchema($em);
+        //$this->updateSchema($em);
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -107,11 +107,13 @@ class Doctrine {
             $em->getClassMetadata("Entities:PartnerNewsletter"),
             $em->getClassMetadata("Entities:City"),
             $em->getClassMetadata("Entities:SubscriptionOption"),
+            $em->getClassMetadata("Entities:SubscriptionOptionOrder"),
             $em->getClassMetadata("Entities:ActiveOption"),
             $em->getClassMetadata("Entities:Attribute"),
             $em->getClassMetadata("Entities:AttributeValue"),
             $em->getClassMetadata("Entities:ItemVariant"),
-            $em->getClassMetadata("Entities:NewsletterSubscriber")
+            $em->getClassMetadata("Entities:NewsletterSubscriber"),
+            $em->getClassMetadata("Entities:JobLog")
         );
 
         $tool->updateSchema($classes);

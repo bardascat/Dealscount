@@ -357,6 +357,13 @@ class partener extends \CI_Controller {
             redirect(base_url('partener/detalii-oferta/' . $_POST['id_offer']));
         }
 
+        //check if it is possible to apply the option
+        $check = $positon = $this->PartnerModel->getOptionAvailablePosition($_POST['id_option'], date("Y-m-d", strtotime($_POST['scheduled'])), $this->User->getCompanyDetails()->getId_company());
+        
+        if (!$check['type']) {
+            $this->session->set_flashdata('notification', array("type" => "error", "html" => $check['info']));
+            redirect(base_url('partener/detalii-oferta/' . $_POST['id_offer']));
+        }
         $this->PartnerModel->applyOption($_POST['id_offer'], $_POST['id_option'], $_POST['scheduled'], $this->User->getCompanyDetails()->getId_company());
         $this->session->set_flashdata('notification', array("type" => "success", "html" => "Optiunea a fost activata cu succes"));
         redirect(base_url('partener/detalii-oferta/' . $_POST['id_offer']));
@@ -365,8 +372,8 @@ class partener extends \CI_Controller {
 
     public function getOptionAvailablePosition() {
         $id_option = $_POST['id_option'];
-        $date = date("Y-m-d", strtotime($_POST['date']));
-        $positon = $this->PartnerModel->getOptionAvailablePosition($id_option, $date);
+        $date = date("Y-m-d", strtotime($_POST['scheduled']));
+        $positon = $this->PartnerModel->getOptionAvailablePosition($id_option, $date, $this->User->getCompanyDetails()->getId_company());
         echo json_encode(array("status" => "success", "position" => $positon));
         exit();
     }
