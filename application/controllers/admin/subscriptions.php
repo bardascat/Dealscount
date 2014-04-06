@@ -45,6 +45,7 @@ class subscriptions extends \CI_Controller {
         $data = array();
         $orders = $this->PartnerModel->getSubscriptionOptionOrders($page);
         $data['orders'] = $orders;
+        $data['companies']=$this->PartnerModel->getCompaniesList();
         $this->load_view_admin('admin/subscriptions/orders.php', $data);
     }
 
@@ -68,14 +69,11 @@ class subscriptions extends \CI_Controller {
         redirect($this->agent->referrer());
     }
 
-    public function searchOrder() {
-        $searchQuery = $_GET['search'];
-        if (strlen($searchQuery) < 2) {
-            redirect(base_url('admin/subscriptions/orders'));
-        }
+    public function searchOrders() {
         $data = array();
-        $orders = $this->PartnerModel->searchSubscriptionOptionOrders($searchQuery);
+        $orders = $this->PartnerModel->searchSubscriptionOptionOrders($_GET);
         $data['orders'] = $orders;
+        $data['companies']=$this->PartnerModel->getCompaniesList();
         $this->load_view_admin('admin/subscriptions/orders.php', $data);
     }
 

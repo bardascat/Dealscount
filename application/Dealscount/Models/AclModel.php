@@ -70,7 +70,7 @@ class AclModel extends AbstractModel {
 
     public function getAclResourcesForRole($id_role) {
         $rep = $this->em->getRepository("Entities:AclResource");
-        $r = $rep->findAll();
+        $r = $rep->findBy(array(),array("alias"=>"asc"));
 
         $con = $this->em->getConnection();
         $stm = $con->prepare("select id_resource from acl where id_role=:id_role and action='allow'");

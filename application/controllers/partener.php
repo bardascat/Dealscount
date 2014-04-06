@@ -21,6 +21,8 @@ class partener extends \CI_Controller {
 
         $this->load->library('user_agent');
         $this->User = $this->getLoggedUser(true);
+        if(!$this->User || $this->User->getAclRole()->getName()!=DLConstants::$PARTNER_ROLE)
+            redirect('util/permission_denied');
         $this->load->library('form_validation');
         $this->checkPermission();
     }

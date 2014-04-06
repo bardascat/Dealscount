@@ -570,9 +570,9 @@ class PartnerModel extends AbstractModel {
                         return array("type" => false, "info" => "In ziua " . $date . ' nu mai avem locuri disponibile pentru promovare. Va rugam alegeti alta zi.');
                     }
                     //validam daca cumva a depasit numarul de promovari
-                    $query="select count(*) as nr_options from active_options "
+                    $query = "select count(*) as nr_options from active_options "
                             . " where (used=1) and scheduled>current_date and activated is null and id_company=$id_company";
-                  
+
                     $current_active_options = $this->em->getConnection()->fetchAll($query);
 
                     if ($current_active_options[0]['nr_options'] > $option->getAvailable_rows()) {
@@ -630,17 +630,49 @@ class PartnerModel extends AbstractModel {
         try {
             $result = $this->em->createQueryBuilder()
                     ->select("orders")
-                    ->from("Entities:SubscriptionOptionOrder", "orders")
-                    ->join("orders.company", 'c')
-                    ->join("c.user", 'u')
-                    ->where("orders.order_number like :searchQuery")
-                    ->orWhere("c.company_name like :searchQuery")
-                    ->orWhere("u.email like :searchQuery")
-                    ->setParameter(":searchQuery", '%' . $searchQuery . '%')
-                    ->getQuery()
-                    ->execute();
+                    ->from("Entities:SubscriptionOptionOrder", "orders");
 
-            return $result;
+
+            $and = 0;
+            if (isset($searchQuery['id_company']) && $searchQuery['id_company']) {
+                $and = 1;
+                $result->where("orders.id_company=:id_company")
+                        ->setParameter(":id_company", $searchQuery['id_company']);
+            }
+
+            if ($searchQuery['search']) {
+                if ($and == 1)
+                    $result->andWhere("orders.order_number like :searchQuery or orders.id_option_order like :searchQuery");
+                else
+                    $result->where("orders.order_number like :searchQuery or orders.id_option_order like :searchQuery");
+                $result->setParameter(":searchQuery", '%' . $searchQuery['search'] . '%');
+                $and = 1;
+            }
+
+            if ($searchQuery['from']) {
+                if ($and == 1)
+                    $result->andWhere("orders.orderedOn>=:from");
+                else
+                    $result->where("orders.orderedOn>=:from");
+
+                $result->setParameter(":from", $searchQuery['from']);
+                $and = 1;
+            }
+            if ($searchQuery['to']) {
+                if ($and == 1)
+                    $result->andWhere("orders.orderedOn<=:to");
+                else
+                    $result->where("orders.orderedOn<=:to");
+
+                $result->setParameter(":to", $searchQuery['to']);
+                $and = 1;
+            }
+
+
+            $result->orderBy("orders.orderedOn", "desc");
+
+            
+            return $result->getQuery()->execute();
         } catch (\Doctrine\ORM\Query\QueryException $e) {
             echo $e->getMessage();
         }
@@ -746,8 +778,8 @@ class PartnerModel extends AbstractModel {
         $option->setUsed_on($id_offer);
         $option->setUsed(1);
         $option->setScheduled(new \DateTime($scheduled));
-        
-        $position=$this->getOptionAvailablePosition($id_option, $scheduled,$id_company);
+
+        $position = $this->getOptionAvailablePosition($id_option, $scheduled, $id_company);
         $option->setPosition($position['nr']);
         $this->em->persist($option);
         $this->em->flush();

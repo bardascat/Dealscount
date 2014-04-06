@@ -15,6 +15,7 @@ class Zacl extends Zend_Acl {
     function __construct() {
         $this->CI = & get_instance();
         $this->AclModel = new Dealscount\Models\AclModel();
+        //$this->AclModel->setAclResources($this->generateResource());
         $this->setAclRules();
     }
 
